@@ -1,5 +1,5 @@
 {
-  "schema_version": "axiom-demo-portfolio/2.0",
+  "schema_version": "rook-demo-portfolio/2.0",
   "portfolio_id": "pf_macro_rates_rv",
   "name": "Macro Rates Relative Value",
   "fictional": true,

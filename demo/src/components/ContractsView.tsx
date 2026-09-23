@@ -23,7 +23,7 @@ const STATUS_TONE: Record<string, string> = {
 
 const GROUPINGS: ContractGrouping[] = ['Event', 'Payoff structure', 'Status', 'Venue'];
 
-/** Every contract Axiom pulled, what it made of each one, and where it came from. */
+/** Every contract Rook pulled, what it made of each one, and where it came from. */
 export function ContractsView({ onContract }: { onContract: (contractId: string) => void }) {
   const [query, setQuery] = useState('');
   const [scope, setScope] = useState<'ALL' | 'CORE' | 'DECOY' | 'OUT_OF_SCOPE'>('ALL');

@@ -3,7 +3,7 @@ import { contractView, payoffOf, STATE_COUNT } from '../domain/engine';
 
 /**
  * The audit trail for one contract: venue identity, the settlement rule as the
- * venue published it, the predicate Axiom derived, and how it was derived.
+ * venue published it, the predicate Rook derived, and how it was derived.
  * Every material claim on any other screen traces back to this.
  */
 export function ContractInspector({ contractId }: { contractId: string }) {

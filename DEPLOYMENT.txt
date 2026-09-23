@@ -10,6 +10,36 @@ Import dev-Kaustav/axiom-frontend, using the repository root.
 vercel.json specifies the build command and dist output directory.
 Connect rook.pm to Production in Settings > Domains.
 
+DEMO ACCESS GATE
+/demo and everything under it sit behind a sign-in page. The gate covers the
+JS, CSS, fonts and JSON as well as the HTML - gating only the page would gate
+nothing, since the bundle carries the portfolio and universe.
+
+  demo-gate.mjs      credentials, sessions and the sign-in page (shared)
+  middleware.ts      Vercel edge, production
+  scripts/serve.mjs  local preview
+
+Both callers import demo-gate.mjs, so local and production cannot drift.
+
+A correct sign-in mints an HMAC-signed cookie holding nothing but its own
+expiry, valid 12 hours; the gate re-verifies the signature on every request.
+No database. An Authorization: Basic header is accepted too, for curl and CI.
+
+  DEMO_USER             username, default axiom
+  DEMO_PASSWORD         plaintext, hashed at request time
+  DEMO_PASSWORD_SHA256  or supply the hash directly
+  DEMO_SESSION_SECRET   HMAC key; falls back to the password hash, so rotating
+                        the password also invalidates issued sessions
+
+Set DEMO_PASSWORD in the Vercel project environment. The hash committed as the
+fallback is unsalted over a short password: it keeps crawlers and the curious
+out, it is not a secret against anyone holding the repository.
+
+After the first deploy, confirm the edge middleware actually ran:
+  curl -o /dev/null -w '%{http_code}\n' https://rook.pm/demo/assets/<bundle>.js
+It must print 401. If it prints 200, middleware did not run for this project
+type - turn on Vercel Deployment Protection > Password Protection instead.
+
 /                 Static Rook landing page.
 /brand/*          Landing-page assets.
 /demo             Demo entry point (local rewrite to /demo/index.html).

@@ -1,4 +1,4 @@
-AXIOM — STANDALONE INVESTOR DEMO
+ROOK — STANDALONE INVESTOR DEMO
 
 Requirements: Node.js 22.12+ and npm.
 

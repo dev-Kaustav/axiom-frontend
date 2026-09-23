@@ -35,7 +35,7 @@ const ITEM_SEP = '<|item|>';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(HERE, '../src/data/universe/universe.json');
 
-export const SCHEMA_VERSION = 'axiom-demo-universe/2.0';
+export const SCHEMA_VERSION = 'rook-demo-universe/2.0';
 
 // ---------------------------------------------------------------- HTTP
 

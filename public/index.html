@@ -1,63 +1,457 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f5f3eb">
-    <meta name="description" content="See what your prediction-market positions really depend on. Rook connects contracts, settlement rules, and portfolio exposure in one research workstation.">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Rook — See the whole position.">
-    <meta property="og:description" content="Contract intelligence for prediction markets. Explore exposure, test scenarios, and understand where a hedge holds—or breaks.">
-    <meta property="og:url" content="https://rook.pm/">
-    <link rel="canonical" href="https://rook.pm/">
-    <link rel="icon" type="image/svg+xml" href="/brand/rook.svg">
-    <link rel="stylesheet" href="/brand/styles.css">
-    <title>Rook — See the whole position.</title>
-  </head>
-  <body>
-    <a class="skip-link" href="#main">Skip to content</a>
-    <header class="site-header wrap">
-      <a class="wordmark" href="/" aria-label="Rook home"><img src="/brand/rook.svg" width="32" height="32" alt="">rook<span class="wordmark-dot">.</span></a>
-      <nav aria-label="Main navigation"><a class="nav-about" href="#approach">The approach</a><a class="nav-demo" href="/demo">Explore the demo <span aria-hidden="true">↗</span></a></nav>
-    </header>
-    <main id="main">
-      <section class="hero wrap" aria-labelledby="hero-title">
-        <div class="hero-copy">
-          <p class="eyebrow"><span class="signal" aria-hidden="true"></span> CONTRACT INTELLIGENCE FOR PREDICTION MARKETS</p>
-          <h1 id="hero-title">See the<br>whole <em>position.</em></h1>
-          <p class="hero-description">Different contracts. Shared outcomes. Hidden exposure.<br class="desktop-break"> Understand what your book really depends on.</p>
-          <div class="hero-actions"><a class="button" href="/demo">Open the workstation <span aria-hidden="true">↗</span></a><a class="text-link" href="#approach">Look beneath the odds <span aria-hidden="true">↓</span></a></div>
-          <p class="hero-note">Interactive demo <span aria-hidden="true">/</span> No sign-up required</p>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0a0c">
+  <meta name="description" content="Rook is the research workstation for prediction-market portfolios. It reads the settlement rule behind every contract you hold, enumerates every world those rules can produce, and settles the whole book in each one.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Rook — The research workstation that prices your book in every world it can land in.">
+  <meta property="og:description" content="Rook reads the settlement rule behind every contract you hold, enumerates every world those rules can produce, and settles the whole book in each one.">
+  <meta property="og:url" content="https://rook.pm/">
+  <meta property="og:site_name" content="Rook">
+  <meta property="og:locale" content="en_GB">
+  <meta property="og:image" content="https://rook.pm/brand/og.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Rook — price your book in every world it can land in. The research workstation for prediction-market portfolios.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Rook — Price your book in every world it can land in.">
+  <meta name="twitter:description" content="The research workstation for prediction-market portfolios. Rook reads the settlement rule behind every contract you hold and settles the whole book in every world those rules can produce.">
+  <meta name="twitter:image" content="https://rook.pm/brand/og.jpg">
+  <meta name="twitter:image:alt" content="Rook — price your book in every world it can land in.">
+  <link rel="canonical" href="https://rook.pm/">
+  <link rel="icon" type="image/svg+xml" href="/brand/rook.svg">
+  <link rel="preload" href="/brand/plex-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/brand/styles.css">
+  <script src="/brand/landing.js" defer></script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://rook.pm/#organization",
+      "name": "Rook",
+      "url": "https://rook.pm/",
+      "logo": "https://rook.pm/brand/rook.svg",
+      "description": "Rook is the research workstation for prediction-market portfolios."
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://rook.pm/#website",
+      "name": "Rook",
+      "url": "https://rook.pm/",
+      "publisher": {
+        "@id": "https://rook.pm/#organization"
+      },
+      "inLanguage": "en-GB"
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://rook.pm/#faq",
+      "isPartOf": {
+        "@id": "https://rook.pm/#website"
+      },
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Rook?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A research workstation for prediction-market portfolios. It connects contract settlement rules to portfolio exposure, so you can explore outcomes, inspect computed relationships, and simulate changes to a book."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Who is it built for?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Traders and research teams running multiple prediction-market positions — especially where contracts share an underlying driver but differ in timing, threshold or settlement condition."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What can I try today?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The interactive demo carries a fictional portfolio over real Polymarket contracts on US rates. Explore exposure, scenarios, relationships, proposed trades and source evidence — no sign-up."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is the data live? Can I place trades?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The demo runs on snapshot data over a fictional book. It is a research and simulation environment; it does not connect to your account and does not execute orders."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Rook predict which outcome will happen?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. It shows what your positions pay under explicitly modelled outcomes. Counts of outcomes are counts, not probabilities. There are no fair values and no forecasts anywhere in the product."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How are relationships computed?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "From how the contracts settle, not from price correlation. The comparison, the assumptions it rests on, and the outcomes where a hedge stops holding are all laid out inside the workstation."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <title>Rook — Price your book in every world it can land in.</title>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="rails" aria-hidden="true"><i></i><i></i></div>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="wordmark" href="/" aria-label="Rook home"><img src="/brand/rook.svg" width="26" height="26" alt="">rook<span>.</span></a>
+    <nav aria-label="Main navigation">
+      <a href="#problem">The problem</a>
+      <a href="#settlement">Settlement</a>
+      <a href="#questions">FAQs</a>
+    </nav>
+    <a class="nav-cta" href="/demo">Launch demo <span aria-hidden="true">↗</span></a>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ── Hero ─────────────────────────────────────────────────────────── -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap">
+      <p class="eyebrow"><span class="signal"></span>PREDICTION-MARKET PORTFOLIO INTELLIGENCE</p>
+      <h1 id="hero-title">The research workstation that prices your book<br>in <em>every world it can land in.</em></h1>
+      <p class="lede">Rook reads the settlement rule behind every contract you hold, enumerates every world those rules can produce, and settles the whole book in each one — so you can compare what your positions are actually betting on.</p>
+      <div class="hero-actions">
+        <a class="button" href="/demo">Launch the workstation <span aria-hidden="true">↗</span></a>
+        <a class="text-link" href="#problem">See what it solves <span aria-hidden="true">↓</span></a>
+      </div>
+      <p class="fineprint">Interactive demo <i></i> Real Polymarket contracts <i></i> Fictional book <i></i> No sign-up</p>
+    </div>
+
+    <div class="wrap hero-stage">
+      <div class="glow" aria-hidden="true"></div>
+      <span class="tick tl" aria-hidden="true"></span><span class="tick tr" aria-hidden="true"></span>
+      <figure class="mac mac-hero">
+        <div class="mac-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mac-title">rook workstation &mdash; relationship map</span></div>
+        <div class="peek">
+          <svg class="graph-art" viewBox="0 0 844 766" role="img" aria-label="The Rook relationship map: seventeen held contracts grouped by payoff structure on one canvas, with the relations between them drawn as edges.">
+            <foreignObject x="0" y="0" width="844" height="766">
+              <div xmlns="http://www.w3.org/1999/xhtml" class="rook-graph" style="width:844px;height:766px">
+                <svg class="graph-lines" xmlns="http://www.w3.org/2000/svg" width="950" height="872" viewBox="-80 -80 950 872" style="left:-60px;top:-60px"><g class="graph-edge exclusivity"><path d="M 246 79 C 136 79, 136 143, 26 143"/></g><g class="graph-edge exclusivity"><path d="M 246 79 C 136 79, 136 207, 26 207"/></g><g class="graph-edge exclusivity"><path d="M 246 79 C 136 79, 136 271, 26 271"/></g><g class="graph-edge exclusivity"><path d="M 246 79 C 136 79, 136 335, 26 335"/></g><g class="graph-edge exclusivity"><path d="M 246 79 C 269 79, 269 79, 292 79"/></g><g class="graph-edge exclusivity"><path d="M 246 79 C 269 79, 269 535, 292 535"/></g><g class="graph-edge implication"><path d="M 246 79 C 402 79, 402 535, 558 535"/></g><g class="graph-edge exclusivity"><path d="M 246 143 C 136 143, 136 207, 26 207"/></g><g class="graph-edge exclusivity"><path d="M 246 143 C 136 143, 136 271, 26 271"/></g><g class="graph-edge exclusivity"><path d="M 246 143 C 136 143, 136 335, 26 335"/></g><g class="graph-edge exclusivity"><path d="M 246 143 C 269 143, 269 535, 292 535"/></g><g class="graph-edge implication"><path d="M 246 143 C 402 143, 402 535, 558 535"/></g><g class="graph-edge exclusivity"><path d="M 246 207 C 136 207, 136 271, 26 271"/></g><g class="graph-edge exclusivity"><path d="M 246 207 C 136 207, 136 335, 26 335"/></g><g class="graph-edge exclusivity"><path d="M 246 207 C 269 207, 269 535, 292 535"/></g><g class="graph-edge exclusivity"><path d="M 246 271 C 136 271, 136 335, 26 335"/></g><g class="graph-edge exclusivity"><path d="M 246 271 C 269 271, 269 143, 292 143"/></g><g class="graph-edge implication"><path d="M 246 271 C 402 271, 402 599, 558 599"/></g><g class="graph-edge exclusivity"><path d="M 246 335 C 269 335, 269 143, 292 143"/></g><g class="graph-edge implication"><path d="M 246 335 C 136 335, 136 599, 26 599"/></g><g class="graph-edge implication"><path d="M 246 335 C 402 335, 402 599, 558 599"/></g><g class="graph-edge exclusivity"><path d="M 246 399 C 269 399, 269 143, 292 143"/></g><g class="graph-edge implication"><path d="M 246 399 C 402 399, 402 599, 558 599"/></g><g class="graph-edge exclusivity"><path d="M 512 143 C 402 143, 402 207, 292 207"/></g><g class="graph-edge exclusivity"><path d="M 512 143 C 535 143, 535 79, 558 79"/></g><g class="graph-edge exclusivity"><path d="M 512 143 C 535 143, 535 143, 558 143"/></g><g class="graph-edge exclusivity"><path d="M 292 143 C 269 143, 269 535, 246 535"/></g><g class="graph-edge exclusivity"><path d="M 292 143 C 269 143, 269 599, 246 599"/></g><g class="graph-edge exclusivity"><path d="M 512 143 C 402 143, 402 535, 292 535"/></g><g class="graph-edge exclusivity"><path d="M 512 143 C 535 143, 535 599, 558 599"/></g><g class="graph-edge implication"><path d="M 512 207 C 535 207, 535 599, 558 599"/></g><g class="graph-edge exclusivity"><path d="M 778 79 C 668 79, 668 143, 558 143"/></g><g class="graph-edge implication"><path d="M 558 79 C 402 79, 402 599, 246 599"/></g><g class="graph-edge implication"><path d="M 778 79 C 668 79, 668 599, 558 599"/></g><g class="graph-edge implication"><path d="M 558 143 C 402 143, 402 535, 246 535"/></g><g class="graph-edge implication"><path d="M 558 143 C 402 143, 402 599, 246 599"/></g><g class="graph-edge implication"><path d="M 778 143 C 668 143, 668 599, 558 599"/></g><g class="graph-edge implication"><path d="M 246 535 C 136 535, 136 599, 26 599"/></g><g class="graph-edge implication"><path d="M 246 535 C 402 535, 402 599, 558 599"/></g><g class="graph-edge implication"><path d="M 512 535 C 535 535, 535 599, 558 599"/></g></svg>
+                <span class="graph-cluster" style="left:34px;top:34px;width:244px;height:434px">
+                  <span class="cluster-head">
+                    <span class="cluster-name">Scheduled decisions</span>
+                    <span class="cluster-count">6</span>
+                  </span>
+                  <span class="contract-node held" style="left:12px;top:38px">
+                    <span class="node-title">Oct -50+</span>
+                    <strong class="node-price">0.4¢<small>YES</small></strong>
+                    <span class="node-sub">YES 100k<span>#2589810</span></span>
+                  </span>
+                  <span class="contract-node held" style="left:12px;top:102px">
+                    <span class="node-title">Oct -25</span>
+                    <strong class="node-price">0.5¢<small>YES</small></strong>
+                    <span class="node-sub">YES 100k<span>#2589811</span></span>
+                  </span>
+                  <span class="contract-node held" style="left:12px;top:166px">
+                    <span class="node-title">Oct hold</span>
+                    <strong class="node-price">45.0¢<small>YES</small></strong>
+                    <span class="node-sub">YES 100k<span>#2589812</span></span>
+                  </span>
+                  <span class="contract-node held" style="left:12px;top:230px">
+                    <span class="node-title">Oct +25</span>
+                    <strong class="node-price">54.0¢<small>YES</small></strong>
+                    <span class="node-sub">YES 100k<span>#2589813</span></span>
+                  </span>
+                  <span class="contract-node held" style="left:12px;top:294px">
+                    <span class="node-title">Oct +50+</span>
+                    <strong class="node-price">1.0¢<small>YES</small></strong>
+                    <span class="node-sub">YES 100k<span>#2589814</span></span>
+                  </span>
+                  <span class="contract-node held" style="left:12px;top:358px">
+                    <span class="node-title">Dec +25</span>
+                    <strong class="node-price">68.0¢<small>YES</small></strong>
+                    <span class="node-sub">YES 100k + YES 250k<span>#3215008</span></span>
+                  </span>
+                </span>
+                <span class="graph-cluster" style="left:300px;top:34px;width:244px;height:242px">
+                  <span class="cluster-head">
+                    <span class="cluster-name">Move counts</span>
+                    <span class="cluster-count">3</span>
+                  </span>
+                  <span class="contract-node held" style="left:12px;top:38px">
+                    <span class="node-title">1 cuts</span>
+                    <strong class="node-price">1.0¢<small>YES</small></strong>
+                    <span class="node-sub">YES 80k<span>#616903</span></span>
+                  </span>
+                  <span class="contract-node held" style="left:12px;top:102px">
+                    <span class="node-title">1 hikes</span>
+                    <strong class="node-price">16.0¢<small>YES</small></strong>
+                    <span class="node-sub">YES 120k<span>#2657589</span></span>
+                  </span>
+                  <span class="contract-node held" style="left:12px;top:166px">
+                    <span class="node-title">3 hikes</span>
+                    <strong class="node-price">24.0¢<small>YES</small></strong>
+                    <span class="node-sub">YES 200k<span>#2657591</span></span>
+                  </span>
+                </span>
+                <span class="graph-cluster" style="left:566px;top:34px;width:244px;height:178px">
+                  <span class="cluster-head">
+                    <span class="cluster-name">Terminal rate</span>
+                    <span class="cluster-count">2</span>
+                  </span>
+                  <span class="contract-node held" style="left:12px;top:38px">
+                    <span class="node-title">EOY 4.25%</span>
+                    <strong class="node-price">51.7¢<small>YES</small></strong>
+                    <span class="node-sub">NO 200k<span>#1168141</span></span>
+                  </span>
+                  <span class="contract-node held" style="left:12px;top:102px">
+                    <span class="node-title">EOY &gt;=4.50%</span>
+                    <strong class="node-price">31.0¢<small>YES</small></strong>
+                    <span class="node-sub">NO 250k<span>#1168142</span></span>
+                  </span>
+                </span>
+                <span class="graph-cluster" style="left:34px;top:490px;width:244px;height:178px">
+                  <span class="cluster-head">
+                    <span class="cluster-name">Rate touched</span>
+                    <span class="cluster-count">2</span>
+                  </span>
+                  <span class="contract-node held" style="left:12px;top:38px">
+                    <span class="node-title">Touch &gt;=4.50%</span>
+                    <strong class="node-price">31.0¢<small>YES</small></strong>
+                    <span class="node-sub">YES 250k<span>#690200</span></span>
+                  </span>
+                  <span class="contract-node held" style="left:12px;top:102px">
+                    <span class="node-title">Touch &gt;=4.25%</span>
+                    <strong class="node-price">84.9¢<small>YES</small></strong>
+                    <span class="node-sub">YES 200k<span>#690202</span></span>
+                  </span>
+                </span>
+                <span class="graph-cluster" style="left:300px;top:490px;width:244px;height:114px">
+                  <span class="cluster-head">
+                    <span class="cluster-name">Decision sequences</span>
+                    <span class="cluster-count">1</span>
+                  </span>
+                  <span class="contract-node held" style="left:12px;top:38px">
+                    <span class="node-title">Path HHH</span>
+                    <strong class="node-price">31.0¢<small>YES</small></strong>
+                    <span class="node-sub">YES 180k<span>#4170754</span></span>
+                  </span>
+                </span>
+                <span class="graph-cluster" style="left:566px;top:490px;width:244px;height:242px">
+                  <span class="cluster-head">
+                    <span class="cluster-name">Conditional events</span>
+                    <span class="cluster-count">3</span>
+                  </span>
+                  <span class="contract-node held" style="left:12px;top:38px">
+                    <span class="node-title">Cut by Dec</span>
+                    <strong class="node-price">3.2¢<small>YES</small></strong>
+                    <span class="node-sub">NO 110k<span>#1439555</span></span>
+                  </span>
+                  <span class="contract-node held" style="left:12px;top:102px">
+                    <span class="node-title">Another hike</span>
+                    <strong class="node-price">87.0¢<small>YES</small></strong>
+                    <span class="node-sub">YES 120k<span>#4620900</span></span>
+                  </span>
+                  <span class="contract-node held" style="left:12px;top:166px">
+                    <span class="node-title">Emergency cut</span>
+                    <strong class="node-price">2.0¢<small>YES</small></strong>
+                    <span class="node-sub">NO 90k<span>#677147</span></span>
+                  </span>
+                </span>
+              </div>
+            </foreignObject>
+          </svg>
         </div>
-        <div class="position-study" aria-label="Illustrative exposure diagram: multiple contracts connect to shared underlying outcomes.">
-          <div class="study-heading"><span>THE ANATOMY OF A POSITION</span><span>FIG. 01</span></div>
-          <div class="study-labels"><span>CONTRACTS</span><span>UNDERLYING OUTCOMES</span></div>
-          <div class="diagram">
-            <svg class="connections" viewBox="0 0 480 310" preserveAspectRatio="none" fill="none" aria-hidden="true"><path d="M170 42C257 42 238 98 322 98M170 117C249 117 247 98 322 98M170 192C254 192 239 98 322 98M170 192C254 192 241 235 322 235M170 267C250 267 248 235 322 235"/><circle cx="247" cy="98" r="4"/><circle cx="251" cy="229" r="4"/></svg>
-            <div class="contract contract-one"><span class="contract-id">01 <span>POLICY</span></span><strong>A cut in October?</strong></div>
-            <div class="contract contract-two"><span class="contract-id">02 <span>TERMINAL</span></span><strong>Year-end rate below 4%?</strong></div>
-            <div class="contract contract-three"><span class="contract-id">03 <span>PATH</span></span><strong>Touches 4.50%?</strong></div>
-            <div class="contract contract-four"><span class="contract-id">04 <span>TERMINAL</span></span><strong>Ends at 4.50%?</strong></div>
-            <div class="outcome outcome-one"><span class="node-symbol" aria-hidden="true">↘</span><strong>The rate path</strong><span>One shared driver</span></div>
-            <div class="outcome outcome-two"><span class="node-symbol" aria-hidden="true">≠</span><strong>The settlement rule</strong><span>A meaningful difference</span></div>
+      </figure>
+      <a class="peek-cta" href="/demo">Open the live workstation <span aria-hidden="true">&#8599;</span></a>
+      <figcaption class="stage-caption">
+        <span>FIG. 01 — THE RELATIONSHIP MAP</span>
+        <p>17 held contracts on one canvas <i></i> what the map found, and the pairs that only look like hedges, are inside the workstation</p>
+      </figcaption>
+    </div>
+  </section>
+
+  <div class="ribbon"><div class="wrap">
+    <span class="ribbon-label">WHAT IT DOES</span>
+    <p>Portfolio exposure</p><i aria-hidden="true">/</i>
+    <p>Scenario analysis</p><i aria-hidden="true">/</i>
+    <p>Relationship mapping</p><i aria-hidden="true">/</i>
+    <p>Settlement evidence</p><i aria-hidden="true">/</i>
+    <p>Trade simulation</p>
+  </div></div>
+
+  <!-- ── 01 The problem ───────────────────────────────────────────────── -->
+  <section class="section" id="problem" aria-labelledby="problem-title">
+    <div class="wrap">
+      <p class="eyebrow">01 / THE BLIND SPOT</p>
+      <div class="split">
+        <h2 id="problem-title">More positions.<br>Not necessarily<br><em>more diversification.</em></h2>
+        <div class="split-copy">
+          <p>A list of tickers tells you what you own. It does not tell you how those positions behave together.</p>
+          <p>A meeting decision, a year-end level, and an “any time this year” contract can all resolve off the same rate path. Their prices sit in three separate markets. Your exposure does not.</p>
+          <p class="statement">Rook brings the underlying outcomes into view.</p>
+        </div>
+      </div>
+      <div class="cards">
+        <article><span class="card-index">01</span><h3>Hidden concentration</h3><p>Several positions can win or lose on the same underlying event. A longer holdings list can still be one large directional bet.</p></article>
+        <article><span class="card-index">02</span><h3>Imperfect hedges</h3><p>Similar headlines can carry different deadlines, thresholds and resolution rules. The apparent offset may not hold where it matters.</p></article>
+        <article><span class="card-index">03</span><h3>Disconnected decisions</h3><p>A single trade moves more than one line in the book. See how it changes the whole position before you commit to it.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 02 Settlement ────────────────────────────────────────────────── -->
+  <section class="section settlement" id="settlement" aria-labelledby="settlement-title">
+    <div class="wrap">
+      <p class="eyebrow">02 / THE DETAILS ARE THE DIFFERENCE</p>
+      <div class="split">
+        <h2 id="settlement-title">A hedge is only as good<br>as the <em>fine print.</em></h2>
+        <div class="split-copy">
+          <p>“Touches 4.00%” and “ends at 4.00%” sound like the same trade. But a rate can reach 4.00% and rise again. The path matters, and so does the contract.</p>
+          <p>Try it below: two positions, three ways a cutting cycle can run, and the settlement rules doing the work. Paths 01 and 03 end the year at the same rate and pay differently.</p>
+        </div>
+      </div>
+
+      <div class="console">
+        <div class="mac-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mac-title">rook — settlement sandbox</span><span class="badge">ILLUSTRATIVE</span></div>
+        <div class="console-body">
+          <div class="console-controls">
+            <span class="step">01 <i></i> CHOOSE A RATE PATH</span>
+            <h3>What if rates…</h3>
+            <div class="paths" role="group" aria-label="Illustrative policy rate path">
+              <button type="button" data-scenario="stall" aria-pressed="false"><span>01</span> Easing stalls at 4.25%</button>
+              <button type="button" data-scenario="ease" aria-pressed="true"><span>02</span> Easing runs to 4.00%</button>
+              <button type="button" data-scenario="reverse" aria-pressed="false"><span>03</span> Easing, then a hike</button>
+            </div>
+            <p class="console-note">The same two positions, priced against three ways a cutting cycle can actually play out. The target rate only moves when the committee meets.</p>
+            <noscript><p class="console-note">Enable JavaScript to switch paths, or open the full demo.</p></noscript>
           </div>
-          <div class="study-insight"><span class="insight-mark" aria-hidden="true">↳</span><p>A shared headline doesn’t make<br>two contracts the same trade.</p></div>
-          <div class="study-footer"><span><span class="signal" aria-hidden="true"></span> FOLLOW THE EXPOSURE</span><span>ILLUSTRATIVE</span></div>
+
+          <div class="console-result" aria-live="polite" aria-atomic="true">
+            <div class="result-head">
+              <div><span class="step">02 <i></i> FOLLOW THE PAYOUT</span><h3 id="scenario-title">The cuts keep coming.</h3></div>
+              <span class="path-tag" id="path-tag">4.75% → 4.00%</span>
+            </div>
+            <div class="chart" id="rate-chart" role="img" aria-label="Illustrative policy rate path: 4.75 percent, cut to 4.50 in March, 4.25 in June and 4.00 in September, then held to year-end">
+              <div class="chart-axis" aria-hidden="true">
+                <span style="top:13.9%">4.75%</span><span style="top:33.3%">4.50%</span><span style="top:52.8%">4.25%</span><span style="top:72.2%">4.00%</span>
+              </div>
+              <div class="chart-plot">
+                <svg viewBox="0 0 600 180" preserveAspectRatio="none" aria-hidden="true">
+                  <path class="chart-grid" d="M0 25H600M0 60H600M0 95H600M0 130H600"/>
+                  <path class="chart-meetings" d="M100 12V168M220 12V168M340 12V168M440 12V168M520 12V168"/>
+                  <path class="chart-area" id="chart-area" d="M0 25H100V60H220V95H340V130H600V165H0Z"/>
+                  <path class="chart-line" id="chart-line" d="M0 25H100V60H220V95H340V130H600"/>
+                </svg>
+                <span class="pin pin-touch" id="pin-touch" aria-hidden="true"><b>TOUCHED 4.00%</b><i></i></span>
+                <span class="pin pin-end" id="pin-end" aria-hidden="true"><b id="pin-end-label">ENDS 4.00%</b><i></i></span>
+              </div>
+              <div class="chart-time" aria-hidden="true">
+                <span class="time-label" style="left:0">START</span>
+                <span class="meeting" style="left:16.7%">MAR</span>
+                <span class="meeting" style="left:36.7%">JUN</span>
+                <span class="meeting" style="left:56.7%">SEP</span>
+                <span class="meeting" style="left:73.3%">NOV</span>
+                <span class="meeting" style="left:86.7%">DEC</span>
+                <span class="time-label time-end">YEAR-END</span>
+              </div>
+              <p class="chart-legend" aria-hidden="true">SCHEDULED COMMITTEE MEETINGS <i></i> THE TARGET RATE MOVES ONLY ON THESE DATES</p>
+            </div>
+            <div class="payouts">
+              <div class="payout-row head"><span>ILLUSTRATIVE POSITION</span><span>SETTLEMENT PAYOUT</span></div>
+              <div class="payout-row"><span><b class="side yes">YES</b> Rate touches 4.00% during the year</span><strong id="touch-payout">$1,000</strong></div>
+              <div class="payout-row"><span><b class="side no">NO</b> Rate ends the year at 4.00%</span><strong id="end-payout">$0</strong></div>
+              <div class="payout-row total"><span>Total payout <small>2 positions <i></i> 1,000 shares each</small></span><strong id="total-payout">$1,000</strong></div>
+            </div>
+            <p class="insight" id="scenario-insight">The rate reaches 4.00% in September and is still there in December. One position pays, the other does not. Now try path 03.</p>
+          </div>
         </div>
-      </section>
-      <div class="principle-strip"><div class="wrap"><p>Built around the question that matters.</p><p>“What happens to my book if <em>this</em> happens?”</p><span aria-hidden="true">↘</span></div></div>
-      <section id="approach" class="approach wrap" aria-labelledby="approach-title">
-        <div class="section-intro"><p class="eyebrow">01 / LOOK BENEATH THE TICKER</p><h2 id="approach-title">A portfolio of contracts.<br>A smaller set of <em>real questions.</em></h2><p>Odds tell you what a market is pricing. Rook helps you trace what settles, what overlaps, and what changes together.</p></div>
-        <div class="capabilities">
-          <article><span class="capability-number">01</span><h3>Find the shared exposure.</h3><p>Connect positions to the underlying outcomes that drive their payouts. See beyond a list of individual markets.</p><span class="capability-tag">EXPOSURE →</span></article>
-          <article><span class="capability-number">02</span><h3>Put the book through its paces.</h3><p>Explore modelled scenarios and trace the positions behind each result. See what a proposed trade changes.</p><span class="capability-tag">SCENARIOS →</span></article>
-          <article><span class="capability-number">03</span><h3>Know where the hedge breaks.</h3><p>Inspect the settlement rules behind an apparent offset. A rate touched during the year isn’t a rate held at year-end.</p><span class="capability-tag">RELATIONSHIPS →</span></article>
+        <div class="console-foot">
+          <span>Simplified binary contracts paying $1 per winning share. Payouts exclude cost and fees; they are not profit and not forecasts.</span>
+          <a href="/demo#/contracts">Inspect real contracts <span aria-hidden="true">↗</span></a>
         </div>
-      </section>
-      <section class="demo-section wrap" aria-labelledby="demo-title">
-        <div class="demo-card"><div><p class="eyebrow">02 / TAKE A CLOSER LOOK</p><h2 id="demo-title">Less guesswork.<br><em>More line of sight.</em></h2><p>Explore a fictional portfolio built on real Polymarket contracts. Follow the exposure from the whole book down to the settlement clause.</p><a class="button button-light" href="/demo">Explore the interactive demo <span aria-hidden="true">↗</span></a></div><div class="demo-index" aria-label="Available demo views"><span>INSIDE THE WORKSTATION</span><ul><li>Portfolio exposure <span>01</span></li><li>Scenario explorer <span>02</span></li><li>Contract relationships <span>03</span></li><li>Trade simulation <span>04</span></li><li>Source & settlement rules <span>05</span></li></ul><p>Snapshot data. Explicit assumptions.<br>No forecasts or trade execution.</p></div></div>
-      </section>
-    </main>
-    <footer class="site-footer wrap"><a class="wordmark" href="/" aria-label="Rook home"><img src="/brand/rook.svg" width="27" height="27" alt="">rook<span class="wordmark-dot">.</span></a><p>Understand the contract. See the exposure.</p><a href="/demo">Open demo <span aria-hidden="true">↗</span></a></footer>
-  </body>
+      </div>
+
+      <div class="feature wrap-flush">
+        <div class="feature-copy">
+          <span class="step">EVIDENCE <i></i> NOT ASSERTION</span>
+          <h3>Every claim traces back to a venue rule.</h3>
+          <p>Against every position Rook keeps the venue’s own rule text, the links back to it, and the hash of the exact version it read. Where a contract cannot be interpreted, it says so and carries the reason rather than quietly dropping it.</p>
+          <a class="text-link" href="/demo#/contracts">Look inside a contract <span aria-hidden="true">↗</span></a>
+        </div>
+        <figure class="shot shot-portrait">
+        <div class="mac">
+          <div class="mac-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mac-title">contract inspector</span></div>
+          <img loading="lazy" src="/brand/shots/evidence.jpg" width="1160" height="1958" alt="The Rook contract inspector: venue, contract id, resolution date, a verified interpretation badge, the settlement rule exactly as the venue published it, links back to the venue, and the provenance hashes.">
+        </div>
+        <figcaption>Contracts &mdash; the venue&rsquo;s own published rule, the links back to it, and the hashes that pin it.</figcaption>
+      </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Thesis ───────────────────────────────────────────────────────── -->
+  <section class="thesis"><div class="wrap">
+    <p class="eyebrow">WHY WE ARE BUILDING ROOK</p>
+    <h2>Markets trade one contract at a time.<br><em>You carry the whole book.</em></h2>
+    <p>Prediction markets turn real-world questions into tradable contracts. Rook exists to make the relationships between those contracts legible — so a portfolio decision starts from a clear view of what is actually at stake.</p>
+    <div class="thesis-foot">
+      <span>THE AMBITION</span>
+      <p>A common language for prediction-market exposure.</p>
+      <img src="/brand/rook.svg" alt="" width="44" height="44">
+    </div>
+  </div></section>
+
+  <!-- ── FAQ ──────────────────────────────────────────────────────────── -->
+  <section class="section faq" id="questions" aria-labelledby="faq-title">
+    <div class="wrap split">
+      <div><p class="eyebrow">03 / A FEW GOOD QUESTIONS</p><h2 id="faq-title">Clarity starts<br><em>right here.</em></h2></div>
+      <div class="faq-list">
+        <details><summary>What is Rook?<span aria-hidden="true"></span></summary><p>A research workstation for prediction-market portfolios. It connects contract settlement rules to portfolio exposure, so you can explore outcomes, inspect computed relationships, and simulate changes to a book.</p></details>
+        <details><summary>Who is it built for?<span aria-hidden="true"></span></summary><p>Traders and research teams running multiple prediction-market positions — especially where contracts share an underlying driver but differ in timing, threshold or settlement condition.</p></details>
+        <details><summary>What can I try today?<span aria-hidden="true"></span></summary><p>The interactive demo carries a fictional portfolio over real Polymarket contracts on US rates. Explore exposure, scenarios, relationships, proposed trades and source evidence — no sign-up.</p></details>
+        <details><summary>Is the data live? Can I place trades?<span aria-hidden="true"></span></summary><p>No. The demo runs on snapshot data over a fictional book. It is a research and simulation environment; it does not connect to your account and does not execute orders.</p></details>
+        <details><summary>Does Rook predict which outcome will happen?<span aria-hidden="true"></span></summary><p>No. It shows what your positions pay under explicitly modelled outcomes. Counts of outcomes are counts, not probabilities. There are no fair values and no forecasts anywhere in the product.</p></details>
+        <details><summary>How are relationships computed?<span aria-hidden="true"></span></summary><p>From how the contracts settle, not from price correlation. The comparison, the assumptions it rests on, and the outcomes where a hedge stops holding are all laid out inside the workstation.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Final CTA ────────────────────────────────────────────────────── -->
+  <section class="final-cta"><div class="wrap">
+    <p class="eyebrow">SEE THE WHOLE POSITION</p>
+    <h2>Your next question deserves<br><em>more than a ticker.</em></h2>
+    <a class="button" href="/demo">Step inside the workstation <span aria-hidden="true">↗</span></a>
+    <p class="fineprint">No sign-up. Just a clearer view of the book.</p>
+  </div></section>
+</main>
+
+<footer class="site-footer"><div class="wrap">
+  <div class="footer-main">
+    <a class="wordmark" href="/" aria-label="Rook home"><img src="/brand/rook.svg" width="24" height="24" alt="">rook<span>.</span></a>
+    <p>Understand the contract. See the exposure.</p>
+    <a class="text-link" href="/demo">Launch demo <span aria-hidden="true">↗</span></a>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Rook</span>
+    <span>Research &amp; simulation <i></i> Snapshot data <i></i> No trade execution</span>
+    <a href="#main">Back to top <span aria-hidden="true">↑</span></a>
+  </div>
+</div></footer>
+</body>
 </html>

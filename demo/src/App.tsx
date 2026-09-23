@@ -23,7 +23,7 @@ const HEADINGS: Record<Page, string> = {
   Scenarios: 'What happens under this outcome?',
   Relationships: 'What offsets what, and where does the hedge fail?',
   Trade: 'What happens if I make this trade?',
-  Contracts: 'Every contract, and what Axiom made of it',
+  Contracts: 'Every contract, and what Rook made of it',
   Data: 'Where the numbers come from',
 };
 
@@ -37,7 +37,7 @@ export default function App() {
     window.addEventListener('hashchange', sync);
     return () => window.removeEventListener('hashchange', sync);
   }, []);
-  useEffect(() => { document.title = `${page} · Axiom Workstation`; }, [page]);
+  useEffect(() => { document.title = `${page} · Rook Workstation`; }, [page]);
   // A trackpad pinch is a ctrl-wheel event, and the browser answers it by
   // zooming the whole page. This is a fixed desktop layout of panes that carry
   // their own scroll and their own zoom, so page zoom only breaks it. Capture
@@ -59,7 +59,7 @@ export default function App() {
       <header className="app-bar">
         <div className="brand">
           <span className="logo-mark" aria-hidden="true" />
-          <span>axiom<span className="brand-period">.</span></span><small>WORKSTATION</small>
+          <span>rook<span className="brand-period">.</span></span><small>WORKSTATION</small>
         </div>
         <nav aria-label="Views" className="page-nav">
           {PAGES.map((p, index) => {

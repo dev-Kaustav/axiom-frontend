@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /demo
+Disallow: /demo/
 
 Sitemap: https://rook.pm/sitemap.xml
