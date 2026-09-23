@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "dev": "node scripts/serve.mjs",
-    "build": "node scripts/build.mjs",
+    "dev": "npm run build && node scripts/serve.mjs dist",
+    "build": "npm ci --prefix demo && npm run build --prefix demo && node scripts/build.mjs",
     "preview": "node scripts/serve.mjs dist"
   }
 }
