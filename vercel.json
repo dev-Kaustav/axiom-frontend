@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/demo", "destination": "https://axiom-demo-beta.vercel.app/" },
+    { "source": "/demo/:path*", "destination": "https://axiom-demo-beta.vercel.app/:path*" },
+    { "source": "/assets/:path*", "destination": "https://axiom-demo-beta.vercel.app/assets/:path*" },
+    { "source": "/favicon.svg", "destination": "https://axiom-demo-beta.vercel.app/favicon.svg" }
+  ]
+}

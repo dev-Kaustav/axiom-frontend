@@ -1,0 +1,29 @@
+ROOK — FRONTEND
+
+Local: npm install, then npm run dev (http://127.0.0.1:4174).
+Build: npm run build. Preview: npm run preview.
+The landing page is static HTML/CSS with self-hosted fonts and no runtime dependencies.
+
+VERCEL
+Import dev-Kaustav/axiom-frontend as a Vercel project.
+Use the repository root. vercel.json specifies the build and dist output.
+Add rook.pm in this frontend project's Settings > Domains, then apply the
+DNS records Vercel shows at your domain registrar.
+
+/                 Rook landing page, owned by this repository.
+/demo             Proxies https://axiom-demo-beta.vercel.app/.
+/demo/*           Proxies matching paths on the separate demo deployment.
+/assets/*         Proxies the demo's existing root-relative Vite assets.
+/favicon.svg      Proxies the demo's existing favicon.
+/brand/*          Landing-page assets; reserved separately to avoid collisions.
+
+The demo is NOT copied, embedded, rebuilt, or modified here. It remains in
+dev-Kaustav/axiom-demo and deploys independently. Its existing Axiom branding
+is preserved. Hash navigation, e.g. /demo#/scenarios, remains on rook.pm.
+Keep the demo deployment publicly accessible for the external rewrites.
+If its production URL changes, update the destinations in vercel.json.
+If the demo adds new root-relative public files, add matching proxy routes
+or configure its asset base in that project. /assets is reserved for the demo.
+
+The local server mirrors these rewrites for development. A production domain
+and DNS must still be connected in Vercel; this repository does not manage DNS.
