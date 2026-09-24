@@ -983,3 +983,35 @@ main, .site-header, .site-footer { position: relative; z-index: 2; }
   .aggregation.is-in-view .agg-link:nth-child(3) { animation-delay: .24s; }
   .workstation.is-in-view .terminal { animation: panel-arrive .7s ease-out both; }
 }
+
+/* --- Contact / founders --------------------------------------------------- */
+
+.founders { display: grid; grid-template-columns: repeat(2, minmax(0, 430px)); gap: 20px; margin-top: 66px; }
+.founder {
+  display: flex; align-items: center; gap: 22px; padding: 22px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--panel);
+  transition: border-color .2s, background .2s, transform .2s;
+}
+.founder:hover { border-color: var(--line-strong); background: var(--raised); transform: translateY(-2px); }
+.founder-photo { width: 116px; aspect-ratio: 1; flex: none; border-radius: 7px; overflow: hidden; background: var(--overlay); }
+.founder-photo img { width: 100%; height: 100%; object-fit: cover; }
+.founder-copy { min-width: 0; }
+.founder h3 { font-size: 19px; letter-spacing: -.02em; }
+.founder-role {
+  display: block; margin-top: 7px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: var(--tracking-label);
+  text-transform: uppercase; color: var(--accent-soft);
+}
+.founder-links { display: flex; flex-wrap: wrap; gap: 9px 20px; margin-top: 17px; font-size: 13px; }
+.founder-links a { color: var(--t3); transition: color .18s; }
+.founder-links a:hover { color: var(--accent-soft); text-decoration: underline; text-underline-offset: 4px; }
+
+@media (max-width: 1080px) {
+  .founders { grid-template-columns: 1fr; margin-top: 44px; }
+}
+@media (max-width: 480px) {
+  .founder { gap: 16px; padding: 16px; }
+  .founder-photo { width: 84px; }
+  .founder h3 { font-size: 17px; }
+  .founder-links { gap: 7px 14px; font-size: 12px; }
+}
