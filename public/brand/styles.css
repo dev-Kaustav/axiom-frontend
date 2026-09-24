@@ -987,7 +987,7 @@ main, .site-header, .site-footer { position: relative; z-index: 2; }
 
 /* --- Contact / founders --------------------------------------------------- */
 
-.founders { display: grid; grid-template-columns: repeat(2, minmax(0, 430px)); justify-content: center; gap: 20px; margin-top: 66px; }
+.founders { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 66px; }
 .founder {
   display: flex; align-items: center; gap: 22px; padding: 22px;
   border: 1px solid var(--line); border-radius: 8px; background: var(--panel);
