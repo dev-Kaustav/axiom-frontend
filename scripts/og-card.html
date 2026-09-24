@@ -1,0 +1,59 @@
+<!--
+  Source for /brand/og-v2.jpg — the social share card (1200x630 CSS px, shot at @2x).
+  It links the live /brand/styles.css, so the palette and type stay in step with the site.
+
+  To regenerate after a design change:
+    1. node scripts/build.mjs && node scripts/serve.mjs dist
+    2. screenshot `#workstation .terminal` from / at 1500px wide @2x
+       into dist/brand/_og-terminal.png
+    3. copy this file to dist/_og.html, open /_og.html at 1200x630 @2x
+       and save it as public/brand/og-v2.jpg (jpeg, quality 90)
+    4. delete dist/_og.html and dist/brand/_og-terminal.png
+
+  Bump the filename (og-v3.jpg, and the og:image / twitter:image meta with it)
+  whenever the art changes — social scrapers cache the old image by URL.
+-->
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<link rel="stylesheet" href="/brand/styles.css">
+<style>
+  html,body{margin:0;padding:0;background:var(--bg);width:1200px;height:630px;overflow:hidden}
+  .card{position:relative;width:1200px;height:630px;overflow:hidden;background:var(--bg)}
+  .grid{position:absolute;inset:0;opacity:.055;
+    background-image:linear-gradient(#d6bd90 1px,transparent 1px),linear-gradient(90deg,#d6bd90 1px,transparent 1px);
+    background-size:60px 60px;
+    -webkit-mask-image:radial-gradient(90% 80% at 30% 45%,#000,transparent 75%)}
+  .bloom{position:absolute;left:-14%;top:22%;width:820px;height:560px;
+    background:radial-gradient(50% 50% at 50% 50%,#dfb77426 0,transparent 70%);filter:blur(52px)}
+  .copy{position:absolute;left:64px;top:64px;width:620px;z-index:2}
+  .mark{display:flex;align-items:center;gap:11px;font-size:34px;font-weight:600;letter-spacing:-.055em;color:var(--t1)}
+  .mark img{width:34px;height:34px}
+  .mark span{margin-left:-9px;color:var(--accent-soft)}
+  .eb{display:flex;align-items:center;gap:10px;margin-top:74px;
+    font-family:var(--mono);font-size:13px;letter-spacing:.14em;color:var(--accent-soft)}
+  .eb i{width:7px;height:7px;border-radius:50%;background:var(--accent-soft);box-shadow:0 0 0 5px var(--accent-fill)}
+  h1{margin:26px 0 0;font-size:62px;line-height:1.02;letter-spacing:-.062em;font-weight:500;color:var(--t1)}
+  h1 em{color:var(--accent-soft);font-family:Georgia,serif;font-style:italic;font-weight:400;letter-spacing:-.05em}
+  p{margin:26px 0 0;font-size:19px;line-height:1.65;color:var(--t3);max-width:520px}
+  .shot{position:absolute;left:672px;top:120px;width:830px;
+    border:1px solid var(--line);border-radius:10px;overflow:hidden;
+    box-shadow:0 0 0 1px #00000055,0 40px 90px -30px #000,0 90px 150px -60px #dfb77433}
+  .shot img{width:100%;display:block}
+  .edge{position:absolute;right:0;top:0;bottom:0;width:170px;
+    background:linear-gradient(90deg,transparent,#0e0f10cc 72%,var(--bg));z-index:3}
+  .caps{position:absolute;left:64px;bottom:60px;display:flex;align-items:center;gap:13px;max-width:600px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--t4);z-index:2}
+  .caps b{font-weight:400}
+  .caps u{width:3px;height:3px;border-radius:50%;background:var(--accent-soft);opacity:.75}
+</style></head><body>
+<div class="card">
+  <div class="grid"></div><div class="bloom"></div>
+  <div class="shot"><img src="/brand/_og-terminal.png" alt=""></div>
+  <div class="edge"></div>
+  <div class="copy">
+    <div class="mark"><img src="/brand/rook.svg" alt="">rook<span>.</span></div>
+    <div class="eb"><i></i>THE PREDICTION MARKET TRADING WORKSTATION</div>
+    <h1>Prediction markets.<br>One <em>connected</em> book.</h1>
+    <p>Aggregated venue books, cross-market arbitrage, and how every trade changes your whole portfolio.</p>
+  </div>
+  <div class="caps"><b>TERMINAL</b><u></u><b>AGGREGATION</b><u></u><b>ARBITRAGE</b><u></u><b>SETTLEMENT</b></div>
+</div></body></html>
