@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0a0a0c">
-  <meta name="description" content="Rook is the research workstation for prediction-market portfolios. It reads the settlement rule behind every contract you hold, enumerates every world those rules can produce, and settles the whole book in each one.">
+  <meta name="theme-color" content="#0e0f10">
+  <meta name="description" content="Rook is the trading workstation for prediction markets. One terminal for aggregated venue books, cross-market arbitrage, and how every trade changes your whole portfolio.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Rook — The research workstation that prices your book in every world it can land in.">
-  <meta property="og:description" content="Rook reads the settlement rule behind every contract you hold, enumerates every world those rules can produce, and settles the whole book in each one.">
+  <meta property="og:title" content="Rook — Prediction markets. One connected book.">
+  <meta property="og:description" content="A trading workstation for prediction markets: aggregated venue books, cross-market arbitrage, and how every trade changes your whole portfolio.">
   <meta property="og:url" content="https://rook.pm/">
   <meta property="og:site_name" content="Rook">
   <meta property="og:locale" content="en_GB">
@@ -15,12 +15,12 @@
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Rook — price your book in every world it can land in. The research workstation for prediction-market portfolios.">
+  <meta property="og:image:alt" content="Rook — prediction markets, one connected book. The research workstation for prediction-market portfolios.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Rook — Price your book in every world it can land in.">
-  <meta name="twitter:description" content="The research workstation for prediction-market portfolios. Rook reads the settlement rule behind every contract you hold and settles the whole book in every world those rules can produce.">
+  <meta name="twitter:title" content="Rook — Prediction markets. One connected book.">
+  <meta name="twitter:description" content="The trading workstation for prediction markets. Aggregated venue books, cross-market arbitrage, and your whole book in one view.">
   <meta name="twitter:image" content="https://rook.pm/brand/og.jpg">
-  <meta name="twitter:image:alt" content="Rook — price your book in every world it can land in.">
+  <meta name="twitter:image:alt" content="Rook — prediction markets, one connected book.">
   <link rel="canonical" href="https://rook.pm/">
   <link rel="icon" type="image/svg+xml" href="/brand/rook.svg">
   <link rel="preload" href="/brand/plex-regular.woff2" as="font" type="font/woff2" crossorigin>
@@ -60,7 +60,7 @@
           "name": "What is Rook?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "A research workstation for prediction-market portfolios. It connects contract settlement rules to portfolio exposure, so you can explore outcomes, inspect computed relationships, and simulate changes to a book."
+            "text": "A trading workstation for prediction-market portfolios. It brings venue order books, contract relationships and portfolio exposure into one terminal, so a trade can be judged against the whole book rather than one line of it."
           }
         },
         {
@@ -76,7 +76,31 @@
           "name": "What can I try today?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "The interactive demo carries a fictional portfolio over real Polymarket contracts on US rates. Explore exposure, scenarios, relationships, proposed trades and source evidence — no sign-up."
+            "text": "The interactive demo carries a fictional portfolio over real Polymarket contracts on US rates. Explore exposure, scenarios, relationships, proposed trades and source evidence with private demo access."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which parts of the terminal are product previews?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The terminal, the aggregated venue book and the opportunity scanner shown on this page are product previews built from real contracts. The demo covers the research side today: exposure, scenarios, computed relationships and settlement evidence."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How are contract relationships different from price correlation?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "They are computed from how the contracts settle, not from how their prices move together. Two contracts can trade in lockstep for months and still pay differently on the one outcome that matters. The comparison, its assumptions, and the outcomes where a hedge stops holding are all laid out inside the workstation."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does settlement compatibility matter for aggregation and arbitrage?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Two contracts with the same headline can carry different observation windows, thresholds or resolution sources. Stacking their books averages two different questions, and an arbitrage across them can leave both legs worthless. Rook compares the rules before it groups quotes or reports an opportunity."
           }
         },
         {
@@ -94,21 +118,13 @@
             "@type": "Answer",
             "text": "No. It shows what your positions pay under explicitly modelled outcomes. Counts of outcomes are counts, not probabilities. There are no fair values and no forecasts anywhere in the product."
           }
-        },
-        {
-          "@type": "Question",
-          "name": "How are relationships computed?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "From how the contracts settle, not from price correlation. The comparison, the assumptions it rests on, and the outcomes where a hedge stops holding are all laid out inside the workstation."
-          }
         }
       ]
     }
   ]
 }
   </script>
-  <title>Rook — Price your book in every world it can land in.</title>
+  <title>Rook — Prediction markets. One connected book.</title>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -119,8 +135,10 @@
   <div class="wrap header-inner">
     <a class="wordmark" href="/" aria-label="Rook home"><img src="/brand/rook.svg" width="26" height="26" alt="">rook<span>.</span></a>
     <nav aria-label="Main navigation">
-      <a href="#problem">The problem</a>
-      <a href="#settlement">Settlement</a>
+      <a href="#workstation">Workstation</a>
+      <a href="#aggregation">Aggregation</a>
+      <a href="#arbitrage">Arbitrage</a>
+      <a href="#intelligence">Intelligence</a>
       <a href="#questions">FAQs</a>
     </nav>
     <a class="nav-cta" href="/demo">Launch demo <span aria-hidden="true">↗</span></a>
@@ -130,19 +148,78 @@
 <main id="main">
 
   <!-- ── Hero ─────────────────────────────────────────────────────────── -->
-  <section class="hero" aria-labelledby="hero-title">
-    <div class="wrap">
-      <p class="eyebrow"><span class="signal"></span>PREDICTION-MARKET PORTFOLIO INTELLIGENCE</p>
-      <h1 id="hero-title">The research workstation that prices your book<br>in <em>every world it can land in.</em></h1>
-      <p class="lede">Rook reads the settlement rule behind every contract you hold, enumerates every world those rules can produce, and settles the whole book in each one — so you can compare what your positions are actually betting on.</p>
-      <div class="hero-actions">
-        <a class="button" href="/demo">Launch the workstation <span aria-hidden="true">↗</span></a>
-        <a class="text-link" href="#problem">See what it solves <span aria-hidden="true">↓</span></a>
-      </div>
-      <p class="fineprint">Interactive demo <i></i> Real Polymarket contracts <i></i> Fictional book <i></i> No sign-up</p>
+  <section class="hero" aria-labelledby="hero-title" data-atmosphere>
+    <div class="hero-atmosphere" aria-hidden="true">
+      <svg class="ambient-svg hero-circuit" viewBox="0 0 1600 840" fill="none" focusable="false">
+        <defs><radialGradient id="circuit-fade"><stop offset="0" stop-color="white"/><stop offset="1" stop-color="black"/></radialGradient><mask id="circuit-mask"><rect width="1600" height="840" fill="url(#circuit-fade)"/></mask></defs>
+        <g class="circuit-grid" mask="url(#circuit-mask)">
+          <path d="M0 120H1600M0 240H1600M0 360H1600M0 480H1600M0 600H1600M0 720H1600M160 0V840M320 0V840M480 0V840M640 0V840M800 0V840M960 0V840M1120 0V840M1280 0V840M1440 0V840"/>
+        </g>
+        <g class="circuit-routes">
+          <path pathLength="1" d="M-80 580H80L180 680H540L650 790H1030L1160 660H1640"/>
+          <path pathLength="1" d="M-80 602H70L170 702H530L640 812H1040L1170 682H1640"/>
+          <path pathLength="1" d="M620 -40V36L688 104H1290L1400 214V430L1500 530H1650"/>
+          <path pathLength="1" d="M648 -40V24L706 82H1302L1422 202V418L1512 508H1650"/>
+          <path pathLength="1" d="M1630 50H1490L1458 82V418L1548 508H1630"/>
+        </g>
+        <g class="circuit-crosses"><path d="M312 120H328M320 112V128M632 600H648M640 592V608M1432 600H1448M1440 592V608M1112 120H1128M1120 112V128"/></g>
+        <g class="circuit-junctions"><circle cx="180" cy="680" r="4"/><circle cx="688" cy="104" r="4"/><circle cx="1400" cy="430" r="4"/><circle cx="1160" cy="660" r="4"/></g>
+        <path class="circuit-tracer" pathLength="1" d="M620 -40V36L688 104H1290L1400 214V430L1500 530H1650"/>
+      </svg>
+      <span class="ambient-caption ambient-caption-top">01—03 / CONNECTED OUTCOMES</span>
+      <span class="ambient-caption ambient-caption-bottom">CONTRACT → RULE → EXPOSURE</span>
     </div>
 
-    <div class="wrap hero-stage">
+    <div class="wrap hero-opening">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="signal"></span>THE PREDICTION MARKET TRADING WORKSTATION</p>
+        <h1 id="hero-title">Prediction markets.<br>One <em>connected</em><br>book.</h1>
+        <p class="lede">Your prediction-market positions don’t exist in isolation. Rook reveals what connects them—and how your whole portfolio settles across modelled outcomes.</p>
+        <div class="hero-actions">
+          <a class="button" href="/demo">Explore the workstation <span aria-hidden="true">↗</span></a>
+          <a class="text-link" href="#workstation">See the terminal <span aria-hidden="true">↓</span></a>
+        </div>
+        <p class="fineprint">Real Polymarket contracts <i></i> Demo book <i></i> Private demo</p>
+      </div>
+
+      <div class="exposure-story" aria-label="Three prediction-market positions connected by the same underlying US rate path. Select a market to inspect what connects it to the book.">
+        <div class="story-heading"><span>THE MARKETS YOU SEE</span><span class="snapshot-label">SNAPSHOT / 22 SEP 2026</span></div>
+        <div class="market-stack" role="group" aria-label="Explore connected prediction-market positions">
+          <button class="market-ticket" type="button" data-market="decision" aria-pressed="false" aria-controls="connection-detail">
+            <!-- Portrait: Federal Reserve, https://www.federalreserve.gov/aboutthefed/bios/board/powell.htm -->
+            <span class="market-avatar"><img src="/brand/markets/fed-policy.jpg" width="48" height="48" alt=""></span>
+            <span class="market-info"><span class="market-category"><span class="venue-symbol" aria-hidden="true">P</span> POLYMARKET <span> / </span> FED DECISION</span><strong>25 bp hike in October?</strong><span class="market-holding"><b class="position-yes">YES</b> 100,000 shares</span></span>
+            <span class="market-quote"><strong>54<span>¢</span></strong><small>YES · LAST TRADE</small></span>
+            <span class="ticket-port" aria-hidden="true"></span>
+          </button>
+          <button class="market-ticket" type="button" data-market="touch" aria-pressed="true" aria-controls="connection-detail">
+            <!-- Event image: https://polymarket.com/event/what-will-fed-rate-hit-before-2027 -->
+            <span class="market-avatar market-photo"><img src="/brand/markets/fed-rate-path.jpg" width="48" height="48" alt=""></span>
+            <span class="market-info"><span class="market-category"><span class="venue-symbol" aria-hidden="true">P</span> POLYMARKET <span> / </span> RATE PATH</span><strong>Rates touch 4.50% this year?</strong><span class="market-holding"><b class="position-yes">YES</b> 250,000 shares</span></span>
+            <span class="market-quote"><strong>31<span>¢</span></strong><small>YES · LAST TRADE</small></span>
+            <span class="ticket-port" aria-hidden="true"></span>
+          </button>
+          <button class="market-ticket" type="button" data-market="terminal" aria-pressed="false" aria-controls="connection-detail">
+            <!-- Event image: https://polymarket.com/event/what-will-the-fed-rate-be-at-the-end-of-2026 -->
+            <span class="market-avatar market-photo"><img src="/brand/markets/fed-year-end.jpg" width="48" height="48" alt=""></span>
+            <span class="market-info"><span class="market-category"><span class="venue-symbol" aria-hidden="true">P</span> POLYMARKET <span> / </span> YEAR-END RATE</span><strong>Rates end at 4.50% or higher?</strong><span class="market-holding"><b class="position-no">NO</b> 250,000 shares</span></span>
+            <span class="market-quote"><strong>31<span>¢</span></strong><small>YES · LAST TRADE</small></span>
+            <span class="ticket-port" aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="connection-spine" aria-hidden="true"><span></span><i></i><span class="spine-label">FOLLOW THE SETTLEMENT RULES</span></div>
+        <div class="connection-detail" id="connection-detail" aria-live="polite" aria-atomic="true">
+          <div class="connection-title"><span class="rook-emblem"><img src="/brand/rook.svg" width="28" height="28" alt=""></span><div><span>THE EXPOSURE ROOK REVEALS</span><h2>One underlying rate path.</h2></div><span class="connection-number" aria-hidden="true">↳</span></div>
+          <p id="connection-copy">A rate can touch 4.50% and fall back before year-end. These two contracts can settle differently.</p>
+          <a href="/demo#/relationships">Inspect the relationship <span aria-hidden="true">↗</span></a>
+        </div>
+        <p class="story-footnote">Quoted marks from the demo snapshot. Fictional holdings, real contracts.</p>
+      </div>
+      <div class="hero-bottom"><span class="hero-bottom-label">SEE BEYOND THE ODDS</span><p>Find shared exposure <span>→</span> Test an outcome <span>→</span> Understand your next trade</p><a href="#relationship-map" aria-label="See the relationship map">↓</a></div>
+    </div>
+
+    <div class="wrap hero-stage" id="relationship-map">
+      <div class="map-intro"><p class="eyebrow">FROM INDIVIDUAL MARKETS TO A CONNECTED PORTFOLIO</p><h2>The whole book.<br> <em>Finally in the same picture.</em></h2><p>Trace the relationships between 17 held contracts, then inspect the rules and assumptions behind each connection.</p></div>
       <div class="glow" aria-hidden="true"></div>
       <span class="tick tl" aria-hidden="true"></span><span class="tick tr" aria-hidden="true"></span>
       <figure class="mac mac-hero">
@@ -278,7 +355,7 @@
           </svg>
         </div>
       </figure>
-      <a class="peek-cta" href="/demo">Open the live workstation <span aria-hidden="true">&#8599;</span></a>
+      <a class="peek-cta" href="/demo">Explore the demo workstation <span aria-hidden="true">&#8599;</span></a>
       <figcaption class="stage-caption">
         <span>FIG. 01 — THE RELATIONSHIP MAP</span>
         <p>17 held contracts on one canvas <i></i> what the map found, and the pairs that only look like hedges, are inside the workstation</p>
@@ -288,47 +365,287 @@
 
   <div class="ribbon"><div class="wrap">
     <span class="ribbon-label">WHAT IT DOES</span>
-    <p>Portfolio exposure</p><i aria-hidden="true">/</i>
-    <p>Scenario analysis</p><i aria-hidden="true">/</i>
+    <p>Terminal</p><i aria-hidden="true">/</i>
+    <p>Market aggregation</p><i aria-hidden="true">/</i>
+    <p>Arbitrage detection</p><i aria-hidden="true">/</i>
     <p>Relationship mapping</p><i aria-hidden="true">/</i>
     <p>Settlement evidence</p><i aria-hidden="true">/</i>
-    <p>Trade simulation</p>
+    <p>Portfolio exposure</p>
   </div></div>
 
-  <!-- ── 01 The problem ───────────────────────────────────────────────── -->
-  <section class="section" id="problem" aria-labelledby="problem-title">
+
+  <!-- ── 01 The terminal ──────────────────────────────────────────────── -->
+  <section class="section workstation" id="workstation" aria-labelledby="workstation-title" data-atmosphere>
     <div class="wrap">
-      <p class="eyebrow">01 / THE BLIND SPOT</p>
+      <p class="eyebrow">01 / THE TERMINAL</p>
       <div class="split">
-        <h2 id="problem-title">More positions.<br>Not necessarily<br><em>more diversification.</em></h2>
+        <h2 id="workstation-title">A trading workstation.<br>With your <em>whole book</em> in view.</h2>
         <div class="split-copy">
-          <p>A list of tickers tells you what you own. It does not tell you how those positions behave together.</p>
+          <p>Bring market prices, contract relationships, and portfolio exposure into the same workspace. Understand what a trade changes before you commit.</p>
+          <p class="statement">Pick a market on the left. Every panel answers for that contract.</p>
+        </div>
+      </div>
+
+      <figure class="terminal" data-terminal data-view="chart">
+        <div class="mac-bar">
+          <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="mac-title">rook &mdash; terminal</span>
+          <span class="t-clock" aria-hidden="true">22 SEP 2026 <i></i> 14:05 UTC</span>
+        </div>
+
+        <div class="terminal-views" role="group" aria-label="Choose a terminal panel">
+          <button type="button" data-view-btn="watchlist" aria-pressed="false">Markets</button>
+          <button type="button" data-view-btn="chart" aria-pressed="true">Chart</button>
+          <button type="button" data-view-btn="book" aria-pressed="false">Depth</button>
+          <button type="button" data-view-btn="exec" aria-pressed="false">Trade</button>
+          <button type="button" data-view-btn="tabs" aria-pressed="false">Impact</button>
+        </div>
+
+        <div class="terminal-body">
+
+          <!-- Watchlist -->
+          <div class="tpanel panel-watch" data-panel="watchlist">
+            <div class="tpanel-head"><span>WATCHLIST</span><span class="yn-head"><i>YES</i><i>NO</i></span></div>
+            <div class="watch-list" role="group" aria-label="Select a market">
+              <button class="watch-row" type="button" data-tmarket="decision" aria-pressed="false">
+                <span class="market-avatar"><img src="/brand/markets/fed-policy.jpg" width="34" height="34" alt="" loading="lazy"></span>
+                <span class="watch-main">
+                  <span class="watch-venue"><span class="venue-symbol" aria-hidden="true">P</span>POLYMARKET</span>
+                  <span class="watch-q">Fed hikes 25 bp in October</span>
+                </span>
+                <span class="watch-yn"><b class="q-yes">54</b><b class="q-no">46</b></span>
+              </button>
+              <button class="watch-row" type="button" data-tmarket="touch" aria-pressed="true">
+                <span class="market-avatar market-photo"><img src="/brand/markets/fed-rate-path.jpg" width="34" height="34" alt="" loading="lazy"></span>
+                <span class="watch-main">
+                  <span class="watch-venue"><span class="venue-symbol" aria-hidden="true">P</span>POLYMARKET</span>
+                  <span class="watch-q">Rates touch 4.50% this year</span>
+                </span>
+                <span class="watch-yn"><b class="q-yes">31</b><b class="q-no">69</b></span>
+              </button>
+              <button class="watch-row" type="button" data-tmarket="terminal" aria-pressed="false">
+                <span class="market-avatar market-photo"><img src="/brand/markets/fed-year-end.jpg" width="34" height="34" alt="" loading="lazy"></span>
+                <span class="watch-main">
+                  <span class="watch-venue"><span class="venue-symbol" aria-hidden="true">P</span>POLYMARKET</span>
+                  <span class="watch-q">Rates end 2026 at 4.50%+</span>
+                </span>
+                <span class="watch-yn"><b class="q-yes">31</b><b class="q-no">69</b></span>
+              </button>
+            </div>
+            <p class="watch-foot">Quotes aggregated across Polymarket, Kalshi and Predict.fun.</p>
+          </div>
+
+          <!-- Selected market + chart -->
+          <div class="tpanel panel-chart" data-panel="chart">
+            <div class="tpanel-head"><span>SELECTED MARKET</span><span class="t-res" id="t-res">RESOLVES 31 DEC 2026</span></div>
+            <h3 id="t-question">Will the fed funds target range reach 4.50% or higher at any point in 2026?</h3>
+            <p class="t-meta"><span id="t-venue"><span class="venue-symbol" aria-hidden="true">P</span>POLYMARKET</span><span id="t-id">#690200</span><span class="t-last"><strong id="t-last">31&cent;</strong><em id="t-chg" class="is-down">&minus;4&cent; / 30D</em></span></p>
+            <div class="t-chart" id="t-chart" role="img" aria-label="Thirty-day price history for the contract, easing from 35 cents to 31 cents.">
+              <svg viewBox="0 0 600 180" preserveAspectRatio="none" aria-hidden="true">
+                <path class="chart-grid" d="M0 36H600M0 72H600M0 108H600M0 144H600"/>
+                <path class="chart-area" id="t-area" d="M0 78 L60 70 L120 84 L180 76 L240 96 L300 90 L360 106 L420 98 L480 114 L540 108 L600 116 L600 180 L0 180 Z"/>
+                <path class="chart-line" id="t-line" d="M0 78 L60 70 L120 84 L180 76 L240 96 L300 90 L360 106 L420 98 L480 114 L540 108 L600 116"/>
+              </svg>
+              <div class="t-chart-time" aria-hidden="true"><span>23 AUG</span><span>07 SEP</span><span>22 SEP</span></div>
+            </div>
+          </div>
+
+          <!-- Order book -->
+          <div class="tpanel panel-book" data-panel="book">
+            <div class="tpanel-head"><span>ORDER BOOK</span><span class="t-sub">YES</span></div>
+            <div class="ladder">
+              <div class="ladder-head" aria-hidden="true"><span>PRICE</span><span>SIZE</span><span>TOTAL</span><span>VENUE</span></div>
+              <div class="ladder-rows" id="t-book">
+                <div class="lrow ask"><i style="width:23%"></i><span>34&cent;</span><span>9,600</span><span>49,900</span><span>K</span></div>
+                <div class="lrow ask"><i style="width:52%"></i><span>33&cent;</span><span>21,400</span><span>40,300</span><span>P</span></div>
+                <div class="lrow ask"><i style="width:46%"></i><span>32&cent;</span><span>18,900</span><span>18,900</span><span>P</span></div>
+                <div class="lspread"><span>SPREAD</span><b id="t-spread">1&cent;</b></div>
+                <div class="lrow bid"><i style="width:66%"></i><span>31&cent;</span><span>27,300</span><span>27,300</span><span>P</span></div>
+                <div class="lrow bid"><i style="width:41%"></i><span>30&cent;</span><span>16,700</span><span>44,000</span><span>K</span></div>
+                <div class="lrow bid"><i style="width:100%"></i><span>29&cent;</span><span>41,200</span><span>85,200</span><span>P</span></div>
+              </div>
+            </div>
+            <p class="ladder-foot">One book, every venue. <a href="#aggregation">How it is built <span aria-hidden="true">&darr;</span></a></p>
+          </div>
+
+          <!-- Execution -->
+          <div class="tpanel panel-exec" data-panel="exec">
+            <div class="tpanel-head"><span>EXECUTION</span><span class="t-sub">MARKET</span></div>
+            <div class="exec-seg" aria-hidden="true"><b class="is-on">Buy</b><b>Sell</b></div>
+            <div class="exec-outcomes" aria-hidden="true">
+              <b class="ex-yes is-on">YES <span id="t-yes-price">32&cent;</span></b>
+              <b class="ex-no">NO <span id="t-no-price">69&cent;</span></b>
+            </div>
+            <div class="exec-field"><span>SHARES</span><strong id="t-exec-qty">50,000</strong></div>
+            <div class="exec-slider" aria-hidden="true"><i style="width:44%"></i><u style="left:44%"></u></div>
+            <dl class="exec-summary">
+              <div><dt>Avg fill</dt><dd id="t-exec-avg">32.8&cent;</dd></div>
+              <div><dt>Cost</dt><dd id="t-exec-cost">$16,408</dd></div>
+              <div><dt>Max return</dt><dd id="t-exec-return">$50,000</dd></div>
+            </dl>
+            <p class="exec-cta" id="t-exec-cta">Buy YES <span>$16,408</span></p>
+            <p class="exec-note" id="t-exec-note">Filled across three venue levels.</p>
+          </div>
+
+          <!-- Tabbed lower panel -->
+          <div class="tpanel panel-tabs" data-panel="tabs">
+            <div class="ttabs" role="group" aria-label="Lower panel">
+              <button type="button" data-ttab="impact" aria-pressed="true" class="is-key">Impact on your book</button>
+              <button type="button" data-ttab="positions" aria-pressed="false">Positions</button>
+              <button type="button" data-ttab="rules" aria-pressed="false">Rules</button>
+            </div>
+
+            <div class="ttab-panel" data-ttabpanel="impact">
+              <div class="impact-grid">
+                <div class="impact-related">
+                  <span class="impact-label">RELATED POSITIONS YOU ALREADY HOLD</span>
+                  <ul id="t-related">
+                    <li><span class="rel-name">Rates end 2026 at 4.50% or higher</span><span class="rel-hold"><b class="position-no">NO</b>250,000</span><span class="rel-tag">IMPLIES</span></li>
+                    <li><span class="rel-name">Rates touch 4.25% this year</span><span class="rel-hold"><b class="position-yes">YES</b>200,000</span><span class="rel-tag">IMPLIED BY</span></li>
+                    <li><span class="rel-name">Hike&ndash;hike&ndash;hike path</span><span class="rel-hold"><b class="position-yes">YES</b>180,000</span><span class="rel-tag">IMPLIES</span></li>
+                  </ul>
+                  <p class="impact-rel" id="t-relationship">The year-end contract only reads December. This one reads the whole year. A rate that touches 4.50% and falls back pays here <b>and</b> pays your year-end NO &mdash; the book is not short this outcome twice.</p>
+                </div>
+                <div class="impact-scen">
+                  <span class="impact-label">BOOK PAYOUT, BEFORE AND AFTER THIS TRADE</span>
+                  <div class="payouts" id="t-scenarios">
+                    <div class="payout-row head"><span>OUTCOME</span><span>BEFORE <i></i> AFTER</span></div>
+                    <div class="payout-row"><span>Touches 4.50%, ends below</span><strong>$498,000 <em>&rarr;</em> $548,000</strong></div>
+                    <div class="payout-row"><span>Touches 4.50%, ends at or above</span><strong>$312,000 <em>&rarr;</em> $362,000</strong></div>
+                    <div class="payout-row"><span>Never reaches 4.50%</span><strong class="is-flat">$455,000 <em>&rarr;</em> $455,000</strong></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ttab-panel" data-ttabpanel="positions" hidden>
+              <div class="tscroll">
+                <table class="ptable">
+                  <thead><tr><th>Market</th><th>Side</th><th>Shares</th><th>Avg</th><th>Now</th><th>Cost</th><th>P&amp;L</th><th>Linked</th></tr></thead>
+                  <tbody id="t-positions"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="ttab-panel" data-ttabpanel="rules" hidden>
+              <div class="rules-box">
+                <span class="impact-label" id="t-rules-title">POLYMARKET <i></i> #690200 <i></i> SETTLEMENT RULE</span>
+                <blockquote id="t-rules-text">This market resolves YES if the upper bound of the Federal Reserve&rsquo;s target range for the federal funds rate is 4.50% or higher at any point between 1 January 2026 and 31 December 2026, as published by the Federal Reserve.</blockquote>
+                <p class="rules-meta"><a id="t-rules-src" href="/demo#/contracts">Source rule <span aria-hidden="true">&#8599;</span></a><code id="t-rules-hash">sha256 9f41c2&hellip;b7e0</code></p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ── 02 Market aggregation ────────────────────────────────────────── -->
+  <section class="section aggregation" id="aggregation" aria-labelledby="aggregation-title" data-atmosphere>
+    <div class="wrap">
+      <p class="eyebrow">02 / MARKET AGGREGATION</p>
+      <div class="agg" data-agg data-case="merge">
+        <div class="agg-copy">
+          <h2 id="aggregation-title">Bring the markets together.<br>Keep the <em>differences</em> visible.</h2>
+          <p class="agg-lede">The same question trades on more than one venue, at more than one price. Rook groups quotes by what the contracts actually mean and how they settle &mdash; not by how closely their titles match.</p>
+          <div class="accordion" role="group" aria-label="How aggregation works">
+            <div class="acc-item">
+              <button type="button" data-agg-case="merge" aria-expanded="true"><span>One contract, every venue</span><i aria-hidden="true"></i></button>
+              <div class="acc-body"><p>Matching markets are resolved across platforms and presented as a single instrument, not three near-duplicates in three tabs.</p></div>
+            </div>
+            <div class="acc-item">
+              <button type="button" data-agg-case="top" aria-expanded="false"><span>Composite top of book</span><i aria-hidden="true"></i></button>
+              <div class="acc-body"><p>The best bid and the best ask can sit on different venues. Stacked into one ladder, the spread on this contract halves and the size inside two cents nearly doubles.</p></div>
+            </div>
+            <div class="acc-item">
+              <button type="button" data-agg-case="settlement" aria-expanded="false"><span>Settlement-aware grouping</span><i aria-hidden="true"></i></button>
+              <div class="acc-body"><p>A shared headline is not a shared contract. Where the settlement conditions differ, Rook keeps the books apart and records the relationship between them instead of averaging two different questions together.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="agg-diagram">
+          <div class="agg-venues" id="agg-venues"></div>
+          <svg class="agg-links" viewBox="0 0 120 420" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <path class="agg-link" pathLength="1" d="M0 70 C70 70 50 210 120 210"/>
+            <path class="agg-link" pathLength="1" d="M0 210 C70 210 50 210 120 210"/>
+            <path class="agg-link" pathLength="1" d="M0 350 C70 350 50 210 120 210"/>
+          </svg>
+          <div class="agg-composite">
+            <div class="ac-head"><img src="/brand/rook.svg" width="15" height="15" alt="">Rook Aggregated<span id="agg-total">150.6k</span></div>
+            <div class="ac-q" id="agg-q">Fed hikes 25 bp in October</div>
+            <div class="ladder-head ac-grid" aria-hidden="true"><span>PRICE</span><span>SIZE</span><span>TOTAL</span><span>VENUE</span></div>
+            <div class="ac-rows" id="agg-composite"></div>
+            <p class="ac-foot" id="agg-foot">Three venues stacked into one ladder. Every level keeps the venue it came from.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 03 Cross-market arbitrage ────────────────────────────────────── -->
+  <section class="section arbitrage" id="arbitrage" aria-labelledby="arbitrage-title" data-atmosphere>
+    <div class="wrap">
+      <p class="eyebrow">03 / CROSS-MARKET ARBITRAGE</p>
+      <div class="split">
+        <h2 id="arbitrage-title">Find opportunities<br>in how markets <em>connect.</em></h2>
+        <div class="split-copy">
+          <p>Inspect price differences across equivalent contracts and related outcomes. Follow the trade legs, settlement conditions, and costs behind each potential opportunity.</p>
+          <p class="statement">A price gap is only an opportunity if the contracts settle the way you think they do.</p>
+        </div>
+      </div>
+
+      <div class="scanner" data-scanner>
+        <div class="scan-list">
+          <div class="scan-head"><span>SCANNER</span><span>4 FOUND <i></i> 2 ACTIONABLE</span></div>
+          <div class="scan-rows" role="group" aria-label="Select an opportunity"></div>
+        </div>
+        <div class="scan-detail" id="scan-detail" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 04 The connected book ───────────────────────────────────────────────── -->
+  <section class="section" id="intelligence" aria-labelledby="intelligence-title" data-atmosphere>
+    <svg class="ambient-svg branch-atmosphere" viewBox="0 0 700 650" fill="none" aria-hidden="true" focusable="false">
+      <g class="branch-lines"><path pathLength="1" d="M690 36H530L440 126H310L216 220H-30"/><path pathLength="1" d="M690 118H560L454 224H334L240 318H80"/><path pathLength="1" d="M690 206H590L474 322H390L282 430H-30"/><path pathLength="1" d="M690 296H620L500 416H442L322 536H120"/><path pathLength="1" d="M440 126V210L334 316V404L282 456V590"/></g>
+      <g class="branch-nodes"><circle cx="440" cy="126" r="7"/><circle cx="454" cy="224" r="5"/><circle cx="474" cy="322" r="7"/><circle cx="500" cy="416" r="5"/><circle cx="282" cy="456" r="5"/></g>
+    </svg>
+
+    <div class="wrap">
+      <p class="eyebrow">04 / THE INTELLIGENCE UNDERNEATH</p>
+      <div class="split">
+        <h2 id="intelligence-title">Behind every trade,<br>a <em>connected portfolio.</em></h2>
+        <div class="split-copy">
+          <p>The terminal, the aggregated books and the opportunity scanner all read from the same thing: a map of how every contract in your book settles against every other one.</p>
           <p>A meeting decision, a year-end level, and an “any time this year” contract can all resolve off the same rate path. Their prices sit in three separate markets. Your exposure does not.</p>
           <p class="statement">Rook brings the underlying outcomes into view.</p>
         </div>
       </div>
       <div class="cards">
-        <article><span class="card-index">01</span><h3>Hidden concentration</h3><p>Several positions can win or lose on the same underlying event. A longer holdings list can still be one large directional bet.</p></article>
-        <article><span class="card-index">02</span><h3>Imperfect hedges</h3><p>Similar headlines can carry different deadlines, thresholds and resolution rules. The apparent offset may not hold where it matters.</p></article>
-        <article><span class="card-index">03</span><h3>Disconnected decisions</h3><p>A single trade moves more than one line in the book. See how it changes the whole position before you commit to it.</p></article>
+        <article><span class="card-index">01</span><h3>Shared exposure</h3><p>Several positions can win or lose on the same underlying event. A longer holdings list can still be one large directional bet.</p></article>
+        <article><span class="card-index">02</span><h3>Conditional hedges</h3><p>A hedge that holds at year-end can fail on the path there. Rook names the outcomes where the offset stops working, and the rule that breaks it.</p></article>
+        <article><span class="card-index">03</span><h3>Portfolio consequence</h3><p>A single trade moves more than one line in the book. See what it changes across every modelled outcome before you commit to it.</p></article>
       </div>
     </div>
   </section>
 
   <!-- ── 02 Settlement ────────────────────────────────────────────────── -->
-  <section class="section settlement" id="settlement" aria-labelledby="settlement-title">
+  <section class="section settlement" id="settlement" aria-labelledby="settlement-title" data-atmosphere>
     <div class="wrap">
-      <p class="eyebrow">02 / THE DETAILS ARE THE DIFFERENCE</p>
+      <p class="eyebrow">05 / THE DETAILS ARE THE DIFFERENCE</p>
       <div class="split">
         <h2 id="settlement-title">A hedge is only as good<br>as the <em>fine print.</em></h2>
         <div class="split-copy">
           <p>“Touches 4.00%” and “ends at 4.00%” sound like the same trade. But a rate can reach 4.00% and rise again. The path matters, and so does the contract.</p>
           <p>Try it below: two positions, three ways a cutting cycle can run, and the settlement rules doing the work. Paths 01 and 03 end the year at the same rate and pay differently.</p>
+          <p class="statement">This is the comparison behind every hedge the map reports, and behind every opportunity the scanner accepts or throws out.</p>
         </div>
       </div>
 
       <div class="console">
-        <div class="mac-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mac-title">rook — settlement sandbox</span><span class="badge">ILLUSTRATIVE</span></div>
+        <div class="mac-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mac-title">rook — settlement sandbox</span></div>
         <div class="console-body">
           <div class="console-controls">
             <span class="step">01 <i></i> CHOOSE A RATE PATH</span>
@@ -406,7 +723,16 @@
   </section>
 
   <!-- ── Thesis ───────────────────────────────────────────────────────── -->
-  <section class="thesis"><div class="wrap">
+  <section class="thesis" data-atmosphere>
+    <svg class="ambient-svg outcome-field" viewBox="0 0 820 520" fill="none" aria-hidden="true" focusable="false">
+      <g class="field-mesh">
+        <path pathLength="1" d="M-40 490L220 344L404 382L602 218L870 270M-40 446L220 300L404 338L602 174L870 226M-40 402L220 256L404 294L602 130L870 182M-40 358L220 212L404 250L602 86L870 138M-40 314L220 168L404 206L602 42L870 94M-40 270L220 124L404 162L602 -2L870 50"/>
+        <path d="M20 456V236M86 420V200M152 382V162M220 344V124M282 357V137M344 370V150M404 382V162M470 328V108M536 273V53M602 218V-2M670 231V11M736 244V24M804 257V37"/>
+      </g>
+      <path class="field-ridge" pathLength="1" d="M-40 358L220 212L404 250L602 86L870 138"/>
+      <g class="field-points"><circle cx="220" cy="212" r="5"/><circle cx="404" cy="250" r="5"/><circle cx="602" cy="86" r="5"/></g>
+    </svg>
+    <div class="wrap">
     <p class="eyebrow">WHY WE ARE BUILDING ROOK</p>
     <h2>Markets trade one contract at a time.<br><em>You carry the whole book.</em></h2>
     <p>Prediction markets turn real-world questions into tradable contracts. Rook exists to make the relationships between those contracts legible — so a portfolio decision starts from a clear view of what is actually at stake.</p>
@@ -420,24 +746,26 @@
   <!-- ── FAQ ──────────────────────────────────────────────────────────── -->
   <section class="section faq" id="questions" aria-labelledby="faq-title">
     <div class="wrap split">
-      <div><p class="eyebrow">03 / A FEW GOOD QUESTIONS</p><h2 id="faq-title">Clarity starts<br><em>right here.</em></h2></div>
+      <div><p class="eyebrow">06 / A FEW GOOD QUESTIONS</p><h2 id="faq-title">Clarity starts<br><em>right here.</em></h2></div>
       <div class="faq-list">
-        <details><summary>What is Rook?<span aria-hidden="true"></span></summary><p>A research workstation for prediction-market portfolios. It connects contract settlement rules to portfolio exposure, so you can explore outcomes, inspect computed relationships, and simulate changes to a book.</p></details>
+        <details><summary>What is Rook?<span aria-hidden="true"></span></summary><p>A trading workstation for prediction-market portfolios. It brings venue order books, contract relationships and portfolio exposure into one terminal, so a trade can be judged against the whole book rather than one line of it.</p></details>
         <details><summary>Who is it built for?<span aria-hidden="true"></span></summary><p>Traders and research teams running multiple prediction-market positions — especially where contracts share an underlying driver but differ in timing, threshold or settlement condition.</p></details>
-        <details><summary>What can I try today?<span aria-hidden="true"></span></summary><p>The interactive demo carries a fictional portfolio over real Polymarket contracts on US rates. Explore exposure, scenarios, relationships, proposed trades and source evidence — no sign-up.</p></details>
+        <details><summary>What can I try today?<span aria-hidden="true"></span></summary><p>The interactive demo carries a fictional portfolio over real Polymarket contracts on US rates. Explore exposure, scenarios, relationships, proposed trades and source evidence with private demo access.</p></details>
+        <details><summary>Which parts of the terminal are product previews?<span aria-hidden="true"></span></summary><p>The terminal, the aggregated venue book and the opportunity scanner shown on this page are product previews built from real contracts. The demo covers the research side today: exposure, scenarios, computed relationships and settlement evidence.</p></details>
+        <details><summary>How are contract relationships different from price correlation?<span aria-hidden="true"></span></summary><p>They are computed from how the contracts settle, not from how their prices move together. Two contracts can trade in lockstep for months and still pay differently on the one outcome that matters. The comparison, its assumptions, and the outcomes where a hedge stops holding are all laid out inside the workstation.</p></details>
+        <details><summary>Why does settlement compatibility matter for aggregation and arbitrage?<span aria-hidden="true"></span></summary><p>Two contracts with the same headline can carry different observation windows, thresholds or resolution sources. Stacking their books averages two different questions, and an arbitrage across them can leave both legs worthless. Rook compares the rules before it groups quotes or reports an opportunity.</p></details>
         <details><summary>Is the data live? Can I place trades?<span aria-hidden="true"></span></summary><p>No. The demo runs on snapshot data over a fictional book. It is a research and simulation environment; it does not connect to your account and does not execute orders.</p></details>
         <details><summary>Does Rook predict which outcome will happen?<span aria-hidden="true"></span></summary><p>No. It shows what your positions pay under explicitly modelled outcomes. Counts of outcomes are counts, not probabilities. There are no fair values and no forecasts anywhere in the product.</p></details>
-        <details><summary>How are relationships computed?<span aria-hidden="true"></span></summary><p>From how the contracts settle, not from price correlation. The comparison, the assumptions it rests on, and the outcomes where a hedge stops holding are all laid out inside the workstation.</p></details>
       </div>
     </div>
   </section>
 
   <!-- ── Final CTA ────────────────────────────────────────────────────── -->
-  <section class="final-cta"><div class="wrap">
+  <section class="final-cta" data-atmosphere><div class="wrap">
     <p class="eyebrow">SEE THE WHOLE POSITION</p>
     <h2>Your next question deserves<br><em>more than a ticker.</em></h2>
     <a class="button" href="/demo">Step inside the workstation <span aria-hidden="true">↗</span></a>
-    <p class="fineprint">No sign-up. Just a clearer view of the book.</p>
+    <p class="fineprint">Private demo access. A clearer view of the book.</p>
   </div></section>
 </main>
 
