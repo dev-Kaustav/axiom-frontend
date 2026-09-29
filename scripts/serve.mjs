@@ -56,7 +56,8 @@ async function gate(req, res, pathname) {
     return true;
   }
 
-  if (!admitted) {
+  // Match the live launch entry: /demo always prompts, then sign-in opens /demo/.
+  if (pathname === '/demo' || !admitted) {
     res.writeHead(401, GATE_HEADERS).end(loginPage({ next: pathname }));
     return true;
   }

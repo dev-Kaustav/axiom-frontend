@@ -25,6 +25,10 @@ A correct sign-in mints an HMAC-signed cookie holding nothing but its own
 expiry, valid 12 hours; the gate re-verifies the signature on every request.
 No database. An Authorization: Basic header is accepted too, for curl and CI.
 
+Landing-page launch links use /demo, which always shows the sign-in screen,
+including for returning users. Successful sign-in redirects to /demo/, where
+the session keeps the workstation and its assets accessible.
+
   DEMO_USER             username, default axiom
   DEMO_PASSWORD         plaintext, hashed at request time
   DEMO_PASSWORD_SHA256  or supply the hash directly

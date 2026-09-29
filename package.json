@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "npm run build && node scripts/serve.mjs dist",
     "build": "npm ci --prefix demo && npm run build --prefix demo && node scripts/build.mjs",
-    "preview": "node scripts/serve.mjs dist"
+    "preview": "node scripts/serve.mjs dist",
+    "test:gate": "node --experimental-strip-types --test tests/demo-gate.test.mjs"
   }
 }

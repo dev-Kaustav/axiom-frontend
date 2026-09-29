@@ -57,7 +57,11 @@ export default async function middleware(request: Request): Promise<Response | u
     });
   }
 
-  if (!admitted) return challenge(loginPage({ next: url.pathname }));
+  // Landing-page launch links use /demo. Always prompt there, even when a
+  // previous session is valid; successful sign-in redirects to /demo/.
+  if (url.pathname === '/demo' || !admitted) {
+    return challenge(loginPage({ next: url.pathname }));
+  }
 
   return undefined;  // admitted: fall through to the static file
 }
