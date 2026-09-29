@@ -1,10 +1,17 @@
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
+import { loadEnvFile } from 'node:process';
 import {
   basicAuthValid, cookieFrom, credentialsValid, GATE_HEADERS,
   loginPage, mintSession, sessionCookie, sessionValid,
 } from '../demo-gate.mjs';
+
+try {
+  loadEnvFile(new URL('../.env.local', import.meta.url));
+} catch (error) {
+  if (error.code !== 'ENOENT') throw error;
+}
 
 const root = resolve(process.argv[2] || 'dist');
 const port = Number(process.env.PORT || 4174);

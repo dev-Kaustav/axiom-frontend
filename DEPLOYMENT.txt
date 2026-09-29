@@ -35,6 +35,10 @@ Set DEMO_PASSWORD in the Vercel project environment. The hash committed as the
 fallback is unsalted over a short password: it keeps crawlers and the curious
 out, it is not a secret against anyone holding the repository.
 
+For local preview, put DEMO_USER and DEMO_PASSWORD (or DEMO_PASSWORD_SHA256)
+in .env.local at the repository root. npm run preview loads this ignored file;
+existing environment variables take precedence.
+
 After the first deploy, confirm the edge middleware actually ran:
   curl -o /dev/null -w '%{http_code}\n' https://rook.pm/demo/assets/<bundle>.js
 It must print 401. If it prints 200, middleware did not run for this project

@@ -60,6 +60,18 @@ export type ContractView = {
   expression: string | null;
 };
 
+// source_url is the raw Gamma API evidence. Venue navigation uses public pages.
+export function venueEventUrl(event: EventRecord): string {
+  return `https://polymarket.com/event/${encodeURIComponent(event.slug)}`;
+}
+
+export function venueContractUrl({ contract, event }: Pick<ContractView, 'contract' | 'event'>): string {
+  const eventUrl = venueEventUrl(event);
+  return contract.slug && contract.slug !== event.slug
+    ? `${eventUrl}/${encodeURIComponent(contract.slug)}`
+    : eventUrl;
+}
+
 /**
  * Built once per contract and kept.
  *

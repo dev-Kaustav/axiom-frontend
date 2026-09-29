@@ -1,5 +1,5 @@
 import { Badge, KeyValue, SourceLink } from './primitives';
-import { contractView, payoffOf, STATE_COUNT } from '../domain/engine';
+import { contractView, payoffOf, STATE_COUNT, venueContractUrl, venueEventUrl } from '../domain/engine';
 
 /**
  * The audit trail for one contract: venue identity, the settlement rule as the
@@ -83,8 +83,8 @@ export function ContractInspector({ contractId }: { contractId: string }) {
         <div className="quiet-copy rule-text" tabIndex={0} role="region" aria-label="Settlement rule text">
           {event.description}
         </div>
-        <SourceLink url={contract.source_url}>Venue contract</SourceLink>{' '}
-        <SourceLink url={event.source_url}>Venue event</SourceLink>
+        <SourceLink url={venueContractUrl(view)}>Venue contract</SourceLink>{' '}
+        <SourceLink url={venueEventUrl(event)}>Venue event</SourceLink>
       </section>
 
       <section className="detail-section">

@@ -12,6 +12,8 @@ import {
   SNAPSHOT,
   contractView,
   shortEventName,
+  venueContractUrl,
+  venueEventUrl,
 } from '../domain/engine';
 
 const STATUS_TONE: Record<string, string> = {
@@ -188,7 +190,7 @@ export function ContractsView({ onContract }: { onContract: (contractId: string)
                                 </Badge>
                               </td>
                               <td>
-                                <SourceLink url={v.contract.source_url}>Venue</SourceLink>
+                                <SourceLink url={venueContractUrl(v)}>Venue</SourceLink>
                               </td>
                             </tr>
                           ))}
@@ -289,7 +291,7 @@ export function DataView() {
         <ul className="download-list">
           {EVENTS.filter((e) => e.scope !== 'CORE').map((e) => (
             <li key={e.event_id}>
-              <strong>{e.title}</strong> — {e.scope_reason} <SourceLink url={e.source_url}>Venue</SourceLink>
+              <strong>{e.title}</strong> — {e.scope_reason} <SourceLink url={venueEventUrl(e)}>Venue</SourceLink>
             </li>
           ))}
         </ul>
