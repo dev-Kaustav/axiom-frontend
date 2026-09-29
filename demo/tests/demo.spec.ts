@@ -62,6 +62,11 @@ test('the five questions can be answered end to end', async ({ page }) => {
   await expect(dialog.getByRole('heading', { name: 'Settlement rule, as published' })).toBeVisible();
   await expect(dialog.getByRole('heading', { name: 'Economic predicate' })).toBeVisible();
   await expect(dialog.getByText(/federal funds/i).first()).toBeVisible();
+  // Venue navigation must open the public market, rather than raw Gamma JSON.
+  for (const name of ['Venue contract', 'Venue event']) {
+    await expect(dialog.getByRole('link', { name, exact: true }))
+      .toHaveAttribute('href', /^https:\/\/polymarket\.com\/event\//);
+  }
   await page.keyboard.press('Escape');
   await expect(dialog).toBeHidden();
 
