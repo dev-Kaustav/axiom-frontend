@@ -15,12 +15,12 @@
   /* --- Surfaces: the elevation ladder ----------------------------------- */
   --bg-app: #0a0a0c;      /* chassis / page ground        */
   --bg-chrome: #101013;   /* app bar, tape, footer rails  */
-  --bg-panel: #151518;    /* panel face                   */
-  --bg-raised: #1d1d21;   /* panel headers, thead, tfoot  */
+  --bg-panel: #111114;    /* panel face                   */
+  --bg-raised: #19191d;   /* panel headers, thead, tfoot  */
   --bg-overlay: #27272c;  /* modals, popovers, hover      */
 
   /* --- Lines ------------------------------------------------------------ */
-  --line: #2c2c32;
+  --line: #25252c;
   --line-strong: #3e3e46;
   --line-focus: #d7d7dd;   /* selection + focus read as a BRIGHT NEUTRAL edge */
   --hairline-hi: #ffffff0f;
@@ -65,7 +65,7 @@
   --warn-line: #ffb34059;
 
   /* --- Type ------------------------------------------------------------- */
-  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-sans: 'Manrope', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
   --fs-2xs: 10px;   /* mono micro-labels, column heads */

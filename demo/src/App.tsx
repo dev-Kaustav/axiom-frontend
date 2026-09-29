@@ -22,7 +22,7 @@ const HEADINGS: Record<Page, string> = {
   Portfolio: 'What has been loaded',
   Scenarios: 'What happens under this outcome?',
   Relationships: 'What offsets what, and where does the hedge fail?',
-  Trade: 'What happens if I make this trade?',
+  Trade: 'Which trades improve this portfolio?',
   Contracts: 'Every contract, and what Rook made of it',
   Data: 'Where the numbers come from',
 };
@@ -31,13 +31,14 @@ export default function App() {
   const [page, setPage] = useState<Page>(currentPage);
   const [inspecting, setInspecting] = useState<string | null>(null);
   const [scenarioKey, setScenarioKey] = useState<string | null>(null);
+  const [hedgeTarget, setHedgeTarget] = useState<number | null>(null);
   const navigate = (next: Page) => { window.location.hash = `/${next.toLowerCase()}`; setPage(next); };
   useEffect(() => {
     const sync = () => setPage(currentPage());
     window.addEventListener('hashchange', sync);
     return () => window.removeEventListener('hashchange', sync);
   }, []);
-  useEffect(() => { document.title = `${page} · Rook Workstation`; }, [page]);
+  useEffect(() => { document.title = `${page} · Rook Workstation`; window.scrollTo(0, 0); }, [page]);
   // A trackpad pinch is a ctrl-wheel event, and the browser answers it by
   // zooming the whole page. This is a fixed desktop layout of panes that carry
   // their own scroll and their own zoom, so page zoom only breaks it. Capture
@@ -53,6 +54,7 @@ export default function App() {
     setScenarioKey(key);
     navigate('Scenarios');
   };
+  const findHedges = (index: number) => { setHedgeTarget(index); navigate('Trade'); };
 
   return (
     <div className="app">
@@ -83,11 +85,11 @@ export default function App() {
 
       <main className="workspace">
         <div className="workspace-header">
-          <div><div className="workspace-kicker">MACRO / US RATES / 2026</div><h1>{page === 'Trade' ? 'Trade simulation' : page === 'Data' ? 'Data & provenance' : page}<span>{HEADINGS[page]}</span></h1></div>
+          <div><div className="workspace-kicker">MACRO / US RATES / 2026</div><h1>{page === 'Trade' ? 'Trade ideas' : page === 'Data' ? 'Data & provenance' : page}<span>{HEADINGS[page]}</span></h1></div>
           <div className="book-label"><span>{PORTFOLIO.name}</span><small><span className="status-dot" /> DEMO BOOK · {POSITIONS.length} POSITIONS</small></div>
         </div>
 
-        {page === 'Exposure' && <ExposureView positions={POSITIONS} onScenario={openScenario} onContract={setInspecting} />}
+        {page === 'Exposure' && <ExposureView positions={POSITIONS} onScenario={openScenario} onContract={setInspecting} onHedge={findHedges} />}
         {page === 'Portfolio' && (
           <PortfolioView
             positions={POSITIONS}
@@ -106,7 +108,7 @@ export default function App() {
         {page === 'Relationships' && (
           <RelationshipsView positions={POSITIONS} onContract={setInspecting} onScenario={openScenario} />
         )}
-        {page === 'Trade' && <TradeSimulator positions={POSITIONS} onContract={setInspecting} />}
+        {page === 'Trade' && <TradeSimulator key={hedgeTarget ?? 'book'} positions={POSITIONS} onContract={setInspecting} targetIndex={hedgeTarget} onClearTarget={() => setHedgeTarget(null)} />}
         {page === 'Contracts' && <ContractsView onContract={setInspecting} />}
         {page === 'Data' && <DataView />}
       </main>

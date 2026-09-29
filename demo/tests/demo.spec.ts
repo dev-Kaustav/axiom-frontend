@@ -67,12 +67,14 @@ test('the five questions can be answered end to end', async ({ page }) => {
 
   // 5. What happens if I make this trade?
   await page.getByRole('button', { name: 'Trade', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'What happens if I make this trade?' })).toBeVisible();
-  // The book as it stands is on screen before anything is simulated; only the
-  // after column is empty.
+  await expect(page.getByRole('heading', { name: 'Which trades improve this portfolio?' })).toBeVisible();
+  // A suggestion is previewed immediately; the unchanged book is an explicit baseline.
+  await expect(page.locator('.suggestion-list .suggestion')).toHaveCount(3);
+  await page.getByRole('button', { name: /Keep current portfolio/ }).click();
+  await page.getByText('Full before and after comparison', { exact: true }).click();
   const worstRow = page.locator('table.compare-table tbody tr').first();
   await expect(worstRow.locator('th')).toHaveText('Worst outcome');
-  await expect(worstRow.locator('td').nth(1)).toHaveText('\u2014');
+  await expect(worstRow.locator('td').nth(1)).toHaveText(await worstRow.locator('td').first().innerText());
 
   await page.getByLabel('Quantity').fill('200000');
   await page.getByLabel('Price').fill('0.02');
@@ -411,5 +413,56 @@ test('dragging a container keeps its wires attached and curved', async ({ page }
   const after = await paths();
   expect(after.every((d) => d.includes('C'))).toBe(true);
 
+  noErrors();
+});
+
+test('a vulnerability leads to targeted suggestions with comparable before and after outcomes', async ({ page }) => {
+  const noErrors = await guard(page);
+  await page.goto('/demo/');
+  const risk = page.locator('.vulnerability-row').nth(1);
+  const scenario = await risk.locator('.risk-select b').innerText();
+  await risk.locator('.risk-select').click();
+  await expect(risk.locator('.risk-select')).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Find hedges for vulnerability 2', exact: true }).click();
+  await expect(page.locator('.target-banner b')).toHaveText(scenario);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await expect(page.getByRole('button', { name: 'Protect selected outcome', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.suggestion.active')).toHaveCount(1);
+  await expect(page.locator('.target-comparison')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'What you give up' })).toBeVisible();
+
+  await page.locator('.suggestion').nth(1).click();
+  await expect(page.locator('.suggestion').nth(1)).toHaveAttribute('aria-pressed', 'true');
+  const selectedName = await page.locator('.suggestion').nth(1).locator('.suggestion-name').innerText();
+  await expect(page.locator('#preview-heading')).toHaveText(selectedName.replace(/^(YES|NO)/, '$1 '));
+
+  await page.getByRole('button', { name: 'More profitable scenarios', exact: true }).click();
+  await page.getByLabel('Additional capital budget').selectOption('5000');
+  await expect(page.locator('.comparison-note')).toContainText('1,124');
+  await page.getByRole('button', { name: /Keep current portfolio/ }).click();
+  await expect(page.locator('#preview-heading')).toHaveText('Keep the current portfolio');
+  await expect(page.locator('.preview-metrics').getByText('$0', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Clear scenario', exact: true }).click();
+  await expect(page.locator('.target-banner')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Reduce worst-case loss', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Exposure', exact: true }).click();
+  await page.getByRole('button', { name: 'Find hedges for selected outcome', exact: true }).click();
+  await expect(page.locator('.target-banner')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  noErrors();
+});
+
+test('custom edits keep the simulated result explicit and reject fractional cents', async ({ page }) => {
+  const noErrors = await guard(page);
+  await page.goto('/demo/#/trade');
+  const originalPreview = await page.locator('#preview-heading').innerText();
+  await page.getByLabel('Quantity', { exact: true }).fill('1');
+  await page.getByLabel('Price ($)', { exact: true }).fill('0.005');
+  await expect(page.getByRole('button', { name: 'Simulate trade', exact: true })).toBeDisabled();
+  await expect(page.locator('#preview-heading')).toHaveText(originalPreview);
+  await page.getByLabel('Quantity', { exact: true }).fill('200000');
+  await page.getByRole('button', { name: 'Simulate trade', exact: true }).click();
+  await expect(page.locator('.preview-heading .section-label')).toHaveText('Custom simulation');
+  await expect(page.locator('.preview-metrics').getByText('$1,000', { exact: true })).toBeVisible();
   noErrors();
 });
