@@ -1,3 +1,5 @@
+import decision from '../data/september-decision.json';
+import { ANCHORS, RANGE_WIDTH_BP } from '../domain/world';
 import { useMemo, useState, type CSSProperties } from 'react';
 import { ArrowRight, ArrowUpRight, Crosshair, RotateCcw } from 'lucide-react';
 import { Panel, KeyValue, Badge, ResizeHandle, useColumnWidth } from './primitives';
@@ -40,6 +42,14 @@ export function ExposureView({ positions, onScenario, onContract, onHedge }: {
   const selectExtreme = (which: 'worst' | 'best') => selectWorld(ALL_STATES.indexOf(summary[which].scenario.representative));
 
   return <div className="exposure-layout">
+    <section className="fed-baseline" aria-label="Current Federal Reserve baseline">
+      <div><span className="eyebrow">Current Fed target · upper bound</span>
+        <strong>{bpPercent(ANCHORS.startUpperBp)}</strong>
+        <span>Target range {bpPercent(ANCHORS.startUpperBp - RANGE_WIDTH_BP)}–{bpPercent(ANCHORS.startUpperBp)}</span></div>
+      <p>September 16, 2026: +{decision.change_bp} bp hike · effective September 17.<br />
+        Already included in the baseline for all future scenarios.</p>
+      <a href={decision.source_url} target="_blank" rel="noopener noreferrer">FOMC statement <ArrowUpRight size={14} aria-hidden="true" /></a>
+    </section>
     <section className="exposure-diagnosis" aria-label="Portfolio diagnosis">
       <div className="diagnosis-copy">
         <span className="section-label">Your largest vulnerability</span>

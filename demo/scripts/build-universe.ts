@@ -22,6 +22,7 @@ import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { SCOPED_EVENTS, type Scope } from './universe-scope.ts';
+import { septemberAnchors } from '../src/data/september-anchors.ts';
 
 const GAMMA = 'https://gamma-api.polymarket.com';
 const MIN_REQUEST_INTERVAL_MS = 200; // matches AXIOM_GAMMA_MIN_REQUEST_INTERVAL_SECONDS
@@ -286,26 +287,8 @@ function deriveAnchors(contracts: ContractRecord[]): AnchorFact[] {
     });
   }
 
-  // 2. The September 2026 decision was a hike.
-  //    Every Pause-leading leg of the Sep-Dec sequence resolved No while the
-  //    Hike-leading legs remain open.
-  const pauseLegs = resolvedWhere(contracts, '955999', (l) => l.startsWith('pause'));
-  const pauseNo = pauseLegs.filter((c) => c.resolution.resolved_outcome === 'No');
-  const hikeLegsOpen = contracts.filter(
-    (c) => c.event_id === '955999' && !c.closed && (c.group_item_title ?? '').toLowerCase().startsWith('hike'),
-  );
-  if (pauseNo.length === pauseLegs.length && pauseNo.length >= 2 && hikeLegsOpen.length > 0) {
-    anchors.push({
-      anchor_id: 'sep_2026_decision',
-      statement: 'September 2026 FOMC decision',
-      value: 'HIKE_25',
-      derivation: 'RESOLVED_MARKET',
-      confidence: 'VERIFIED',
-      reasoning:
-        'Every sequence leg beginning with Pause resolved No, while the legs beginning with Hike are still open. The September decision was therefore a hike. Combined with the cut anchor and the 25 bp increment, it was a 25 bp hike.',
-      evidence: evidenceFor(contracts, pauseNo.map((c) => c.contract_id)),
-    });
-  }
+  // The September decision and starting range are pinned to the official statement.
+  anchors.push(...septemberAnchors());
 
   // 3. At least one hike in 2026, and at most one so far.
   //    "no hikes" resolved No; the "1 hike" leg is still open, and these ladders
@@ -366,19 +349,6 @@ function deriveAnchors(contracts: ContractRecord[]): AnchorFact[] {
     reasoning:
       'No cut has occurred in 2026 and exactly one hike has, so the target range has moved only upward and the highest upper bound reached to date is the current one. Corroborated by the touch ladder: no upward leg above the current level has resolved Yes.',
     evidence: [],
-  });
-
-  // 5. The level itself is not derivable from any settled contract.
-  anchors.push({
-    anchor_id: 'upper_bound_after_sep_2026_bps',
-    statement: 'Target federal funds upper bound after the September 2026 meeting',
-    value: 400,
-    derivation: 'EXTERNAL_SOURCE',
-    confidence: 'HIGH_CONFIDENCE',
-    reasoning:
-      'No settled contract in this universe states the level, so it is taken from the Federal Reserve. It is corroborated by cross-event pricing: the touch contract at 4.25% trades near one minus the product of the two no-change legs, and the terminal contract at 4.50% or above trades near the product of the two hike legs. Both identities only hold at a 4.00% base.',
-    evidence: [],
-    source_url: 'https://www.federalreserve.gov/monetarypolicy/openmarket.htm',
   });
 
   return anchors;

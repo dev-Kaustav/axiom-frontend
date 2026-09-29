@@ -58,33 +58,13 @@
     },
     {
       "anchor_id": "sep_2026_decision",
-      "statement": "September 2026 FOMC decision",
+      "statement": "September 16, 2026 FOMC decision",
       "value": "HIKE_25",
-      "derivation": "RESOLVED_MARKET",
+      "derivation": "EXTERNAL_SOURCE",
       "confidence": "VERIFIED",
-      "reasoning": "Every sequence leg beginning with Pause resolved No, while the legs beginning with Hike are still open. The September decision was therefore a hike. Combined with the cut anchor and the 25 bp increment, it was a 25 bp hike.",
-      "evidence": [
-        {
-          "contract_id": "4170756",
-          "question": "Will the Fed Pause–Pause–Hike in the next three decisions (Sep–Oct–Dec)?",
-          "resolved_outcome": "No"
-        },
-        {
-          "contract_id": "4170757",
-          "question": "Will the Fed Pause–Pause–Pause in the next three decisions (Sep–Oct–Dec)?",
-          "resolved_outcome": "No"
-        },
-        {
-          "contract_id": "4170758",
-          "question": "Will the Fed Pause–Hike–Hike in the next three decisions (Sep–Oct–Dec)?",
-          "resolved_outcome": "No"
-        },
-        {
-          "contract_id": "4170759",
-          "question": "Will the Fed Pause–Hike–Pause in the next three decisions (Sep–Oct–Dec)?",
-          "resolved_outcome": "No"
-        }
-      ]
+      "reasoning": "The September 16, 2026 FOMC statement announced a 25 bp increase to a target range of 3.75%–4.00%, effective September 17. This is an established decision, already included in the demo baseline.",
+      "evidence": [],
+      "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"
     },
     {
       "anchor_id": "hikes_2026_to_date",
@@ -132,13 +112,13 @@
     },
     {
       "anchor_id": "upper_bound_after_sep_2026_bps",
-      "statement": "Target federal funds upper bound after the September 2026 meeting",
+      "statement": "Current target federal funds upper bound after the September meeting (bp)",
       "value": 400,
       "derivation": "EXTERNAL_SOURCE",
-      "confidence": "HIGH_CONFIDENCE",
-      "reasoning": "No settled contract in this universe states the level, so it is taken from the Federal Reserve. It is corroborated by cross-event pricing: the touch contract at 4.25% trades near one minus the product of the two no-change legs, and the terminal contract at 4.50% or above trades near the product of the two hike legs. Both identities only hold at a 4.00% base.",
+      "confidence": "VERIFIED",
+      "reasoning": "The Federal Reserve announced a 3.75%–4.00% target range on September 16, 2026, effective September 17. All future paths start at the 4.00% upper bound (400 bp); 3.75% is the lower bound, not the starting upper bound.",
       "evidence": [],
-      "source_url": "https://www.federalreserve.gov/monetarypolicy/openmarket.htm"
+      "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"
     }
   ],
   "events": [
