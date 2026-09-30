@@ -1,0 +1,43 @@
+{
+  "contract": "1.0.0",
+  "flavor": "core",
+  "milestone": "v1",
+  "phases": [
+    {
+      "id": "AXF-01",
+      "name": "Production shell and API boundary",
+      "status": "planned"
+    },
+    {
+      "id": "AXF-02",
+      "name": "Backend catalog and evidence",
+      "status": "planned"
+    },
+    {
+      "id": "AXF-03",
+      "name": "Wallet onboarding and workspace",
+      "status": "planned"
+    },
+    {
+      "id": "AXF-04",
+      "name": "Portfolio and scenario analytics",
+      "status": "planned"
+    },
+    {
+      "id": "AXF-05",
+      "name": "Relationships and hypothetical trades",
+      "status": "planned"
+    },
+    {
+      "id": "AXF-06",
+      "name": "Production delivery and integration",
+      "status": "planned"
+    }
+  ],
+  "next": {
+    "command": "/gsd-execute-phase 1",
+    "label": "Implement the production shell",
+    "reason": "Frontend initialized; 6 phases / 8 plans; backend prerequisites tracked separately."
+  },
+  "updated_at": "2026-09-30T06:32:38.304444+00:00"
+}
