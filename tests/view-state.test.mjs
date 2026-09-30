@@ -18,3 +18,19 @@ test('connection failure is actionable; pending readiness never looks empty', ()
   }
   assert.equal(deriveViewState({ origin: { configured: true, base: '/api' }, readiness: { ...success, status: 'pending', hasData: false }, data: null }).kind, 'loading');
 });
+test('refresh failure retains existing content and its original timestamp', () => {
+  const data = { ...success, status: 'error', error: new ApiError({ kind: 'network' }), errorUpdatedAt: 2000 };
+  const state = deriveViewState({ origin: { configured: true, base: '/api' }, readiness: success, data });
+  assert.equal(state.kind, 'ready');
+  assert.equal(state.stale.asOf, 1000);
+});
+test('a rate limit remains disabled until its retry deadline', () => {
+  const state = deriveViewState({ origin: { configured: true, base: '/api' }, readiness: { ...success, status: 'error', hasData: false, error: new ApiError({ kind: 'rate_limited', retryAfterSeconds: 7 }), errorUpdatedAt: 1000 }, data: null });
+  assert.equal(state.kind, 'rate_limited');
+  assert.equal(describeViewState(state, copy, { nowMs: 1800 }).action.label, 'Retry in 7s');
+  assert.equal(describeViewState(state, copy, { nowMs: 8000 }).action.disabled, false);
+});
+test('version mismatch invalidates retained results instead of presenting them as ready', () => {
+  const data = { ...success, status: 'error', error: new ApiError({ kind: 'stale_version' }), errorUpdatedAt: 2000 };
+  assert.equal(deriveViewState({ origin: { configured: true, base: '/api' }, readiness: success, data }).kind, 'stale_version');
+});
