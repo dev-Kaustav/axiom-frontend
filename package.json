@@ -4,12 +4,35 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.12"
   },
   "scripts": {
     "dev": "npm run build && node scripts/serve.mjs dist",
     "build": "npm ci --prefix demo && npm run build --prefix demo && node scripts/build.mjs",
     "preview": "node scripts/serve.mjs dist",
-    "test:gate": "node --experimental-strip-types --test tests/demo-gate.test.mjs"
+    "test:gate": "node --experimental-strip-types --test tests/demo-gate.test.mjs",
+    "typecheck": "tsc -p tsconfig.json",
+    "build:app": "tsc -p tsconfig.json && vite build",
+    "dev:app": "vite --host 127.0.0.1 --port 5174 --strictPort",
+    "preview:app": "vite preview --host 127.0.0.1 --port 4175 --strictPort",
+    "test": "node --experimental-strip-types --test tests/api-client.test.mjs tests/view-state.test.mjs tests/search.test.mjs",
+    "test:build": "node --experimental-strip-types --test tests/build/*.test.mjs",
+    "test:live": "node --experimental-strip-types --test tests/live/*.test.mjs"
+  },
+  "dependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "@tanstack/react-router": "^1.170.40",
+    "@tanstack/react-query": "^5.104.0",
+    "lucide-react": "^0.468.0",
+    "@fontsource/manrope": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.2.6"
+  },
+  "devDependencies": {
+    "vite": "^8.3.1",
+    "@vitejs/plugin-react": "^6.1.1",
+    "typescript": "~5.9.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0"
   }
 }
