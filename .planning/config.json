@@ -25,7 +25,7 @@
     "auto_advance": false,
     "node_repair": false,
     "node_repair_budget": 2,
-    "ui_phase": false,
+    "ui_phase": true,
     "ui_safety_gate": false,
     "ai_integration_phase": false,
     "api_coverage_gate": false,

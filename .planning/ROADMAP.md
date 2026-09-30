@@ -3,18 +3,32 @@
 All phases are planned, none executed. Backend readiness is an explicit dependency, not an instruction to fake data or to re-test the demo.
 
 ## Phase 1: Production shell and API boundary
+
 **ID:** AXF-01
 **Goal:** Production shell and API boundary using backend data while preserving the validated terminal.
 **Depends on:** None
 **Requirements:** FND-01, FND-02
 **Backend:** None for scaffolding; API origin and existing OpenAPI for integration
 **Success criteria:** Production is independently implemented in root src/ with its own build/config/dependencies outside demo/; no production imports or copies demo code. Both routes retain correct assets/deep links; no silent fixture fallback.; Typed API requests preserve IDs/decimals, cancellation, structured errors, and response versions.
-**Plans:** 0/2 complete
+**Plans:** 0/4 complete
+**Wave 1**
 
-- [ ] 01-01-PLAN.md — Build an independent production frontend outside demo
-- [ ] 01-02-PLAN.md — Add typed requests and contract-to-view adapters
+- [ ] 01-01-PLAN.md — Tracer: /app/exposure reaches the real backend through the typed client; then complete the typed API boundary (IDs/decimals, errors, cancellation, version pins)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 01-02-PLAN.md — Production-owned design system: UI-SPEC tokens, global styles, primitives and the full state contract
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 01-03-PLAN.md — Persistent shell with seven /app routes, honest per-view states, sanitised URL search and a dev-only state gallery
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [ ] 01-04-PLAN.md — Compose landing + /app + /demo into one deployment (publication decision checkpoint) and document it
 
 ## Phase 2: Backend catalog and evidence
+
 **ID:** AXF-02
 **Goal:** Backend catalog and evidence using backend data while preserving the validated terminal.
 **Depends on:** Phase 1
@@ -26,6 +40,7 @@ All phases are planned, none executed. Backend readiness is an explicit dependen
 - [ ] 02-01-PLAN.md — Connect catalog and inspector to published contracts
 
 ## Phase 3: Wallet onboarding and workspace
+
 **ID:** AXF-03
 **Goal:** Wallet onboarding and workspace using backend data while preserving the validated terminal.
 **Depends on:** Phase 2
@@ -38,6 +53,7 @@ All phases are planned, none executed. Backend readiness is an explicit dependen
 - [ ] 03-02-PLAN.md — Add private workspace sign-in and session recovery
 
 ## Phase 4: Portfolio and scenario analytics
+
 **ID:** AXF-04
 **Goal:** Portfolio and scenario analytics using backend data while preserving the validated terminal.
 **Depends on:** Phase 3
@@ -49,6 +65,7 @@ All phases are planned, none executed. Backend readiness is an explicit dependen
 - [ ] 04-01-PLAN.md — Replace portfolio and exposure calculations with backend view models
 
 ## Phase 5: Relationships and hypothetical trades
+
 **ID:** AXF-05
 **Goal:** Relationships and hypothetical trades using backend data while preserving the validated terminal.
 **Depends on:** Phase 4
@@ -60,6 +77,7 @@ All phases are planned, none executed. Backend readiness is an explicit dependen
 - [ ] 05-01-PLAN.md — Connect relationships, suggestions and before/after simulation
 
 ## Phase 6: Production delivery and integration
+
 **ID:** AXF-06
 **Goal:** Production delivery and integration using backend data while preserving the validated terminal.
 **Depends on:** Phase 5
