@@ -138,8 +138,7 @@ test('the workspace can be resized, panned and compared', async ({ page }) => {
   // anyone not using a pointer.
   const evidenceWidth = () => page.locator('.evidence-panel').evaluate((e) => e.clientWidth);
   const before = await evidenceWidth();
-  const handle = page.locator('.resize-handle');
-  await expect(handle).toHaveCount(1);
+  const handle = page.locator('.resize-handle[aria-orientation=vertical]');
   const box = (await handle.boundingBox())!;
   await page.mouse.move(box.x + 3, box.y + 200);
   await page.mouse.down();
@@ -151,6 +150,20 @@ test('the workspace can be resized, panned and compared', async ({ page }) => {
   await handle.focus();
   await page.keyboard.press('Shift+ArrowLeft');
   expect(await evidenceWidth()).toBeGreaterThan(evidenceBefore);
+
+  // The inspector and the hedge watch share a divider the user can move.
+  const inspectorHeight = () => page.locator('.evidence-panel').evaluate((e) => e.clientHeight);
+  const heightBefore = await inspectorHeight();
+  const divider = page.getByRole('separator', { name: 'Inspector height' });
+  const dividerBox = (await divider.boundingBox())!;
+  await page.mouse.move(dividerBox.x + 40, dividerBox.y + 3);
+  await page.mouse.down();
+  await page.mouse.move(dividerBox.x + 40, dividerBox.y + 103, { steps: 8 });
+  await page.mouse.up();
+  expect(await inspectorHeight()).toBeGreaterThan(heightBefore);
+  await divider.focus();
+  await page.keyboard.press('Shift+ArrowUp');
+  expect(await inspectorHeight()).toBeLessThan(heightBefore + 100);
 
   // The canvas pans under the pointer. It is a transform, not a scroll
   // container, which is what lets a container sit at a negative coordinate.
@@ -183,7 +196,7 @@ test('a selection of contracts is measured against the outcome space', async ({ 
   const evidence = page.locator('.evidence-panel');
 
   // Nothing selected: the inspector describes the whole book, not a blank.
-  await expect(evidence.locator('.badge').first()).toHaveText('WHOLE BOOK');
+  await expect(evidence.getByText('Worst outcome')).toBeVisible();
   await expect(evidence.getByRole('heading', { name: 'Model scope' })).toBeVisible();
 
   // The five October brackets partition the October decision, so exactly one
@@ -203,7 +216,7 @@ test('a selection of contracts is measured against the outcome space', async ({ 
   // A click on bare canvas clears it and hands back the whole-book view.
   const canvas = (await page.locator('.graph-viewport').boundingBox())!;
   await page.mouse.click(canvas.x + canvas.width - 30, canvas.y + canvas.height - 30);
-  await expect(evidence.locator('.badge').first()).toHaveText('WHOLE BOOK');
+  await expect(evidence.getByText('Worst outcome')).toBeVisible();
 
   noErrors();
 });

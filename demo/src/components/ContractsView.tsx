@@ -108,7 +108,7 @@ export function ContractsView({ onContract }: { onContract: (contractId: string)
         </button>
       </div>
 
-      <Panel title="Contract universe" eyebrow={`${rows.length} of ${CONTRACT_VIEWS.length}`}>
+      <Panel eyebrow={`${rows.length} of ${CONTRACT_VIEWS.length}`}>
         {rows.length === 0 ? (
           <p className="empty-state">No contract matches that search.</p>
         ) : (
@@ -290,7 +290,7 @@ export function DataView() {
         </details>
       </Panel>
 
-      <Panel title="Events not modelled" eyebrow="carried, not dropped">
+      <Panel title="Events not modelled">
         <details className="evidence-disclosure"><summary>View details</summary>
         <ul className="download-list">
           {EVENTS.filter((e) => e.scope !== 'CORE').map((e) => (

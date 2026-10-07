@@ -91,20 +91,16 @@ export function ScenarioExplorer({
       <div className="summary-strip">
         <KeyValue label="Distinct outcomes">
           {rows.length}
-          <small>Unique portfolio payoffs</small>
         </KeyValue>
         <KeyValue label="Loss-making">
           <span className="negative">{losing}</span>
           <span className="metric-denominator"> / {rows.length}</span>
-          <small>Distinct portfolio outcomes</small>
         </KeyValue>
         <KeyValue label="Worst outcome">
           <span className="negative">{money(sorted[0] ? Math.min(...rows.map((r) => r.pnlCents)) : 0, true)}</span>
-          <small>Across all scenarios</small>
         </KeyValue>
         <KeyValue label="Best outcome">
           <span className="positive">{money(Math.max(...rows.map((r) => r.pnlCents)), true)}</span>
-          <small>Across all scenarios</small>
         </KeyValue>
         <KeyValue label="Selected">
           <span className={selected.pnlCents < 0 ? 'negative' : 'positive'}>
@@ -119,11 +115,6 @@ export function ScenarioExplorer({
           title="Scenario outcomes"
           eyebrow={`${rows.length} distinct`}
           className="scenario-panel"
-          actions={
-            <span className="quiet-copy">
-              Sorted by {sort === 'pnl' ? 'profit and loss' : sort}, {ascending ? 'worst first' : 'best first'}
-            </span>
-          }
         >
           <div className="table-scroll scenario-scroll">
             <table className="matrix-table scenario-table">
@@ -201,7 +192,7 @@ export function ScenarioExplorer({
         </Panel>
 
         <ResizeHandle value={side.width} min={260} max={680} invert onChange={side.setWidth} label="Selected outcome panel width" />
-        <Panel title="Selected outcome" eyebrow="LINKED" className="scenario-detail">
+        <Panel title="Selected outcome" className="scenario-detail">
           <SelectedOutcome
             row={selected}
             positions={positions}
@@ -313,7 +304,6 @@ function SelectedOutcome({
         <strong className={row.pnlCents < 0 ? 'negative' : 'positive'}>
           {money(row.pnlCents, true)}
         </strong>
-        <span>Portfolio P&amp;L at settlement</span>
       </div>
 
       <div className="outcome-facts">

@@ -4,7 +4,7 @@ import { Panel, Badge, KeyValue, ResizeHandle, useColumnWidth } from './primitiv
 import { ALL_STATES, contractView, costCents, describeState, exposureSummary, money, portfolioAt, price, type Position } from '../domain/engine';
 import { groupPositions, type Grouping } from './portfolioModel';
 
-export function PortfolioView({positions, portfolioName, onContract}: {positions: Position[]; portfolioName: string; onContract: (id: string) => void}) {
+export function PortfolioView({positions, onContract}: {positions: Position[]; onContract: (id: string) => void}) {
   const side = useColumnWidth(320);
   const [grouping, setGrouping] = useState<Grouping>('Event');
   const [query, setQuery] = useState('');
@@ -23,7 +23,7 @@ export function PortfolioView({positions, portfolioName, onContract}: {positions
   const toggle = (set: Set<string>, id: string) => {const next = new Set(set);if (next.has(id)) next.delete(id);else next.add(id);return next;};
 
   return <div className="portfolio-view">
-    <div className="summary-strip portfolio-summary"><KeyValue label="Capital deployed">{money(summary.costCents)}<small>{portfolioName}</small></KeyValue><KeyValue label="Positions">{positions.length}<small>{summary.contractCount} contracts · {groupPositions(positions,'Event').length} events</small></KeyValue><KeyValue label="P&L in selected world"><span className={bookResult.pnlCents < 0 ? 'negative' : 'positive'}>{money(bookResult.pnlCents,true)}</span><small>{query ? 'Filtered positions' : 'Entire portfolio'}</small></KeyValue></div>
+    <div className="summary-strip portfolio-summary"><KeyValue label="Capital deployed">{money(summary.costCents)}</KeyValue><KeyValue label="Positions">{positions.length}<small>{summary.contractCount} contracts · {groupPositions(positions,'Event').length} events</small></KeyValue><KeyValue label="P&L in selected world"><span className={bookResult.pnlCents < 0 ? 'negative' : 'positive'}>{money(bookResult.pnlCents,true)}</span>{query&&<small>Filtered positions</small>}</KeyValue></div>
     <div className="portfolio-workspace" style={{ '--side-width': `${side.width}px` } as CSSProperties}>
       <Panel title="Position navigator" eyebrow={`${filtered.length} LOTS`} className="position-panel">
         <div className="navigator-toolbar"><label className="search-box"><Search size={14}/><input aria-label="Search positions" placeholder="Search contract, event or lot…" value={query} onChange={e=>setQuery(e.target.value)}/></label><label>Group by <select aria-label="Group positions by" value={grouping} onChange={e=>{setGrouping(e.target.value as Grouping);setExpanded(new Set());setFocused(null);}}>{(['Event','Payoff structure','Side'] as const).map(g=><option key={g}>{g}</option>)}</select></label><button className="text-button" onClick={()=>setExpanded(new Set(groups.map(g=>g.name)))}>Expand all</button><button className="text-button" onClick={()=>{setExpanded(new Set());setLots(new Set());}}>Collapse all</button></div>
@@ -40,10 +40,10 @@ export function PortfolioView({positions, portfolioName, onContract}: {positions
           })}
           {groups.length===0 && <tr><td colSpan={7} className="empty-state">No positions match your search.</td></tr>}
         </tbody><tfoot><tr><th scope="row">{query?'Filtered portfolio':'Portfolio total'}</th><td colSpan={3}/><MoneyCell value={bookResult.costCents}/><MoneyCell value={bookResult.payoutCents}/><MoneyCell value={bookResult.pnlCents} signed/></tr></tfoot></table></div>
-        <p className="panel-footnote">Select a group to explore its positions and scenario P&L.</p>
+        
       </Panel>
       <ResizeHandle value={side.width} min={260} max={680} invert onChange={side.setWidth} label="Group drill-down panel width" />
-      <Panel title="Group drill-down" eyebrow="LINKED" className="group-inspector">
+      <Panel title="Group drill-down" className="group-inspector">
         <div className="inspector-section"><label className="field-label">Scenario for all rows<select aria-label="Portfolio scenario" value={scenario} onChange={e=>setScenario(e.target.value as typeof scenario)}><option value="worst">Whole-book worst outcome</option><option value="hold">No further rate moves</option><option value="best">Whole-book best outcome</option></select></label><p className="quiet-copy">{describeState(ALL_STATES[stateIndex])}</p></div>
         {focus && focusSummary && focusResult && <><div className="inspector-section"><span className="section-label">{grouping.toUpperCase()} GROUP</span><h3>{focus.name}</h3><Badge>{focus.positions.length} positions</Badge><div className="group-readout"><small>P&amp;L IN SELECTED WORLD</small><strong className={focusResult.pnlCents<0?'negative':'positive'}>{money(focusResult.pnlCents,true)}</strong></div><KeyValue label="Capital deployed">{money(focusResult.costCents)}</KeyValue><KeyValue label="Terminal payout">{money(focusResult.payoutCents)}</KeyValue></div><div className="inspector-section"><h4>Standalone group risk</h4><KeyValue label="Worst P&L"><span className={focusSummary.worst.pnlCents<0?'negative':'positive'}>{money(focusSummary.worst.pnlCents,true)}</span></KeyValue><KeyValue label="Best P&L"><span className={focusSummary.best.pnlCents<0?'negative':'positive'}>{money(focusSummary.best.pnlCents,true)}</span></KeyValue><p className="quiet-copy">Range across scenarios for this group.</p>{focusSummary.worst.pnlCents===focusSummary.best.pnlCents && <Badge tone="teal">CONSTANT PAYOUT GROUP</Badge>}</div><div className="inspector-section"><h4>Contracts in this group</h4>{[...new Set(focus.positions.map(p=>p.contract_id))].map(id=><button className="group-contract" key={id} onClick={()=>onContract(id)}>{contractView(id).authored.shortName}<ChevronRight size={13}/></button>)}</div></>}
       </Panel>

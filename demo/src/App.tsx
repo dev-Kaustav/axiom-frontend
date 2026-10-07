@@ -106,8 +106,8 @@ export default function App() {
       <div className="workspace-light" aria-hidden="true"><div className="light-field" ref={light} /></div>
       <main className="workspace" ref={workspace} tabIndex={-1}>
         <div className="workspace-header">
-          <div><div className="workspace-kicker">MACRO / US RATES / 2026</div><h1>{page === 'Trade' ? 'Trade ideas' : page === 'Data' ? 'Data & sources' : page}</h1></div>
-          <div className="book-label"><span>{PORTFOLIO.name}</span><small><span className="status-dot" /> {POSITIONS.length} POSITIONS · AS OF {SNAPSHOT.retrieved_at.slice(0, 10)}</small></div>
+          <h1 className="sr-only">{page === 'Trade' ? 'Trade ideas' : page === 'Data' ? 'Data & sources' : page}</h1>
+          <div className="book-label"><span>{PORTFOLIO.name}</span><small><span className="status-dot" /> {POSITIONS.length} positions · {SNAPSHOT.retrieved_at.slice(0, 10)}</small></div>
         </div>
 
         <div className="view-content">
@@ -115,7 +115,6 @@ export default function App() {
         {page === 'Portfolio' && (
           <PortfolioView
             positions={POSITIONS}
-            portfolioName={PORTFOLIO.name}
             onContract={setInspecting}
           />
         )}

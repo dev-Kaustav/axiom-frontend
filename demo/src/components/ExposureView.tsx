@@ -56,13 +56,13 @@ export function ExposureView({ positions, onScenario, onContract, onHedge }: {
     <div className="summary-strip exposure-metrics">
       <KeyValue label="Capital deployed">{money(summary.costCents)}<small>{summary.positionCount} positions · {summary.contractCount} contracts</small></KeyValue>
 
-      <KeyValue label="Best outcome"><button className="metric-button positive" onClick={() => selectExtreme('best')}>{money(summary.best.pnlCents, true)}<ArrowUpRight size={16}/></button><small>Across all modelled worlds</small></KeyValue>
-      <KeyValue label="Profitable scenarios">{breadth.profitable}<span className="metric-denominator"> / {COMPARISON_SCENARIOS.length.toLocaleString()}</span><small>Distinct rate scenarios</small></KeyValue>
-      <KeyValue label="Loss-making scenarios">{breadth.losing}<span className="metric-denominator"> / {COMPARISON_SCENARIOS.length.toLocaleString()}</span><small>Current portfolio</small></KeyValue>
+      <KeyValue label="Best outcome"><button className="metric-button positive" onClick={() => selectExtreme('best')}>{money(summary.best.pnlCents, true)}<ArrowUpRight size={16}/></button></KeyValue>
+      <KeyValue label="Profitable scenarios">{breadth.profitable}<span className="metric-denominator"> / {COMPARISON_SCENARIOS.length.toLocaleString()}</span></KeyValue>
+      <KeyValue label="Loss-making scenarios">{breadth.losing}<span className="metric-denominator"> / {COMPARISON_SCENARIOS.length.toLocaleString()}</span></KeyValue>
     </div>
     <div className="exposure-workspace" style={{ '--side-width': `${side.width}px` } as CSSProperties}>
-      <Panel title="Payoff landscape" eyebrow="October × December" className="landscape-panel" actions={<Badge>USD P&amp;L</Badge>}>
-        <div className="landscape-controls"><div><span className="section-label">INTER-MEETING MOVES</span><span className="quiet-copy">81 worlds in this slice</span></div>
+      <Panel title="Payoff landscape" className="landscape-panel">
+        <div className="landscape-controls"><div><span className="section-label">INTER-MEETING MOVES</span></div>
           {WINDOWS.map(([key, label]) => <label key={key}>{label}<select aria-label={label} value={windows[key]} onChange={e => setWindows({...windows, [key]: Number(e.target.value)})}>{INTER_MOVES_BP.map(n => <option key={n} value={n}>{n === 0 ? 'No move' : `${move(n)} bp`}</option>)}</select></label>)}
           <button className="icon-button" aria-label="Reset landscape" onClick={() => {setWindows({interSepOct:0,interOctDec:0,postDec:0});setSelectedMoves({october:0,december:0});}}><RotateCcw size={14}/></button>
         </div>
@@ -82,7 +82,7 @@ export function ExposureView({ positions, onScenario, onContract, onHedge }: {
       <ResizeHandle value={side.width} min={260} max={680} invert onChange={side.setWidth} label="Selected outcome panel width" />
       <section className="panel outcome-panel" tabIndex={0} role="region" aria-label="Selected outcome">
         <header className="panel-header"><h2>Selected outcome</h2></header>
-        <div className="outcome-readout"><div className="section-label">OCT {move(selected.state.october)} / DEC {move(selected.state.december)}</div><strong className={selected.pnl < 0 ? 'negative' : 'positive'}>{money(selected.pnl, true)}</strong><span>Portfolio P&amp;L at settlement</span></div>
+        <div className="outcome-readout"><div className="section-label">OCT {move(selected.state.october)} / DEC {move(selected.state.december)}</div><strong className={selected.pnl < 0 ? 'negative' : 'positive'}>{money(selected.pnl, true)}</strong></div>
         <div className="outcome-facts"><KeyValue label="Terminal payout">{money(result.payoutCents)}</KeyValue><KeyValue label="December upper bound">{bpPercent(stateFacts.terminalUpperBp)}</KeyValue><KeyValue label="2026 hike / cut units">{stateFacts.hikes2026} / {stateFacts.cuts2026}</KeyValue></div>
         <div className="subpanel-title"><span>POSITION CONTRIBUTIONS</span><span>P&amp;L</span></div>
         <div className="contribution-list">{contributions.map(r => {

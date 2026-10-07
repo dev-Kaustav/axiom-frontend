@@ -56,14 +56,14 @@ code, pre, kbd, samp { font-family: var(--font-sans); }
 .light-field {
   position: absolute; inset: -16px;
   transition: transform .3s ease-out;
-  /* Offset spots illuminate adjoining glass and gutters. Silver shafts cut
+  /* Every source sits beyond the page edge, so only its falloff is visible and there is no centre for the eye to find. Offset spots illuminate adjoining glass and gutters. Silver shafts cut
      diagonally through the field, with dark intervals between each source. */
   background-image:
-    radial-gradient(ellipse 310px 230px at 73% var(--light-focus-y, 112px), #9564fa61, transparent 76%),
-    radial-gradient(ellipse 280px 260px at 91% var(--light-rail-y, 470px), #9565ee66, transparent 76%),
-    radial-gradient(ellipse 280px 190px at 12% 345px, #8d60dc38, transparent 78%),
-    radial-gradient(ellipse 390px 180px at 27% 160px, #e6e4ef1c, transparent 78%),
-    radial-gradient(ellipse 440px 230px at 52% 520px, #dddde917, transparent 78%),
+    radial-gradient(ellipse 640px 420px at 76% -150px, #9564fa78, transparent 76%),
+    radial-gradient(ellipse 520px 430px at 112% var(--light-rail-y, 470px), #9565ee70, transparent 76%),
+    radial-gradient(ellipse 480px 360px at -12% calc(var(--light-focus-y, 112px) + 330px), #8d60dc48, transparent 78%),
+    radial-gradient(ellipse 700px 320px at 28% -140px, #e6e4ef22, transparent 78%),
+    radial-gradient(ellipse 760px 340px at 55% 1080px, #dddde91c, transparent 78%),
     linear-gradient(122deg, transparent 12%, #e5e3ed03 18%, #e5e3ed12 22%, #e5e3ed05 25%, transparent 32%, transparent 48%, #e5e3ed0c 54%, #e5e3ed03 58%, transparent 65%);
   background-size: 100% 1000px;
   background-repeat: no-repeat;
@@ -78,12 +78,14 @@ code, pre, kbd, samp { font-family: var(--font-sans); }
 }
 
 
-.workspace-header { display: flex; align-items: center; justify-content: space-between; min-height: 68px; gap: 20px; }
+.workspace-header { display: flex; align-items: center; justify-content: flex-end; min-height: 40px; gap: 20px; }
+.book-label { display: flex; align-items: center; gap: 14px; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .workspace-kicker { margin-bottom: 5px; }
 h1 { font-size: 26px; font-weight: 500; letter-spacing: -.5px; display: flex; align-items: center; gap: 18px; }
 h1 > span { color: var(--text-muted); font-size: 14px; font-weight: 400; letter-spacing: 0; padding-left: 18px; border-left: 1px solid var(--line-strong); }
 .book-label { text-align: right; font-size: 14px; }
-.book-label small { display: block; font: 500 12px var(--font-sans); color: var(--text-faint); margin-top: 5px; letter-spacing: .04em; }
+.book-label small { display: block; font: 500 12px var(--font-sans); color: var(--text-faint); letter-spacing: .04em; }
 .status-dot { display: inline-block; width: 5px; height: 5px; background: var(--accent-soft); border-radius: 50%; margin-right: 5px; vertical-align: middle; }
 .app-footer { flex-shrink: 0; min-height: 29px; display: flex; align-items: center; gap: 10px; padding: 7px 22px; border-top: 1px solid var(--line); color: var(--text-faint); font-size: 12px; }
 .app-footer > span:last-child { margin-left: auto; }
@@ -119,7 +121,7 @@ h1 > span { color: var(--text-muted); font-size: 14px; font-weight: 400; letter-
 .primary-button { background: var(--surface-action); border: 1px solid var(--accent-line); color: var(--accent-ink); padding: 10px 18px; font-weight: 500; }
 .primary-button:hover { background: var(--accent-cta); border-color: var(--accent-soft); }
 .source-link { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; }
-.exposure-workspace { display: grid; grid-template-columns: minmax(0,1fr) 7px minmax(280px,var(--side-width)); grid-template-rows: minmax(0,1fr); height: clamp(464px,calc(100dvh - 436px),640px); gap: 0 8px; }
+.exposure-workspace { display: grid; grid-template-columns: minmax(0,1fr) 7px minmax(280px,var(--side-width)); grid-template-rows: minmax(0,1fr); height: clamp(464px,calc(100dvh - 408px),668px); gap: 0 8px; }
 .landscape-panel { display: flex; flex-direction: column; min-height: 0; }
 .landscape-controls { display: flex; padding: 8px 16px; align-items: flex-end; gap: 14px; border-bottom: 1px solid var(--line); }
 .landscape-controls > div { margin-right: auto; align-self: center; }
@@ -177,6 +179,9 @@ h1 > span { color: var(--text-muted); font-size: 14px; font-weight: 400; letter-
 .resize-handle::after { content: ''; position: absolute; inset: 0; margin: auto; width: 1px; height: 100%; background: var(--line); }
 .resize-handle:hover::after,.resize-handle:focus-visible::after { width: 3px; background: var(--accent-soft); }
 .resize-handle:focus-visible { outline: none; }
+.resize-handle.horizontal { cursor: row-resize; }
+.resize-handle.horizontal::after { width: 100%; height: 1px; }
+.resize-handle.horizontal:hover::after,.resize-handle.horizontal:focus-visible::after { width: 100%; height: 3px; }
 .table-scroll { overflow: auto; min-width: 0; }
 table { width: 100%; border-collapse: collapse; font-size: 14px; }
 th,td { padding: 9px 13px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
@@ -187,7 +192,7 @@ tfoot th,tfoot td { background: var(--bg-raised); font-weight: 500; position: st
 .selected-row { background: var(--accent-fill); }
 .master-table .instrument-link { max-width: 350px; }
 .portfolio-summary { grid-template-columns: repeat(3,minmax(0,1fr)); }
-.portfolio-workspace { height: max(520px,calc(100dvh - 310px)); grid-template-rows: minmax(0,1fr); display: grid; grid-template-columns: minmax(0,1fr) 7px var(--side-width); gap: 0; }
+.portfolio-workspace { height: max(520px,calc(100dvh - 282px)); grid-template-rows: minmax(0,1fr); display: grid; grid-template-columns: minmax(0,1fr) 7px var(--side-width); gap: 0; }
 .position-panel { display: flex; flex-direction: column; min-height: 0; }
 .position-panel > :not(.navigator-scroll) { flex-shrink: 0; }
 .group-inspector { min-height: 0; overflow: auto; }
@@ -224,8 +229,8 @@ tfoot th,tfoot td { background: var(--bg-raised); font-weight: 500; position: st
 .group-readout small { display: block; color: var(--text-faint); font: 500 12px var(--font-sans); }
 .group-readout strong { font: 500 26px var(--font-sans); font-variant-numeric: tabular-nums; display: block; margin: 8px 0; }
 .group-contract { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px; width: 100%; padding: 8px 0; border-bottom: 1px solid var(--line); text-align: left; border-radius: 0; }
-.relationship-workspace { border-radius: var(--radius-lg); overflow: hidden; display: grid; grid-template-columns: minmax(0,1fr) 7px var(--evidence-width); height: max(540px,calc(100dvh - 182px)); border: 1px solid var(--line); }
-.relationship-side { display: grid; grid-template-rows: minmax(0,12fr) minmax(0,9fr); min-height: 0; min-width: 0; border-left: 1px solid var(--line); }
+.relationship-workspace { border-radius: var(--radius-lg); overflow: hidden; display: grid; grid-template-columns: minmax(0,1fr) 7px var(--evidence-width); height: max(540px,calc(100dvh - 154px)); border: 1px solid var(--line); }
+.relationship-side { display: grid; grid-template-rows: minmax(120px,var(--inspector-height)) 7px minmax(120px,1fr); min-height: 0; min-width: 0; border-left: 1px solid var(--line); }
 .rail-heading,.evidence-heading { min-height: 39px; display: flex; align-items: center; justify-content: space-between; gap: 5px; padding: 11px 13px; font: 500 12px var(--font-sans); letter-spacing: .07em; color: var(--text-muted); border-bottom: 1px solid var(--line); background: var(--bg-chrome); }
 .rail-controls { padding: 12px; border-bottom: 1px solid var(--line); }
 .segmented { display: flex; padding: 2px; background: var(--bg-app); border: 1px solid var(--line); border-radius: 3px; margin: 10px 0 0; }
@@ -637,3 +642,9 @@ tfoot th,tfoot td { background: var(--bg-raised); font-weight: 500; position: st
   .universe-menu { margin-left: auto; }
 }
 .evidence-panel .inspector-section { padding-block: 12px; }
+
+.graph-panel { position: relative; }
+.graph-tools { position: absolute; top: 10px; right: 12px; z-index: 6; display: flex; gap: 4px; }
+.graph-tools .panel-tools { display: flex; gap: 4px; }
+.pane-title { display: inline-flex; align-items: center; gap: 8px; }
+.universe-popover .rail-controls { padding-top: 12px; }

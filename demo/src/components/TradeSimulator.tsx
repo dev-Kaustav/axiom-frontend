@@ -42,14 +42,13 @@ export function TradeSimulator({ positions, onContract, targetIndex, onClearTarg
   const targetAfter = targetIndex === null ? null : portfolioAt(trade ? [...positions, trade] : positions, targetIndex).pnlCents;
 
   return <div className="trade-ideas">
-    <div className="ideas-intro"><div><span className="section-label">PORTFOLIO OPTIMIZER</span><h2>Strengthen your downside.</h2></div><Badge>Simulation</Badge></div>
     {targetIndex !== null && <div className="target-banner"><div><span className="section-label">Outcome selected from Exposure</span><b>{scenarioTitle(ALL_STATES[targetIndex])}</b><small>{pathDetail(ALL_STATES[targetIndex])}</small></div><span>Current P&amp;L <strong className={tone(targetBefore!)}>{money(targetBefore!, true)}</strong></span><button className="text-button" onClick={onClearTarget}>Clear scenario</button></div>}
     <div className="ideas-controls"><div className="objective-switch" role="group" aria-label="Trade objective">
       {targetIndex !== null && <button aria-pressed={objective === 'target'} onClick={() => { setObjective('target'); resetSelection(); }}>Protect selected outcome</button>}
       {OBJECTIVES.map(([id, label]) => <button key={id} aria-pressed={objective === id} onClick={() => { setObjective(id); resetSelection(); }}>{label}</button>)}
-    </div><label className="budget-field">Additional capital <select aria-label="Additional capital budget" value={budget} onChange={e => { setBudget(Number(e.target.value)); resetSelection(); }}>{[5000, 25000, 50000, 100000].map(n => <option key={n} value={n}>Up to {money(n * 100)}</option>)}</select></label></div>
+    </div><label className="budget-field">Additional capital <select aria-label="Additional capital budget" value={budget} onChange={e => { setBudget(Number(e.target.value)); resetSelection(); }}>{[5000, 25000, 50000, 100000].map(n => <option key={n} value={n}>Up to {money(n * 100)}</option>)}</select></label><Badge>Simulation</Badge></div>
     <section className="suggestions-section" aria-label="Suggested trades">
-      <div className="section-intro"><h2>Suggested trades</h2><span>Ranked for your objective</span></div>
+      <div className="section-intro"><h2>Suggested trades</h2></div>
       <div className="suggestion-list">{suggestions.map((suggestion, i) => {
         const active = !custom && selected?.id === suggestion.id;
         const v = contractView(suggestion.trade.contract_id);

@@ -10,16 +10,18 @@ import { X, ArrowUpRight, Grip } from 'lucide-react';
  * `invert` is for a handle on the LEFT of the panel it sizes: dragging left
  * then makes that panel wider, not narrower.
  */
-export function ResizeHandle({ value, min, max, onChange, label, invert = false }: {
+export function ResizeHandle({ value, min, max, onChange, label, invert = false, horizontal = false }: {
   value: number; min: number; max: number; onChange: (next: number) => void; label: string; invert?: boolean;
+  /** A divider between stacked panels: it moves on the vertical axis and sizes the panel above it. */
+  horizontal?: boolean;
 }) {
   const origin = useRef({ x: 0, value: 0 });
   const clamp = (n: number) => Math.min(max, Math.max(min, Math.round(n)));
   return (
     <div
-      className="resize-handle"
+      className={`resize-handle ${horizontal ? 'horizontal' : ''}`}
       role="separator"
-      aria-orientation="vertical"
+      aria-orientation={horizontal ? 'horizontal' : 'vertical'}
       aria-label={label}
       aria-valuenow={value}
       aria-valuemin={min}
@@ -27,18 +29,18 @@ export function ResizeHandle({ value, min, max, onChange, label, invert = false 
       tabIndex={0}
       onPointerDown={(e) => {
         e.currentTarget.setPointerCapture(e.pointerId);
-        origin.current = { x: e.clientX, value };
+        origin.current = { x: horizontal ? e.clientY : e.clientX, value };
       }}
       onPointerMove={(e) => {
         if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
-        const delta = (e.clientX - origin.current.x) * (invert ? -1 : 1);
+        const delta = ((horizontal ? e.clientY : e.clientX) - origin.current.x) * (invert ? -1 : 1);
         onChange(clamp(origin.current.value + delta));
       }}
       onLostPointerCapture={() => undefined}
       onKeyDown={(e) => {
         const step = (e.shiftKey ? 48 : 12) * (invert ? -1 : 1);
-        if (e.key === 'ArrowLeft') onChange(clamp(value - step));
-        else if (e.key === 'ArrowRight') onChange(clamp(value + step));
+        if (e.key === (horizontal ? 'ArrowUp' : 'ArrowLeft')) onChange(clamp(value - step));
+        else if (e.key === (horizontal ? 'ArrowDown' : 'ArrowRight')) onChange(clamp(value + step));
         else return;
         e.preventDefault();
       }}
@@ -55,8 +57,8 @@ export function useColumnWidth(initial: number) {
   return { width, setWidth, reset: () => setWidth(initial) };
 }
 
-export function Panel({ title, eyebrow, actions, children, className = '' }: { title: string; eyebrow?: string; actions?: ReactNode; children: ReactNode; className?: string }) {
-  return <section className={`panel ${className}`}><header className="panel-header"><div className="panel-title"><Grip size={13} className="grip"/><h2>{title}</h2>{eyebrow && <span className="panel-count">{eyebrow}</span>}</div>{actions}</header>{children}</section>;
+export function Panel({ title = '', eyebrow, actions, children, className = '' }: { title?: string; eyebrow?: string; actions?: ReactNode; children: ReactNode; className?: string }) {
+  return <section className={`panel ${className}`}><header className="panel-header"><div className="panel-title"><Grip size={13} className="grip"/>{title && <h2>{title}</h2>}{eyebrow && <span className="panel-count">{eyebrow}</span>}</div>{actions}</header>{children}</section>;
 }
 export function Badge({ children, tone = '' }: { children: ReactNode; tone?: string }) { return <span className={`badge ${tone}`}>{children}</span>; }
 export function Modal({ title, children, onClose, wide = false }: { title: string; children: ReactNode; onClose: () => void; wide?: boolean }) {
