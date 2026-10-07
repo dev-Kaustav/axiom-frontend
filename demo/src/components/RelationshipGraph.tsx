@@ -1,11 +1,11 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Minus, Plus, Scan, ChevronDown, ChevronRight, GripVertical, Grid3x3, LayoutGrid } from 'lucide-react';
-import { contractView, price, type Position, type Relation, type GroupOffset } from '../domain/engine';
+import { contractView, price, type Position, type Relation } from '../domain/engine';
 import { contractGroup, contractStatus, type ContractGrouping } from './portfolioModel';
 
 export type Move = { dx: number; dy: number };
 export type Moves = Record<string, Move>;
-const NODE_W = 220, NODE_H = 64, PAD = 12;
+const NODE_W = 220, NODE_H = 70, PAD = 12;
 const CLUSTER_W = PAD + NODE_W + PAD;
 /** Rows a container runs to before its contracts wrap into another column. A
  *  38-contract container in one column is 2,500px tall, and one container that
@@ -18,7 +18,7 @@ const NO_MOVE: Move = { dx: 0, dy: 0 };
 
 /** One edge's curve, from the two node corners it joins. */
 const edgePath = (ax:number, ay:number, bx:number, by:number) => {
-  const right=bx>=ax;const sx=ax+(right?NODE_W:0);const ex=bx+(right?0:NODE_W);const sy=ay+27,ey=by+27;
+  const right=bx>=ax;const sx=ax+(right?NODE_W:0);const ex=bx+(right?0:NODE_W);const sy=ay+30,ey=by+30;
   const bend=Math.abs(ex-sx)<40?Math.max(sx,ex)+40:(sx+ex)/2;
   return `M ${sx} ${sy} C ${bend} ${sy}, ${bend} ${ey}, ${ex} ${ey}`;
 };
@@ -32,11 +32,13 @@ const MIN_ZOOM = .3, MAX_ZOOM = 2;
  * left of where the computed arrangement put it: a scroll container cannot hold
  * negative coordinates, so it pins the top-left container in place.
  */
-export function RelationshipGraph({ids, positions, relations, focusIds, selectedRelation, exactGroups, grouping, moves, onMove, onMoves, onSelect, onRelation, onGroup, onBackground}: {
+export function RelationshipGraph({ids, positions, relations, focusIds, selectedRelation, grouping, moves, onMove, onMoves, onSelect, onRelation, onBackground, footer}: {
   ids: string[]; positions: Position[]; relations: Relation[]; focusIds: string[]; selectedRelation: Relation | null;
-  exactGroups: GroupOffset[]; grouping: ContractGrouping;
+  grouping: ContractGrouping;
   moves: Moves; onMove: (name:string, move:Move)=>void; onMoves: (next:Moves)=>void;
-  onSelect: (id:string, additive:boolean)=>void; onRelation:(r:Relation)=>void; onGroup:(id:string)=>void; onBackground:()=>void;
+  onSelect: (id:string, additive:boolean)=>void; onRelation:(r:Relation)=>void; onBackground:()=>void;
+  /** Sits in the bottom bar beside the counts: the relation legend and the universe controls. */
+  footer?: ReactNode;
 }) {
   const viewport = useRef<HTMLDivElement>(null);const stage = useRef<HTMLDivElement>(null);const lines = useRef<SVGSVGElement>(null);
   const [zoom,setZoom]=useState(1);const zoomRef=useRef(1);const [view,setView]=useState({x:0,y:0});const [framed,setFramed]=useState(false);
@@ -99,17 +101,17 @@ export function RelationshipGraph({ids, positions, relations, focusIds, selected
   },[base,moves]);
 
   /** Frame the whole canvas, wherever things have been dragged to. */
-  const frame = (node: HTMLDivElement, l: typeof layout) => {
-    const z=Math.max(MIN_ZOOM,Math.min(1,(node.clientWidth-32)/l.width,(node.clientHeight-32)/l.height));
+  const frame = (node: HTMLDivElement, l: typeof layout, minimumZoom = MIN_ZOOM) => {
+    const z=Math.max(minimumZoom,Math.min(1,(node.clientWidth-32)/l.width,(node.clientHeight-32)/l.height));
     zoomRef.current=z;setZoom(z);
-    setView({x:(node.clientWidth-l.width*z)/2-l.minX*z, y:(node.clientHeight-l.height*z)/2-l.minY*z});
+    setView({x:Math.max(16,(node.clientWidth-l.width*z)/2)-l.minX*z, y:Math.max(16,(node.clientHeight-l.height*z)/2)-l.minY*z});
   };
   const fit = () => {if(viewport.current)frame(viewport.current,layout);};
 
   // Frame on open, when the filters change the cast of contracts, and when the
   // panel is resized -- never while the user is arranging.
   useEffect(()=>{setFramed(false);},[base]);
-  useEffect(()=>{const node=viewport.current;if(!node||framed)return;frame(node,layout);setFramed(true);},[framed,layout]);
+  useEffect(()=>{const node=viewport.current;if(!node||framed)return;frame(node,layout,ids.length <= 20 ? .6 : MIN_ZOOM);setFramed(true);},[framed,layout]);
   useEffect(()=>{const node=viewport.current;if(!node)return;
     const observer=new ResizeObserver(()=>{setFramed(false);setPanel(p=>p.w===node.clientWidth&&p.h===node.clientHeight?p:{w:node.clientWidth,h:node.clientHeight});});
     observer.observe(node);return()=>observer.disconnect();},[]);
@@ -311,12 +313,12 @@ export function RelationshipGraph({ids, positions, relations, focusIds, selected
       {ids.length===0&&<div className="empty-state">No contracts match these filters.</div>}
     </div>
 
-    <div className="graph-bottom"><span>{ids.length} nodes · {edges.length.toLocaleString()} relations drawn</span><div>
+    <div className="graph-bottom"><span className="graph-count">{ids.length} nodes · {edges.length.toLocaleString()} relations</span>{footer}<div>
       <button className="icon-button" aria-label="Snap containers to grid" title="Snap to grid" onClick={snap}><Grid3x3 size={13}/></button>
       <button className="icon-button" aria-label="Auto-arrange containers" title="Auto-arrange" onClick={()=>onMoves({})}><LayoutGrid size={13}/></button>
       <span className="toolbar-rule" />
       <button className="icon-button" aria-label="Zoom out" disabled={zoom<=MIN_ZOOM} onClick={()=>zoomTo(Math.max(MIN_ZOOM,zoom-.1))}><Minus size={13}/></button><span className="mono">{Math.round(zoom*100)}%</span><button className="icon-button" aria-label="Zoom in" disabled={zoom>=MAX_ZOOM} onClick={()=>zoomTo(Math.min(MAX_ZOOM,zoom+.1))}><Plus size={13}/></button><button className="icon-button" aria-label="Fit graph" onClick={fit}><Scan size={14}/></button>
     </div></div>
-    {exactGroups.length>0&&<div className="exact-group-strip"><span className="section-label">EXACT GROUP OFFSETS</span>{exactGroups.map(g=><button key={g.eventId} onClick={()=>onGroup(g.eventId)}><span className="exact-bracket">[ {g.positions.length} LEGS ]</span><span>{contractView(g.positions[0].contract_id).event.title}</span><b>{(g.constantPayoutCents/100).toLocaleString('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0})} payout</b><ChevronRight size={13}/></button>)}</div>}
+
   </div>;
 }

@@ -51,3 +51,7 @@ User accepted React/TypeScript/Vite + TanStack Router + TanStack Query, with Wag
 **Last session:** 2026-09-30T13:23:38.609Z
 **Stopped at:** Phase 1 UI-SPEC approved
 **Resume file:** .planning/phases/AXF-01-production-shell/01-UI-SPEC.md
+
+## Visual planning revision — 2026-10-07
+
+Shared redesign research is incorporated into UI-SPEC.md and AXF-01–06 plans. Old tokens, mono fonts, exact demo parity and no-redesign restrictions are superseded by explicit user direction. Candidate visual recipes remain proposed pending representative Exposure proof; no new checker run, application implementation or completion is claimed. Existing progress/counters and backend/API dependencies are unchanged. The earlier session/approval notes above are historical; resume with the revised UI contract.

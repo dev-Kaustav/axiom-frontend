@@ -126,7 +126,7 @@ export function ContractsView({ onContract }: { onContract: (contractId: string)
                 <thead>
                   <tr>
                     <th scope="col">Group / contract</th>
-                    <th scope="col">Event</th>
+                    {grouping !== 'Event' && <th scope="col">Event</th>}
                     <th scope="col">Predicate</th>
                     <th scope="col">Status</th>
                     <th scope="col">Source</th>
@@ -156,7 +156,7 @@ export function ContractsView({ onContract }: { onContract: (contractId: string)
                               <small>{g.members.length}</small>
                             </button>
                           </th>
-                          <td className="muted">—</td>
+                          {grouping !== 'Event' && <td className="muted">—</td>}
                           <td className="muted">
                             {withheld === 0
                               ? 'every contract interpreted'
@@ -176,7 +176,7 @@ export function ContractsView({ onContract }: { onContract: (contractId: string)
                                   {v.authored.shortName}
                                 </button>
                               </th>
-                              <td className="muted">{shortEventName(v.event)}</td>
+                              {grouping !== 'Event' && <td className="muted">{shortEventName(v.event)}</td>}
                               <td>
                                 {v.expression ? (
                                   <code className="expression">{v.expression}</code>
@@ -227,10 +227,7 @@ export function DataView() {
       </Panel>
 
       <Panel title="Established facts" eyebrow={`${ANCHOR_FACTS.length} anchors`}>
-        <p className="quiet-copy">
-          The state space is enumerated forward from what has already happened in 2026. Each fact
-          carries how it was established.
-        </p>
+
         {ANCHOR_FACTS.map((a) => (
           <div key={a.anchor_id} className="detail-section">
             <h4 className="inspector-heading">
@@ -239,7 +236,7 @@ export function DataView() {
                 {a.derivation.replace(/_/g, ' ')}
               </Badge>
             </h4>
-            <p className="quiet-copy">{a.reasoning}</p>
+            <details className="evidence-disclosure"><summary>Evidence &amp; reasoning</summary><p className="quiet-copy">{a.reasoning}</p>
             {a.evidence.length > 0 && (
               <ul className="download-list">
                 {a.evidence.map((e) => (
@@ -250,11 +247,14 @@ export function DataView() {
               </ul>
             )}
             {'source_url' in a && a.source_url && <SourceLink url={a.source_url as string}>Source</SourceLink>}
+            </details>
           </div>
         ))}
       </Panel>
 
+      <div className="data-secondary">
       <Panel title="Model assumptions" eyebrow={`${ASSUMPTIONS.length} declared`}>
+        <details className="evidence-disclosure"><summary>View details</summary>
         <ul className="download-list">
           {ASSUMPTIONS.map((a) => (
             <li key={a.id}>
@@ -262,9 +262,11 @@ export function DataView() {
             </li>
           ))}
         </ul>
+        </details>
       </Panel>
 
       <Panel title="Contracts with no reachable outcome" eyebrow={`${DEGENERATE.length} found`}>
+        <details className="evidence-disclosure"><summary>View details</summary>
         <p className="quiet-copy">
           These contracts pay the same in every modelled world. The two reasons mean opposite
           things and are never merged.
@@ -285,9 +287,11 @@ export function DataView() {
             </li>
           ))}
         </ul>
+        </details>
       </Panel>
 
       <Panel title="Events not modelled" eyebrow="carried, not dropped">
+        <details className="evidence-disclosure"><summary>View details</summary>
         <ul className="download-list">
           {EVENTS.filter((e) => e.scope !== 'CORE').map((e) => (
             <li key={e.event_id}>
@@ -295,7 +299,9 @@ export function DataView() {
             </li>
           ))}
         </ul>
+        </details>
       </Panel>
+      </div>
     </div>
   );
 }

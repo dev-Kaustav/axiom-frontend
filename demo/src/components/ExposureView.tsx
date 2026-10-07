@@ -1,11 +1,10 @@
-import decision from '../data/september-decision.json';
-import { ANCHORS, RANGE_WIDTH_BP } from '../domain/world';
 import { useMemo, useState, type CSSProperties } from 'react';
 import { ArrowRight, ArrowUpRight, Crosshair, RotateCcw } from 'lucide-react';
+import { OutcomeChart } from './OutcomeChart';
 import { Panel, KeyValue, Badge, ResizeHandle, useColumnWidth } from './primitives';
 import {
   ALL_STATES, INTER_MOVES_BP, SCHEDULED_MOVES_BP,
-  bpPercent, compact, contractView, describeState, drivers, exposureSummary, facts,
+  bpPercent, compact, contractView, drivers, exposureSummary, facts,
   money, pnlVector, portfolioAt, scenarioRows, type Position,
 } from '../domain/engine';
 import { COMPARISON_SCENARIOS, comparisonPnls, outcomeMetrics, pathDetail, scenarioTitle, vulnerabilities } from '../domain/decisionSupport';
@@ -22,7 +21,8 @@ export function ExposureView({ positions, onScenario, onContract, onHedge }: {
   const [windows, setWindows] = useState({ interSepOct: initial.interSepOct, interOctDec: initial.interOctDec, postDec: initial.postDec });
   const [selectedMoves, setSelectedMoves] = useState({ october: initial.october, december: initial.december });
   const summary = useMemo(() => exposureSummary(positions), [positions]);
-  const breadth = useMemo(() => outcomeMetrics(comparisonPnls(positions)), [positions]);
+  const comparisonValues = useMemo(() => comparisonPnls(positions), [positions]);
+  const breadth = useMemo(() => outcomeMetrics(comparisonValues), [comparisonValues]);
   const rows = useMemo(() => scenarioRows(positions), [positions]);
   const vector = useMemo(() => pnlVector(positions, ALL_STATES.length), [positions]);
   const driving = useMemo(() => drivers(positions), [positions]);
@@ -42,44 +42,26 @@ export function ExposureView({ positions, onScenario, onContract, onHedge }: {
   const selectExtreme = (which: 'worst' | 'best') => selectWorld(ALL_STATES.indexOf(summary[which].scenario.representative));
 
   return <div className="exposure-layout">
-    <section className="fed-baseline" aria-label="Current Federal Reserve baseline">
-      <div><span className="eyebrow">Current Fed target · upper bound</span>
-        <strong>{bpPercent(ANCHORS.startUpperBp)}</strong>
-        <span>Target range {bpPercent(ANCHORS.startUpperBp - RANGE_WIDTH_BP)}–{bpPercent(ANCHORS.startUpperBp)}</span></div>
-      <p>September 16, 2026: +{decision.change_bp} bp hike · effective September 17.<br />
-        Already included in the baseline for all future scenarios.</p>
-      <a href={decision.source_url} target="_blank" rel="noopener noreferrer">FOMC statement <ArrowUpRight size={14} aria-hidden="true" /></a>
-    </section>
     <section className="exposure-diagnosis" aria-label="Portfolio diagnosis">
       <div className="diagnosis-copy">
         <span className="section-label">Your largest vulnerability</span>
         <h2>{risks[0] ? scenarioTitle(risks[0].scenario.representative) : 'No loss-making scenario in this model'}</h2>
-        {risks[0] && <><p className="diagnosis-path">{pathDetail(risks[0].scenario.representative)}</p>
-          <p>{risks[0].contributors.map(c => c.name).join(' and ')} contribute <b>{money(risks[0].contributors.reduce((sum, c) => sum + c.pnlCents, 0), true)}</b> in this outcome. Multiple positions lose on the same rate path.</p></>}
+        {risks[0] && <p className="diagnosis-path">{pathDetail(risks[0].scenario.representative)}</p>}
       </div>
-      <div className="diagnosis-action"><span>Worst portfolio P&amp;L</span><strong className={summary.worst.pnlCents < 0 ? 'negative' : 'positive'}>{money(summary.worst.pnlCents, true)}</strong>
-        {risks[0] && <button className="primary-button" onClick={() => onHedge(risks[0].index)}>Find trades to protect this outcome <ArrowRight size={15}/></button>}
+      <OutcomeChart values={comparisonValues} />
+      <div className="diagnosis-action"><span>Worst portfolio P&amp;L</span><button className={`metric-button diagnosis-worst ${summary.worst.pnlCents < 0 ? 'negative' : 'positive'}`} onClick={() => selectExtreme('worst')}>{money(summary.worst.pnlCents, true)}<ArrowUpRight size={16}/></button>
+        {risks[0] && <button className="primary-button" onClick={() => onHedge(risks[0].index)}>Protect this outcome <ArrowRight size={15}/></button>}
       </div>
-    </section>
-    <section className="vulnerability-section" aria-labelledby="vulnerability-heading">
-      <div className="section-intro"><h2 id="vulnerability-heading">Scenarios that hurt most</h2><span>Ranked by portfolio loss · representative paths, not forecasts</span></div>
-      <div className="vulnerability-list">{risks.map((risk, i) => <div className={`vulnerability-row ${risk.index === selected.index ? 'active' : ''}`} key={risk.scenario.key}>
-        <span className="risk-rank">0{i + 1}</span>
-        <button className="risk-select" aria-pressed={risk.index === selected.index} onClick={() => selectWorld(risk.index)}><b>{scenarioTitle(risk.scenario.representative)}</b><small>{pathDetail(risk.scenario.representative)}</small></button>
-        <div className="risk-cause"><span>Largest loss contributors</span><b>{risk.contributors.map(c => c.name).join(' · ')}</b></div>
-        <strong className="negative">{money(risk.pnlCents, true)}</strong>
-        <button className="text-button hedge-link" onClick={() => onHedge(risk.index)} aria-label={`Find hedges for vulnerability ${i + 1}`}>Find hedges <ArrowUpRight size={14}/></button>
-      </div>)}</div>
     </section>
     <div className="summary-strip exposure-metrics">
       <KeyValue label="Capital deployed">{money(summary.costCents)}<small>{summary.positionCount} positions · {summary.contractCount} contracts</small></KeyValue>
-      <KeyValue label="Worst outcome"><button className="metric-button negative" onClick={() => selectExtreme('worst')}>{money(summary.worst.pnlCents, true)}<ArrowUpRight size={16}/></button><small>Across all modelled worlds</small></KeyValue>
+
       <KeyValue label="Best outcome"><button className="metric-button positive" onClick={() => selectExtreme('best')}>{money(summary.best.pnlCents, true)}<ArrowUpRight size={16}/></button><small>Across all modelled worlds</small></KeyValue>
-      <KeyValue label="Profitable scenarios">{breadth.profitable}<span className="metric-denominator"> / {COMPARISON_SCENARIOS.length.toLocaleString()}</span><small>Fixed comparison set · not odds</small></KeyValue>
-      <KeyValue label="Loss-making scenarios">{breadth.losing}<span className="metric-denominator"> / {COMPARISON_SCENARIOS.length.toLocaleString()}</span><small>Before any suggested trade</small></KeyValue>
+      <KeyValue label="Profitable scenarios">{breadth.profitable}<span className="metric-denominator"> / {COMPARISON_SCENARIOS.length.toLocaleString()}</span><small>Distinct rate scenarios</small></KeyValue>
+      <KeyValue label="Loss-making scenarios">{breadth.losing}<span className="metric-denominator"> / {COMPARISON_SCENARIOS.length.toLocaleString()}</span><small>Current portfolio</small></KeyValue>
     </div>
     <div className="exposure-workspace" style={{ '--side-width': `${side.width}px` } as CSSProperties}>
-      <Panel title="Explore the payoff landscape" eyebrow="October × December" className="landscape-panel" actions={<Badge>USD P&amp;L</Badge>}>
+      <Panel title="Payoff landscape" eyebrow="October × December" className="landscape-panel" actions={<Badge>USD P&amp;L</Badge>}>
         <div className="landscape-controls"><div><span className="section-label">INTER-MEETING MOVES</span><span className="quiet-copy">81 worlds in this slice</span></div>
           {WINDOWS.map(([key, label]) => <label key={key}>{label}<select aria-label={label} value={windows[key]} onChange={e => setWindows({...windows, [key]: Number(e.target.value)})}>{INTER_MOVES_BP.map(n => <option key={n} value={n}>{n === 0 ? 'No move' : `${move(n)} bp`}</option>)}</select></label>)}
           <button className="icon-button" aria-label="Reset landscape" onClick={() => {setWindows({interSepOct:0,interOctDec:0,postDec:0});setSelectedMoves({october:0,december:0});}}><RotateCcw size={14}/></button>
@@ -93,32 +75,40 @@ export function ExposureView({ positions, onScenario, onContract, onHedge }: {
               return <td key={d}><button className={`heat-cell ${cell.pnl < 0 ? 'loss' : 'gain'} ${active ? 'selected' : ''}`} style={{backgroundColor: `color-mix(in srgb, var(${cell.pnl < 0 ? '--down' : '--up'}) ${8 + Math.abs(cell.pnl) / maxAbs * 35}%, var(--bg-app))`}} aria-label={`October ${o} bp, December ${d} bp, ${money(cell.pnl, true)} P&L`} aria-pressed={active} onClick={() => setSelectedMoves({october:o,december:d})}>{compact(cell.pnl)}{active && <Crosshair size={11} aria-hidden="true"/>}</button></td>;
             })}</tr>)}</tbody>
           </table></div>
-          <div className="heatmap-legend"><span><i className="legend-loss"/>Loss</span><div className="heat-scale"/><span>Profit<i className="legend-gain"/></span><span className="legend-note">Select a cell to inspect its positions</span></div>
+          <div className="heatmap-legend"><span><i className="legend-loss"/>Loss</span><div className="heat-scale"/><span>Profit<i className="legend-gain"/></span><span className="legend-note">Select an outcome</span></div>
         </div>
-        <div className="panel-footnote">Cell values in $ thousands. Scheduled moves −100 to +100 bp; each inter-meeting window −25, 0 or +25 bp. Counts are not probabilities.</div>
+
       </Panel>
       <ResizeHandle value={side.width} min={260} max={680} invert onChange={side.setWidth} label="Selected outcome panel width" />
-      <Panel title="Why this outcome hurts or helps" className="outcome-panel">
+      <section className="panel outcome-panel" tabIndex={0} role="region" aria-label="Selected outcome">
+        <header className="panel-header"><h2>Selected outcome</h2></header>
         <div className="outcome-readout"><div className="section-label">OCT {move(selected.state.october)} / DEC {move(selected.state.december)}</div><strong className={selected.pnl < 0 ? 'negative' : 'positive'}>{money(selected.pnl, true)}</strong><span>Portfolio P&amp;L at settlement</span></div>
         <div className="outcome-facts"><KeyValue label="Terminal payout">{money(result.payoutCents)}</KeyValue><KeyValue label="December upper bound">{bpPercent(stateFacts.terminalUpperBp)}</KeyValue><KeyValue label="2026 hike / cut units">{stateFacts.hikes2026} / {stateFacts.cuts2026}</KeyValue></div>
         <div className="subpanel-title"><span>POSITION CONTRIBUTIONS</span><span>P&amp;L</span></div>
         <div className="contribution-list">{contributions.map(r => {
           const v = contractView(r.position.contract_id);
-          return <button key={r.position.position_id} onClick={() => onContract(r.position.contract_id)}><span><b>{v.authored.shortName}</b><small>{r.position.side} · {v.event.title}</small></span><span className={`mono ${r.pnlCents < 0 ? 'negative' : 'positive'}`}>{compact(r.pnlCents)}</span></button>;
+          return <button key={r.position.position_id} onClick={() => onContract(r.position.contract_id)}><span className="contribution-name"><b>{v.authored.shortName}</b><small>{r.position.side}</small><i className={`contribution-bar ${r.pnlCents < 0 ? 'loss' : 'gain'}`} style={{width: `${Math.abs(r.pnlCents) / Math.max(...contributions.map(c => Math.abs(c.pnlCents)), 1) * 100}%`}} /></span><span className={`mono ${r.pnlCents < 0 ? 'negative' : 'positive'}`}>{compact(r.pnlCents)}</span></button>;
         })}</div>
-        <button className="panel-action" onClick={() => onScenario(selectedScenario.scenario.key)}>Open full scenario breakdown <ArrowUpRight size={14}/></button>
-        <button className="panel-action" onClick={() => onHedge(selected.index)}>Find hedges for selected outcome <ArrowRight size={14}/></button>
-      </Panel>
+        <div className="outcome-actions"><button className="panel-action" onClick={() => onScenario(selectedScenario.scenario.key)}>Explore scenario <ArrowUpRight size={14}/></button>
+        <button className="panel-action" onClick={() => onHedge(selected.index)}>Find hedges <ArrowRight size={14}/></button></div>
+      </section>
     </div>
+    <section className="vulnerability-section" aria-labelledby="vulnerability-heading">
+      <div className="section-intro"><h2 id="vulnerability-heading">Downside scenarios</h2><span>Ranked by portfolio loss</span></div>
+      <div className="vulnerability-list">{risks.map((risk, i) => <div className={`vulnerability-row ${risk.index === selected.index ? 'active' : ''}`} key={risk.scenario.key}>
+        <span className="risk-rank">0{i + 1}</span>
+        <button className="risk-select" aria-pressed={risk.index === selected.index} onClick={() => selectWorld(risk.index)}><b>{scenarioTitle(risk.scenario.representative)}</b><small>{pathDetail(risk.scenario.representative)}</small></button>
+        <div className="risk-cause"><span>Largest loss contributors</span><b>{risk.contributors.map(c => c.name).join(' · ')}</b></div>
+        <strong className="negative">{money(risk.pnlCents, true)}</strong>
+        <button className="text-button hedge-link" onClick={() => onHedge(risk.index)} aria-label={`Find hedges for vulnerability ${i + 1}`}>Find hedges <ArrowUpRight size={14}/></button>
+      </div>)}</div>
+    </section>
     <div className="exposure-bottom">
       <Panel title="Economic drivers" eyebrow="MAXIMUM P&L SWING">
         <ul className="driver-list">{driving.map(d => <li key={d.id}><span>{d.label}</span><span className="driver-bar"><i style={{width:`${d.swingCents / driving[0].swingCents * 100}%`}}/></span><span className="mono">{money(d.swingCents)}</span></li>)}</ul>
         <p className="panel-footnote">Sweep one variable while holding the others fixed. These swings are not additive.</p>
       </Panel>
-      <Panel title="Stress monitor" eyebrow="WHOLE BOOK">
-        {(['worst','best'] as const).map(which => <button className="stress-row" key={which} onClick={() => selectExtreme(which)}><span><small>{which === 'worst' ? 'MAXIMUM MODELLED LOSS' : 'MAXIMUM MODELLED PROFIT'}</small><b>{describeState(summary[which].scenario.representative)}</b></span><span className={`mono ${which === 'worst' ? 'negative' : 'positive'}`}>{money(summary[which].pnlCents,true)}<ArrowUpRight size={14}/></span></button>)}
-        <div className="coverage-status"><Badge tone="teal">{summary.unsupportedHoldings.length === 0 ? 'HELD BOOK COVERED' : 'REVIEW COVERAGE'}</Badge><span>{summary.rawWorldCount.toLocaleString()} worlds → {summary.scenarioCount} book outcomes</span></div>
-      </Panel>
+      <div className="coverage-status"><Badge tone="teal">{summary.unsupportedHoldings.length === 0 ? 'HELD BOOK COVERED' : 'REVIEW COVERAGE'}</Badge><span>{summary.rawWorldCount.toLocaleString()} worlds → {summary.scenarioCount} book outcomes</span></div>
     </div>
   </div>;
 }

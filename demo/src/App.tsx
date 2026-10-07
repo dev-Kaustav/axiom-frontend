@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Activity, Layers3, GitBranch, FlaskConical, ArrowLeftRight, BookOpen, Database } from 'lucide-react';
 import './styles.css';
 import { Modal } from './components/primitives';
@@ -9,25 +9,18 @@ import { RelationshipsView } from './components/RelationshipsView';
 import { TradeSimulator } from './components/TradeSimulator';
 import { ContractsView, DataView } from './components/ContractsView';
 import { ContractInspector } from './components/ContractInspector';
-import { Ticker, Clock } from './components/Ticker';
-import { PORTFOLIO, POSITIONS, contractView } from './domain/engine';
+import { Clock } from './components/Clock';
+import { PORTFOLIO, POSITIONS, SNAPSHOT, contractView } from './domain/engine';
 
 const PAGES = ['Exposure', 'Portfolio', 'Scenarios', 'Relationships', 'Trade', 'Contracts', 'Data'] as const;
 type Page = (typeof PAGES)[number];
 const ICONS = [Activity, Layers3, FlaskConical, GitBranch, ArrowLeftRight, BookOpen, Database];
 const currentPage = () => PAGES.find(p => `#/${p.toLowerCase()}` === window.location.hash) ?? 'Exposure';
 
-const HEADINGS: Record<Page, string> = {
-  Exposure: 'What am I exposed to?',
-  Portfolio: 'What has been loaded',
-  Scenarios: 'What happens under this outcome?',
-  Relationships: 'What offsets what, and where does the hedge fail?',
-  Trade: 'Which trades improve this portfolio?',
-  Contracts: 'Every contract, and what Rook made of it',
-  Data: 'Where the numbers come from',
-};
 
 export default function App() {
+  const workspace = useRef<HTMLElement>(null);
+  const light = useRef<HTMLDivElement>(null);
   const [page, setPage] = useState<Page>(currentPage);
   const [inspecting, setInspecting] = useState<string | null>(null);
   const [scenarioKey, setScenarioKey] = useState<string | null>(null);
@@ -38,7 +31,36 @@ export default function App() {
     window.addEventListener('hashchange', sync);
     return () => window.removeEventListener('hashchange', sync);
   }, []);
-  useEffect(() => { document.title = `${page} · Rook Workstation`; window.scrollTo(0, 0); }, [page]);
+  useEffect(() => { document.title = `${page} · Rook Workstation`; workspace.current?.scrollTo(0, 0); }, [page]);
+  useEffect(() => {
+    const area = workspace.current!;
+    const field = light.current!;
+    const motion = window.matchMedia('(prefers-reduced-motion: no-preference) and (pointer: fine)');
+    let frame = 0;
+    const reset = () => {
+      cancelAnimationFrame(frame);
+      field.style.transform = 'translate(0px, 0px)';
+    };
+    const move = (event: PointerEvent) => {
+      if (!motion.matches || event.pointerType !== 'mouse' || event.buttons) return;
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const bounds = area.getBoundingClientRect();
+        const x = ((event.clientX - bounds.left) / bounds.width - .5) * 20;
+        const y = ((event.clientY - bounds.top) / bounds.height - .5) * 12;
+        field.style.transform = `translate(${x}px, ${y}px)`;
+      });
+    };
+    area.addEventListener('pointermove', move);
+    area.addEventListener('pointerleave', reset);
+    motion.addEventListener('change', reset);
+    return () => {
+      reset();
+      area.removeEventListener('pointermove', move);
+      area.removeEventListener('pointerleave', reset);
+      motion.removeEventListener('change', reset);
+    };
+  }, []);
   // A trackpad pinch is a ctrl-wheel event, and the browser answers it by
   // zooming the whole page. This is a fixed desktop layout of panes that carry
   // their own scroll and their own zoom, so page zoom only breaks it. Capture
@@ -81,14 +103,14 @@ export default function App() {
         <Clock />
       </header>
 
-      <Ticker />
-
-      <main className="workspace">
+      <div className="workspace-light" aria-hidden="true"><div className="light-field" ref={light} /></div>
+      <main className="workspace" ref={workspace} tabIndex={-1}>
         <div className="workspace-header">
-          <div><div className="workspace-kicker">MACRO / US RATES / 2026</div><h1>{page === 'Trade' ? 'Trade ideas' : page === 'Data' ? 'Data & provenance' : page}<span>{HEADINGS[page]}</span></h1></div>
-          <div className="book-label"><span>{PORTFOLIO.name}</span><small><span className="status-dot" /> DEMO BOOK · {POSITIONS.length} POSITIONS</small></div>
+          <div><div className="workspace-kicker">MACRO / US RATES / 2026</div><h1>{page === 'Trade' ? 'Trade ideas' : page === 'Data' ? 'Data & sources' : page}</h1></div>
+          <div className="book-label"><span>{PORTFOLIO.name}</span><small><span className="status-dot" /> {POSITIONS.length} POSITIONS · AS OF {SNAPSHOT.retrieved_at.slice(0, 10)}</small></div>
         </div>
 
+        <div className="view-content">
         {page === 'Exposure' && <ExposureView positions={POSITIONS} onScenario={openScenario} onContract={setInspecting} onHedge={findHedges} />}
         {page === 'Portfolio' && (
           <PortfolioView
@@ -111,12 +133,13 @@ export default function App() {
         {page === 'Trade' && <TradeSimulator key={hedgeTarget ?? 'book'} positions={POSITIONS} onContract={setInspecting} targetIndex={hedgeTarget} onClearTarget={() => setHedgeTarget(null)} />}
         {page === 'Contracts' && <ContractsView onContract={setInspecting} />}
         {page === 'Data' && <DataView />}
+        </div>
       </main>
 
       <footer className="app-footer">
-        <span><span className="status-dot" /> SNAPSHOT DATA · Fictional portfolio over real Polymarket contracts.</span>
+        <span><span className="status-dot" /> US RATES · USD</span>
         <span className="footer-separator">·</span>
-        <span>No probabilities, no fair values, no execution.</span>
+        <span>Rook Workstation</span>
       </footer>
 
       {inspecting && (

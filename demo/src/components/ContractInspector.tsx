@@ -18,9 +18,6 @@ export function ContractInspector({ contractId }: { contractId: string }) {
     <div className="inspector">
       <div className="coverage-grid">
         <KeyValue label="Venue">{contract.source_url.includes('polymarket') ? 'POLYMARKET' : 'UNKNOWN'}</KeyValue>
-        <KeyValue label="Contract id">
-          <span className="mono">{contract.contract_id}</span>
-        </KeyValue>
         <KeyValue label="Event">{event.title}</KeyValue>
         <KeyValue label="Resolution date">{contract.end_date?.slice(0, 10) ?? 'unstated'}</KeyValue>
         <KeyValue label="Interpretation">
@@ -42,13 +39,7 @@ export function ContractInspector({ contractId }: { contractId: string }) {
         {view.expression ? (
           <>
             <code className="expression">{view.expression}</code>
-            <p className="quiet-copy">{authored.rationale}</p>
-            <p className="panel-footnote">
-              Derived by deterministic template matching on the venue's own event and outcome
-              labels, then evaluated against {STATE_COUNT.toLocaleString('en-US')} enumerated worlds.
-              The interpretation step is the only place judgement enters; the payout computation
-              below it is arithmetic.
-            </p>
+            <details className="evidence-disclosure"><summary>Interpretation rationale</summary><p className="quiet-copy">{authored.rationale}</p></details>
           </>
         ) : (
           <>
@@ -87,9 +78,10 @@ export function ContractInspector({ contractId }: { contractId: string }) {
         <SourceLink url={venueEventUrl(event)}>Venue event</SourceLink>
       </section>
 
-      <section className="detail-section">
-        <h4 className="inspector-heading">Provenance</h4>
+      <details className="evidence-disclosure">
+        <summary>Provenance</summary>
         <div className="coverage-grid">
+          <KeyValue label="Contract id">{contract.contract_id}</KeyValue>
           <KeyValue label="Condition id">
             <span className="mono truncate">{contract.condition_id}</span>
           </KeyValue>
@@ -107,11 +99,7 @@ export function ContractInspector({ contractId }: { contractId: string }) {
             </ul>
           </KeyValue>
         </div>
-        <p className="panel-footnote">
-          Token identifiers are 70-plus digit decimals and are carried as text throughout. The rule
-          hash covers only settlement-bearing fields, so a price move never looks like an amendment.
-        </p>
-      </section>
+      </details>
     </div>
   );
 }

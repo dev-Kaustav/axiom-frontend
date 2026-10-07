@@ -1,5 +1,5 @@
-import { useMemo, useState, type CSSProperties } from 'react';
-import { ArrowRight, ArrowUpRight, Maximize2, Minimize2, Search, RotateCcw } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { ArrowRight, ArrowUpRight, Maximize2, Minimize2, Search, RotateCcw, SlidersHorizontal, ChevronUp } from 'lucide-react';
 import { Panel, Badge, KeyValue, SourceLink, ResizeHandle, useColumnWidth } from './primitives';
 import { ALL_STATES, BASIS_SUMMARY, CONTRACT_VIEWS, SCOPE_COUNTS, basketCoverage, contractView, exactGroupOffsets, exposureSummary, money, rankedOffsets, relationsAmong, scenarioRows, type OffsetAssessment, type Position, type Relation, type RelationKind } from '../domain/engine';
 import { RelationshipGraph, type Moves } from './RelationshipGraph';
@@ -16,7 +16,7 @@ export function RelationshipsView({positions,onContract,onScenario}: {positions:
   const [selection,setSelection]=useState<Selection>({kind:'none'});
   const [query,setQuery]=useState('');const [scope,setScope]=useState('held');const [kinds,setKinds]=useState<Set<RelationKind>>(new Set(KINDS.filter(k=>k!=='OVERLAP')));
   const [grouping,setGrouping]=useState<ContractGrouping>('Payoff structure');
-  const [maximized,setMaximized]=useState(false);const rail=useColumnWidth(252);const evidence=useColumnWidth(360);
+  const [maximized,setMaximized]=useState(false);const evidence=useColumnWidth(520);
   const [moves,setMoves]=useState<Moves>({});
   const heldIds=useMemo(()=>new Set(positions.map(p=>p.contract_id)),[positions]);
   // Every contract in scope goes on the canvas, including the ones no relation
@@ -47,18 +47,32 @@ export function RelationshipsView({positions,onContract,onScenario}: {positions:
   const failureScenario=(index:number)=>{const row=bookScenarios.find(r=>r.scenario.memberIndices.includes(index));if(row)onScenario(row.scenario.key);};
   const scopeIds=selection.kind==='pair'?[]:focusIds;
   const visibleOffsetRows=offsets.map((o,index)=>({o,index})).filter(({o})=>ids.includes(o.a.contract_id)&&ids.includes(o.b.contract_id)&&(scopeIds.length===0||scopeIds.includes(o.a.contract_id)||scopeIds.includes(o.b.contract_id)));
-  const reset=()=>{setQuery('');setScope('held');setGrouping('Payoff structure');setKinds(new Set(KINDS.filter(k=>k!=='OVERLAP')));setSelection({kind:'none'});setMoves({});rail.reset();evidence.reset();setMaximized(false);};
-  return <div className={`relationship-workspace ${maximized?'maximized':''}`} style={{'--rail-width':`${rail.width}px`,'--evidence-width':`${evidence.width}px`} as CSSProperties}>
-    <aside className="relationship-rail"><div className="rail-heading">UNIVERSE NAVIGATOR</div><div className="rail-controls"><label className="search-box"><Search size={14}/><input aria-label="Search graph contracts" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Find a contract…"/></label><div className="segmented"><button aria-pressed={scope==='held'} onClick={()=>setScope('held')}>Portfolio</button><button aria-pressed={scope==='all'} onClick={()=>setScope('all')}>All contracts</button></div><p className="rail-hint">{scope==='held'?`The ${ids.length} contracts this book holds, and every relation between them.`:`All ${ids.length} contracts in the universe. ${relatableIds.length} carry a payoff vector and can relate; the other ${ids.length-relatableIds.length} are carried with the reason they cannot.`}</p><label className="rail-field">Group by <select aria-label="Group contracts by" value={grouping} onChange={e=>setGrouping(e.target.value as ContractGrouping)}>{GROUPINGS.map(g=><option key={g}>{g}</option>)}</select></label><div className="section-label">RELATION TYPES</div><div className="relation-filters">{KINDS.map(k=><label key={k}><input type="checkbox" checked={kinds.has(k)} onChange={()=>{const next=new Set(kinds);if(next.has(k))next.delete(k);else next.add(k);setKinds(next);}}/><i className={`edge-key ${k.toLowerCase()}`}/>{k.toLowerCase()}<small>{allRelations.filter(r=>r.kind===k).length}</small></label>)}</div></div>
-      <div className="rail-heading"><span>HEDGE FAILURE WATCH</span><Badge tone="amber">{visibleOffsetRows.filter(({o})=>o.misleading).length}</Badge></div><p className="rail-note">{scopeIds.length?`Pairs touching the ${scopeIds.length} contract${scopeIds.length===1?'':'s'} in focus.`:'Every held pair, ranked by residual exposure. Select a pair to trace it.'}</p><div className="hedge-watch">{visibleOffsetRows.slice(0,30).map(({o,index})=><button className={selection.kind==='pair'&&selection.index===index?'active':''} key={`${o.a.position_id}:${o.b.position_id}`} onClick={()=>setSelection({kind:'pair',index})}><span className="watch-class"><Badge tone={o.klass==='EXACT'?'teal':o.misleading?'amber':''}>{o.klass}</Badge><span>{money(o.residualRangeCents)}</span></span><b>{o.a.side} {contractView(o.a.contract_id).authored.shortName}</b><span className="watch-join">+ {o.b.side} {contractView(o.b.contract_id).authored.shortName}</span><small>{o.a.position_id} / {o.b.position_id} · payout range</small></button>)}{visibleOffsetRows.length===0&&<p className="empty-state">No held pairs in this view.</p>}</div><div className="rail-note">{Math.min(30,visibleOffsetRows.length)} of {visibleOffsetRows.length} pairs shown. Constant and unsupported claims excluded from graph.</div></aside>
-    <ResizeHandle value={rail.width} min={200} max={520} onChange={rail.setWidth} label="Universe navigator width" />
+  const reset=()=>{setQuery('');setScope('held');setGrouping('Payoff structure');setKinds(new Set(KINDS.filter(k=>k!=='OVERLAP')));setSelection({kind:'none'});setMoves({});evidence.reset();setUniverseOpen(false);setMaximized(false);};
+  const [universeOpen,setUniverseOpen]=useState(false);const universeRef=useRef<HTMLDivElement>(null);
+  useEffect(()=>{if(!universeOpen)return;
+    const close=(e:PointerEvent)=>{if(!universeRef.current?.contains(e.target as Node))setUniverseOpen(false);};
+    const esc=(e:KeyboardEvent)=>{if(e.key==='Escape')setUniverseOpen(false);};
+    document.addEventListener('pointerdown',close);document.addEventListener('keydown',esc);
+    return()=>{document.removeEventListener('pointerdown',close);document.removeEventListener('keydown',esc);};},[universeOpen]);
+  const toggleKind=(k:RelationKind)=>{const next=new Set(kinds);if(next.has(k))next.delete(k);else next.add(k);setKinds(next);};
+  /** The legend and the universe controls live in the map's own bottom bar: the chips are the
+   *  filter and the key at once, and the popover holds what is only needed now and then. */
+  const footer=<div className="graph-legend">
+    <div className="relation-chips" role="group" aria-label="Relation types">{KINDS.map(k=><button key={k} className="relation-chip" aria-pressed={kinds.has(k)} onClick={()=>toggleKind(k)}><i className={`edge-key ${k.toLowerCase()}`}/>{k.toLowerCase()}<small>{allRelations.filter(r=>r.kind===k).length}</small></button>)}</div>
+    <div className="universe-menu" ref={universeRef}>
+      <button className="universe-button" aria-expanded={universeOpen} aria-haspopup="dialog" onClick={()=>setUniverseOpen(!universeOpen)}><SlidersHorizontal size={13}/>Universe<ChevronUp size={12}/></button>
+      {universeOpen&&<div className="universe-popover" role="dialog" aria-label="Universe navigator"><div className="rail-heading">UNIVERSE NAVIGATOR</div><div className="rail-controls"><label className="search-box"><Search size={14}/><input aria-label="Search graph contracts" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Find a contract…"/></label><div className="segmented"><button aria-pressed={scope==='held'} onClick={()=>setScope('held')}>Portfolio</button><button aria-pressed={scope==='all'} onClick={()=>setScope('all')}>All contracts</button></div><p className="rail-hint">{scope==='held'?`${ids.length} held contracts`:`All ${ids.length} contracts in the universe. ${relatableIds.length} carry a payoff vector and can relate; the other ${ids.length-relatableIds.length} are carried with the reason they cannot.`}</p><label className="rail-field">Group by <select aria-label="Group contracts by" value={grouping} onChange={e=>setGrouping(e.target.value as ContractGrouping)}>{GROUPINGS.map(g=><option key={g}>{g}</option>)}</select></label></div></div>}
+    </div>
+  </div>;
+  return <div className={`relationship-workspace ${maximized?'maximized':''}`} style={{'--evidence-width':`${evidence.width}px`} as CSSProperties}>
     <Panel title="Relationship map" eyebrow="COMPUTED FROM PAYOFFS" className="graph-panel" actions={<div className="panel-tools"><button className="icon-button" aria-label="Reset relationship layout" onClick={reset}><RotateCcw size={13}/></button><button className="icon-button" aria-label={maximized?'Restore workspace':'Maximize graph'} onClick={()=>setMaximized(!maximized)}>{maximized?<Minimize2 size={14}/>:<Maximize2 size={14}/>}</button></div>}>
       <div className="graph-context"><span className="status-dot"/><span>{focusIds.length ? `${focusIds.filter(id=>ids.includes(id)).length} focused contracts` : 'Select a contract or position pair'}</span><span>Drag to pan · shift-click a second contract to compare</span></div>
-      <RelationshipGraph ids={ids} positions={positions} relations={shownRelations} focusIds={focusIds} selectedRelation={relation} exactGroups={groups} grouping={grouping} moves={moves} onMove={(name,move)=>setMoves(m=>({...m,[name]:move}))} onMoves={setMoves} onBackground={()=>setSelection({kind:'none'})} onSelect={selectContract} onRelation={r=>setSelection({kind:'relation',relation:r})} onGroup={id=>setSelection({kind:'group',id})}/>
+      <RelationshipGraph ids={ids} positions={positions} relations={shownRelations} focusIds={focusIds} selectedRelation={relation} grouping={grouping} moves={moves} onMove={(name,move)=>setMoves(m=>({...m,[name]:move}))} onMoves={setMoves} onBackground={()=>setSelection({kind:'none'})} onSelect={selectContract} onRelation={r=>setSelection({kind:'relation',relation:r})} footer={footer}/>
     </Panel>
-    <ResizeHandle value={evidence.width} min={280} max={640} invert onChange={evidence.setWidth} label="Evidence inspector width" />
+    <ResizeHandle value={evidence.width} min={340} max={720} invert onChange={evidence.setWidth} label="Evidence inspector width" />
+    <div className="relationship-side">
     <aside className="evidence-panel"><div className="evidence-heading"><span>EVIDENCE INSPECTOR</span></div><div className="evidence-scroll" tabIndex={0} role="region" aria-label="Evidence inspector">
-      {offset && <><div className="inspector-section"><Badge tone={offset.klass==='EXACT'?'teal':'amber'}>{offset.klass} OFFSET</Badge><h3>{CLASS_COPY[offset.klass]}</h3><p className="quiet-copy">{offset.a.side} · {contractView(offset.a.contract_id).displayName}<br/>+ {offset.b.side} · {contractView(offset.b.contract_id).displayName}</p><div className="residual-readout"><span>RESIDUAL PAYOUT RANGE</span><strong>{money(offset.residualRangeCents)}</strong></div><KeyValue label="Stable payout count">{offset.coveredScenarios} / {offset.totalScenarios}</KeyValue><div className="coverage-meter"><i style={{width:`${offset.coverageFraction*100}%`}}/></div><p className="quiet-copy">Count of shared-basis outcomes at the modal payout. Not a likelihood or hedge probability.</p></div>
+      {offset && <><div className="inspector-section"><Badge tone={offset.klass==='EXACT'?'teal':'amber'}>{offset.klass} OFFSET</Badge><h3>{CLASS_COPY[offset.klass]}</h3><p className="quiet-copy">{offset.a.side} · {contractView(offset.a.contract_id).displayName}<br/>+ {offset.b.side} · {contractView(offset.b.contract_id).displayName}</p><div className="residual-readout"><span>RESIDUAL PAYOUT RANGE</span><strong>{money(offset.residualRangeCents)}</strong></div><KeyValue label="Stable payout count">{offset.coveredScenarios} / {offset.totalScenarios}</KeyValue><div className="coverage-meter"><i style={{width:`${offset.coverageFraction*100}%`}}/></div><p className="quiet-copy">Outcomes with a stable combined payout.</p></div>
         {offset.failures.length>0&&<div className="inspector-section"><h4>Where it fails</h4><p className="quiet-copy">Largest deviations from the modal combined payout. Positive values mean more payout.</p>{offset.failures.slice(0,4).map(f=><button className="counterexample" key={f.scenario.key} onClick={()=>failureScenario(f.scenario.memberIndices[0])}><span>{f.scenario.label}</span><b className={f.shortfallCents<0?'negative':'positive'}>{money(f.shortfallCents,true)} <ArrowUpRight size={12}/></b></button>)}</div>}</>}
       {group&&<div className="inspector-section"><Badge tone="teal">EXACT MULTI-LEG OFFSET</Badge><h3>{group.positions.length} legs. One constant payout.</h3><div className="residual-readout"><span>EVERY MODELLED WORLD</span><strong className="positive">{money(group.constantPayoutCents)}</strong></div><p className="quiet-copy">{group.proof}</p><div className="group-equation">{group.positions.map((p,i)=><FragmentLeg key={p.position_id} id={p.contract_id} side={p.side} quantity={p.quantity} plus={i>0} onContract={onContract}/>)}<div className="equation-total">= {money(group.constantPayoutCents)} payout</div></div></div>}
       {relation&&!compared&&<div className="inspector-section"><h4>Contract relation <Badge>{relation.kind}</Badge></h4><div className="relation-expression"><span>{contractView(relation.a).authored.shortName}</span><ArrowRight size={15}/><span>{contractView(relation.b).authored.shortName}</span></div><p>{relation.proof}</p><p className="quiet-copy">Verified across {ALL_STATES.length.toLocaleString()} modelled worlds. This describes YES settlement payoffs; held quantities and sides determine the offset.</p></div>}
@@ -75,6 +89,8 @@ export function RelationshipsView({positions,onContract,onScenario}: {positions:
       })()}
       <div className="inspector-section"><h4>{focusIds.length>1?'Why the contracts differ':'Settlement evidence'}</h4>{[...new Set(focusIds)].map(id=>{const v=contractView(id);return <div className="clause-card" key={id}><button className="instrument-link" onClick={()=>onContract(id)}>{v.contract.question}<ArrowUpRight size={13}/></button>{v.expression&&<code className="expression">{v.expression}</code>}<p className="quiet-copy">{v.authored.rationale}</p><SourceLink url={v.contract.source_url}>Venue rule & identifiers</SourceLink></div>;})}</div>
     </div></aside>
+      <section className="hedge-watch-panel" aria-label="Hedge failure watch">      <div className="rail-heading"><span>HEDGE FAILURE WATCH</span><Badge tone="amber">{visibleOffsetRows.filter(({o})=>o.misleading).length}</Badge></div><div className="exact-group-strip" tabIndex={0} role="region" aria-label="Exact group offsets">{groups.map(g=><button key={g.eventId} className={selection.kind==='group'&&selection.id===g.eventId?'active':''} onClick={()=>setSelection({kind:'group',id:g.eventId})}><span className="exact-bracket">{g.positions.length} LEGS</span><span>{contractView(g.positions[0].contract_id).event.title}</span><b>{money(g.constantPayoutCents)} payout</b></button>)}{groups.length===0&&<p className="rail-note">No exact group offsets in this portfolio.</p>}</div><div className="hedge-watch" tabIndex={0} role="region" aria-label="Hedge failure pairs">{visibleOffsetRows.slice(0,30).map(({o,index})=><button className={selection.kind==='pair'&&selection.index===index?'active':''} key={`${o.a.position_id}:${o.b.position_id}`} onClick={()=>setSelection({kind:'pair',index})}><span className="watch-class"><Badge tone={o.klass==='EXACT'?'teal':o.misleading?'amber':''}>{o.klass}</Badge><span>{money(o.residualRangeCents)}</span></span><b>{o.a.side} {contractView(o.a.contract_id).authored.shortName}</b><span className="watch-join">+ {o.b.side} {contractView(o.b.contract_id).authored.shortName}</span><small>{o.a.position_id} / {o.b.position_id} · payout range</small></button>)}{visibleOffsetRows.length===0&&<p className="empty-state">No held pairs in this view.</p>}</div><div className="rail-note">{Math.min(30,visibleOffsetRows.length)} of {visibleOffsetRows.length} pairs · {scopeIds.length?`Pairs touching the ${scopeIds.length} contract${scopeIds.length===1?'':'s'} in focus.`:'Select a pair to trace its exposure.'}</div></section>
+    </div>
   </div>;
 }
 function FragmentLeg({id,side,quantity,plus,onContract}:{id:string;side:string;quantity:number;plus:boolean;onContract:(id:string)=>void}) {return <div>{plus&&<span className="muted">+</span>}<button className="instrument-link" onClick={()=>onContract(id)}>{side} {contractView(id).authored.shortName}<small>{quantity.toLocaleString()} contracts</small></button></div>;}
@@ -119,7 +135,7 @@ function BasketPanel({basket}: {basket: ReturnType<typeof basketCoverage>}) {
           <span className={payout.minCents-payout.costCents<0?'negative':'positive'}>{money(payout.minCents-payout.costCents,true)}</span>
         </KeyValue>
       </div>
-      {constant&&<p className="quiet-copy">This basket pays the same amount whatever the Fed does, so what it cost decides the result. Nothing here is probabilistic.</p>}
+      {constant&&<p className="quiet-copy">Constant terminal payout across every rate path.</p>}
     </>}
     {!payout&&<p className="quiet-copy">None of these contracts is held, so this describes the contracts themselves rather than an exposure.</p>}
     {excluded}
@@ -133,22 +149,17 @@ function UniverseOverview({positions,ids,relatableIds,relations,offsets,groups}:
 }) {
   const summary=exposureSummary(positions);
   const misleading=offsets.filter(o=>o.misleading).length;
-  const byKind=KINDS.map(k=>[k,relations.filter(r=>r.kind===k).length] as const).filter(([,n])=>n>0);
   return <>
     <div className="inspector-section">
       <Badge>WHOLE BOOK</Badge>
-      <h3>Nothing selected. Select a contract, or shift-click several, to narrow everything to them.</h3>
+      <h3>Portfolio relationships</h3>
       <div className="outcome-facts">
         <KeyValue label="Worst outcome"><span className="negative">{money(summary.worst.pnlCents,true)}</span></KeyValue>
         <KeyValue label="Best outcome"><span className="positive">{money(summary.best.pnlCents,true)}</span></KeyValue>
         <KeyValue label="Capital deployed">{money(summary.costCents)}</KeyValue>
         <KeyValue label="Distinct outcomes">{summary.scenarioCount.toLocaleString()}</KeyValue>
       </div>
-    </div>
-    <div className="inspector-section">
-      <h4>Relations in view</h4>
-      <ul className="coverage-bars">{byKind.map(([kind,n])=><li key={kind}><span>{kind.toLowerCase()}</span><span className="coverage-track"><i style={{width:`${(n/Math.max(...byKind.map(([,c])=>c)))*100}%`}}/></span><b className="mono">{n}</b></li>)}</ul>
-      <p className="quiet-copy">{ids.length} contracts on the canvas. {relatableIds.length} of them carry a varying payoff vector, and {relations.length.toLocaleString()} relations are computed between those.{ids.length>relatableIds.length&&` The remaining ${ids.length-relatableIds.length} carry no edge — not because nothing relates them, but because this model derived nothing to compare.`} Contract relations are not position offsets: an implication between two contracts says nothing about the quantities held.</p>
+      <p className="quiet-copy">{relatableIds.length} comparable / {ids.length} contracts · {relations.length.toLocaleString()} payoff relationships</p>
     </div>
     <div className="inspector-section">
       <h4>Hedges to look at</h4>

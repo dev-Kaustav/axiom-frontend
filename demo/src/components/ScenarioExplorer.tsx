@@ -91,20 +91,20 @@ export function ScenarioExplorer({
       <div className="summary-strip">
         <KeyValue label="Distinct outcomes">
           {rows.length}
-          <small>Worlds that pay this book alike are one row</small>
+          <small>Unique portfolio payoffs</small>
         </KeyValue>
         <KeyValue label="Loss-making">
           <span className="negative">{losing}</span>
           <span className="metric-denominator"> / {rows.length}</span>
-          <small>Counts of outcomes, never odds</small>
+          <small>Distinct portfolio outcomes</small>
         </KeyValue>
         <KeyValue label="Worst outcome">
           <span className="negative">{money(sorted[0] ? Math.min(...rows.map((r) => r.pnlCents)) : 0, true)}</span>
-          <small>Across every modelled world</small>
+          <small>Across all scenarios</small>
         </KeyValue>
         <KeyValue label="Best outcome">
           <span className="positive">{money(Math.max(...rows.map((r) => r.pnlCents)), true)}</span>
-          <small>Across every modelled world</small>
+          <small>Across all scenarios</small>
         </KeyValue>
         <KeyValue label="Selected">
           <span className={selected.pnlCents < 0 ? 'negative' : 'positive'}>
@@ -196,8 +196,7 @@ export function ScenarioExplorer({
             </table>
           </div>
           <p className="panel-footnote">
-            Basis points per decision. A dot means no move in that window. Each row stands for every
-            world that pays this book the same amount, so the Worlds column is a count, not a weight.
+            Decisions in basis points · select a row to explore position contributions.
           </p>
         </Panel>
 

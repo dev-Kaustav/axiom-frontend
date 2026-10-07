@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ArrowRight, ArrowUpRight, Check, SlidersHorizontal } from 'lucide-react';
+import { OutcomeChart } from './OutcomeChart';
 import { Panel, Badge } from './primitives';
 import { ContributionTable } from './ScenarioExplorer';
 import {
@@ -7,7 +8,7 @@ import {
   money, portfolioAt, rankedOffsets, type Position,
 } from '../domain/engine';
 import {
-  COMPARISON_SCENARIOS, compareTrade, pathDetail, scenarioTitle, suggestTrades,
+  COMPARISON_SCENARIOS, comparisonPnls, compareTrade, pathDetail, scenarioTitle, suggestTrades,
   parseTradeInputs, type ScenarioChange, type TradeObjective,
 } from '../domain/decisionSupport';
 
@@ -30,6 +31,8 @@ export function TradeSimulator({ positions, onContract, targetIndex, onClearTarg
   const selected = selectedId === 'baseline' ? undefined : suggestions.find(s => s.id === selectedId) ?? suggestions[0];
   const trade = custom ?? selected?.trade ?? null;
   const comparison = useMemo(() => compareTrade(positions, trade), [positions, trade]);
+  const chartBefore = useMemo(() => comparisonPnls(positions), [positions]);
+  const chartAfter = useMemo(() => comparisonPnls(trade ? [...positions, trade] : positions), [positions, trade]);
   const touched = useMemo(() => trade ? rankedOffsets([...positions, trade]).filter(o => o.a.position_id === 'proposed' || o.b.position_id === 'proposed') : [], [positions, trade]);
   const resetSelection = () => { setSelectedId(null); setCustom(null); };
   const view = trade ? contractView(trade.contract_id) : null;
@@ -39,14 +42,14 @@ export function TradeSimulator({ positions, onContract, targetIndex, onClearTarg
   const targetAfter = targetIndex === null ? null : portfolioAt(trade ? [...positions, trade] : positions, targetIndex).pnlCents;
 
   return <div className="trade-ideas">
-    <div className="ideas-intro"><div><span className="section-label">A better position starts with a clear objective</span><h2>Find the trade that changes your exposure.</h2><p>Compare portfolio-aware ideas, see the trade-offs, then fine-tune the size.</p></div><Badge>Hypothetical · no execution</Badge></div>
+    <div className="ideas-intro"><div><span className="section-label">PORTFOLIO OPTIMIZER</span><h2>Strengthen your downside.</h2></div><Badge>Simulation</Badge></div>
     {targetIndex !== null && <div className="target-banner"><div><span className="section-label">Outcome selected from Exposure</span><b>{scenarioTitle(ALL_STATES[targetIndex])}</b><small>{pathDetail(ALL_STATES[targetIndex])}</small></div><span>Current P&amp;L <strong className={tone(targetBefore!)}>{money(targetBefore!, true)}</strong></span><button className="text-button" onClick={onClearTarget}>Clear scenario</button></div>}
     <div className="ideas-controls"><div className="objective-switch" role="group" aria-label="Trade objective">
       {targetIndex !== null && <button aria-pressed={objective === 'target'} onClick={() => { setObjective('target'); resetSelection(); }}>Protect selected outcome</button>}
       {OBJECTIVES.map(([id, label]) => <button key={id} aria-pressed={objective === id} onClick={() => { setObjective(id); resetSelection(); }}>{label}</button>)}
     </div><label className="budget-field">Additional capital <select aria-label="Additional capital budget" value={budget} onChange={e => { setBudget(Number(e.target.value)); resetSelection(); }}>{[5000, 25000, 50000, 100000].map(n => <option key={n} value={n}>Up to {money(n * 100)}</option>)}</select></label></div>
     <section className="suggestions-section" aria-label="Suggested trades">
-      <div className="section-intro"><h2>Suggested trades</h2><span>Ranked for your objective · all changes include trade cost</span></div>
+      <div className="section-intro"><h2>Suggested trades</h2><span>Ranked for your objective</span></div>
       <div className="suggestion-list">{suggestions.map((suggestion, i) => {
         const active = !custom && selected?.id === suggestion.id;
         const v = contractView(suggestion.trade.contract_id);
@@ -67,7 +70,7 @@ export function TradeSimulator({ positions, onContract, targetIndex, onClearTarg
       <div className="preview-heading"><div><span className="section-label">{custom ? 'Custom simulation' : trade ? 'Selected idea' : 'Baseline'}</span><h2 id="preview-heading">{trade && view ? `${trade.side} ${view.displayName}` : 'Keep the current portfolio'}</h2><p>{trade ? `${trade.quantity.toLocaleString()} contracts · ${tradePrice(trade.entry_price_x4)} per contract · ${money(extraCost)} additional capital` : 'The current book, with no additional cost or change in exposure.'}</p></div>{trade && <button className="text-button" onClick={() => onContract(trade.contract_id)}>Inspect contract <ArrowUpRight size={14}/></button>}</div>
       <div className="preview-metrics"><div><span>Worst-case P&amp;L</span><strong className={tone(comparison.after.worstCents)}>{money(comparison.after.worstCents, true)}</strong><small>From {money(comparison.before.worstCents, true)} <b className={tone(comparison.after.worstCents - comparison.before.worstCents)}>{money(comparison.after.worstCents - comparison.before.worstCents, true)} change</b></small></div><div><span>Profitable scenarios</span><strong>{comparison.after.profitable}<em> / {COMPARISON_SCENARIOS.length.toLocaleString()}</em></strong><small><b className="positive">{comparison.newlyProfitable} newly profitable</b> · <b className={comparison.noLongerProfitable ? 'negative' : 'muted'}>{comparison.noLongerProfitable} no longer profitable</b></small></div><div><span>Additional capital</span><strong>{money(extraCost)}</strong><small>{trade ? 'Maximum loss on this added position' : 'Current portfolio baseline'}</small></div></div>
       {targetBefore !== null && targetAfter !== null && <div className="target-comparison"><span>Selected outcome P&amp;L</span><b>{money(targetBefore, true)}</b><ArrowRight size={15}/><b className={tone(targetAfter)}>{money(targetAfter, true)}</b><span className={tone(targetAfter - targetBefore)}>{money(targetAfter - targetBefore, true)} change</span></div>}
-      <p className="comparison-note">The same {COMPARISON_SCENARIOS.length.toLocaleString()} economically distinct scenarios before and after. Counts describe model coverage, not the probability of making money.</p>
+      <OutcomeChart values={chartAfter} before={chartBefore} />
       {trade && <div className="scenario-impact"><ImpactList title="Where this trade helps" changes={comparison.improved}/><ImpactList title="What you give up" changes={comparison.worsened}/></div>}
     </section>
     <div className="trade-detail-grid"><div>
@@ -99,6 +102,6 @@ function CustomTrade({ seed, onSimulate }: { seed: Position; onSimulate: (trade:
     <div className="ticket-grid"><div><label className="field-label" htmlFor="trade-side">Side</label><select id="trade-side" value={side} onChange={e => setSide(e.target.value as Position['side'])}><option>YES</option><option>NO</option></select></div><div><label className="field-label" htmlFor="trade-quantity">Quantity</label><input id="trade-quantity" inputMode="numeric" value={quantity} onChange={e => setQuantity(e.target.value)}/></div><div><label className="field-label" htmlFor="trade-price">Price ($)</label><input id="trade-price" inputMode="decimal" value={priceText} onChange={e => setPriceText(e.target.value)}/></div></div>
     <dl className="ticket-readout"><div><dt>Trade cost</dt><dd>{parsed ? money(parsed.quantity * parsed.priceX4 / 100) : '—'}</dd></div><div><dt>Maximum payout</dt><dd>{parsed ? money(parsed.quantity * 100) : '—'}</dd></div></dl>
     <button type="submit" className="primary-button" disabled={!parsed}>Simulate trade <ArrowRight size={14}/></button>
-    <p className="form-hint">{parsed ? 'Edits apply when you simulate. Custom trades use your entered price and size, independent of the suggestion budget.' : 'Use a positive whole quantity and a price between $0 and $1, up to four decimal places. Total cost must be whole cents.'}</p>
+    <p className="form-hint">{parsed ? 'Enter a size and price to preview the portfolio impact.' : 'Use a positive whole quantity and a price between $0 and $1, up to four decimal places. Total cost must be whole cents.'}</p>
   </form>;
 }

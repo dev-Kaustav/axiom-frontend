@@ -10,13 +10,16 @@ async function guard(page: Page) {
   return () => expect(errors).toEqual([]);
 }
 
+/** The navigator lives in a popover on the map's bottom bar. */
+const openUniverse = (page: Page) => page.getByRole('button', { name: 'Universe' }).click();
+
 test('the five questions can be answered end to end', async ({ page }) => {
   const noErrors = await guard(page);
   await page.goto('/demo/');
 
   // 1. What am I exposed to?
-  await expect(page.getByRole('heading', { name: 'What am I exposed to?' })).toBeVisible();
-  await expect(page.locator('.summary-strip').getByText('Worst outcome')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Exposure', exact: true })).toBeVisible();
+  await expect(page.getByText('Worst portfolio P&L', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Economic drivers' })).toBeVisible();
 
   // The October and December decisions must be the dominant drivers of a book
@@ -26,7 +29,7 @@ test('the five questions can be answered end to end', async ({ page }) => {
 
   // 2. What happens under this outcome?
   await page.getByRole('button', { name: 'Scenarios' }).click();
-  await expect(page.getByRole('heading', { name: 'What happens under this outcome?' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Scenarios', exact: true })).toBeVisible();
 
   const scenarioTable = page.locator('table.scenario-table');
   await expect(scenarioTable).toBeVisible();
@@ -46,7 +49,7 @@ test('the five questions can be answered end to end', async ({ page }) => {
 
   // 3. Where does the hedge fail?
   await page.getByRole('button', { name: 'Relationships' }).click();
-  await expect(page.getByRole('heading', { name: /where does the hedge fail/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Relationships', exact: true })).toBeVisible();
 
   // The ranked pairs are computed from payoffs, and selecting one traces it
   // through the graph into the evidence inspector.
@@ -72,7 +75,7 @@ test('the five questions can be answered end to end', async ({ page }) => {
 
   // 5. What happens if I make this trade?
   await page.getByRole('button', { name: 'Trade', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Which trades improve this portfolio?' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Trade ideas', exact: true })).toBeVisible();
   // A suggestion is previewed immediately; the unchanged book is an explicit baseline.
   await expect(page.locator('.suggestion-list .suggestion')).toHaveCount(3);
   await page.getByRole('button', { name: /Keep current portfolio/ }).click();
@@ -120,7 +123,8 @@ test('nothing is silently excluded', async ({ page }) => {
   await expect(page.getByText('RESOLVED MARKET').first()).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Model assumptions' })).toBeVisible();
 
-  // The two causes of an unreachable outcome are never merged.
+  // The two causes of an unreachable outcome remain available in the disclosure.
+  await page.locator('.panel').filter({ has: page.getByRole('heading', { name: 'Contracts with no reachable outcome' }) }).getByText('View details', { exact: true }).click();
   await expect(page.getByRole('heading', { name: /Already settled/ })).toBeVisible();
   await expect(page.getByRole('heading', { name: /Outside the declared move alphabet/ })).toBeVisible();
 });
@@ -129,22 +133,22 @@ test('the workspace can be resized, panned and compared', async ({ page }) => {
   const noErrors = await guard(page);
   await page.goto('/demo/#/relationships');
 
-  // Side rails are draggable: a contract name too long for the default width
-  // has to be readable, not truncated.
-  const railWidth = () => page.locator('.relationship-rail').evaluate((e) => e.clientWidth);
-  const before = await railWidth();
-  const handle = page.locator('.resize-handle').first();
+  // The inspector column is draggable: a contract name too long for the
+  // default width has to be readable, not truncated. And by keyboard, for
+  // anyone not using a pointer.
+  const evidenceWidth = () => page.locator('.evidence-panel').evaluate((e) => e.clientWidth);
+  const before = await evidenceWidth();
+  const handle = page.locator('.resize-handle');
+  await expect(handle).toHaveCount(1);
   const box = (await handle.boundingBox())!;
   await page.mouse.move(box.x + 3, box.y + 200);
   await page.mouse.down();
-  await page.mouse.move(box.x + 123, box.y + 200, { steps: 8 });
+  await page.mouse.move(box.x - 77, box.y + 200, { steps: 8 });
   await page.mouse.up();
-  expect(await railWidth()).toBeGreaterThan(before);
+  expect(await evidenceWidth()).toBeGreaterThan(before);
 
-  // And by keyboard, for anyone not using a pointer.
-  const evidenceWidth = () => page.locator('.evidence-panel').evaluate((e) => e.clientWidth);
   const evidenceBefore = await evidenceWidth();
-  await page.locator('.resize-handle').nth(1).focus();
+  await handle.focus();
   await page.keyboard.press('Shift+ArrowLeft');
   expect(await evidenceWidth()).toBeGreaterThan(evidenceBefore);
 
@@ -241,8 +245,6 @@ test('graph containers drag like a flowchart', async ({ page }) => {
 });
 
 test('no horizontal scroll at any desktop width', async ({ page }) => {
-  // Desktop-only by decision: .app declares min-width 1200px. Narrower
-  // viewports are a later pass, not a supported width today.
   for (const width of [1280, 1440, 1920]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/demo/');
@@ -301,6 +303,7 @@ test('the whole universe can be put on the canvas', async ({ page }) => {
 
   // The toggle puts the entire universe on the canvas, including the contracts
   // no relation can be computed about. They are carried with the reason.
+  await openUniverse(page);
   await page.getByRole('button', { name: 'All contracts' }).click();
   await expect(page.locator('.contract-node')).toHaveCount(122);
   await expect(page.locator('.contract-node.inert')).toHaveCount(57);
@@ -322,6 +325,7 @@ test('the whole universe can be put on the canvas', async ({ page }) => {
 test('a selection may include contracts the model never interpreted', async ({ page }) => {
   const noErrors = await guard(page);
   await page.goto('/demo/#/relationships');
+  await openUniverse(page);
   await page.getByRole('button', { name: 'All contracts' }).click();
   // Narrowed so the pair under test is on screen: the October decision brackets
   // are interpreted, and the October dissent contracts are refused.
@@ -373,7 +377,7 @@ test('a trackpad pinch zooms the canvas continuously', async ({ page }) => {
   // The gesture is refused everywhere in the app, so a pinch never zooms the
   // browser page out from under a fixed desktop layout -- and a pinch outside
   // the canvas does not move the canvas either.
-  for (const sel of ['.evidence-panel', '.relationship-rail', 'body']) {
+  for (const sel of ['.evidence-panel', '.hedge-watch-panel', 'body']) {
     const prevented = await page.locator(sel).first().evaluate((node) => {
       const e = new WheelEvent('wheel', { deltaY: -10, ctrlKey: true, bubbles: true, cancelable: true });
       node.dispatchEvent(e);
@@ -389,6 +393,7 @@ test('a trackpad pinch zooms the canvas continuously', async ({ page }) => {
 test('dragging a container keeps its wires attached and curved', async ({ page }) => {
   const noErrors = await guard(page);
   await page.goto('/demo/#/relationships');
+  await openUniverse(page);
   await page.getByRole('button', { name: 'All contracts' }).click();
   await expect(page.locator('.contract-node')).toHaveCount(122);
 
@@ -398,7 +403,7 @@ test('dragging a container keeps its wires attached and curved', async ({ page }
   expect(before.length).toBeGreaterThan(1000);
 
   const head = (await page.locator('.graph-cluster').first().locator('.cluster-head').boundingBox())!;
-  await page.mouse.move(head.x + 40, head.y + 8);
+  await page.mouse.move(head.x + head.width / 2, head.y + head.height / 2);
   await page.mouse.down();
   await page.mouse.move(head.x + 200, head.y + 140, { steps: 6 });
 
@@ -443,7 +448,7 @@ test('a vulnerability leads to targeted suggestions with comparable before and a
 
   await page.getByRole('button', { name: 'More profitable scenarios', exact: true }).click();
   await page.getByLabel('Additional capital budget').selectOption('5000');
-  await expect(page.locator('.comparison-note')).toContainText('1,124');
+  await expect(page.locator('.trade-preview .chart-heading')).toContainText('Before / after');
   await page.getByRole('button', { name: /Keep current portfolio/ }).click();
   await expect(page.locator('#preview-heading')).toHaveText('Keep the current portfolio');
   await expect(page.locator('.preview-metrics').getByText('$0', { exact: true })).toBeVisible();
@@ -451,7 +456,7 @@ test('a vulnerability leads to targeted suggestions with comparable before and a
   await expect(page.locator('.target-banner')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Reduce worst-case loss', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await page.getByRole('button', { name: 'Exposure', exact: true }).click();
-  await page.getByRole('button', { name: 'Find hedges for selected outcome', exact: true }).click();
+  await page.getByRole('button', { name: 'Find hedges', exact: true }).click();
   await expect(page.locator('.target-banner')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   noErrors();
@@ -470,4 +475,111 @@ test('custom edits keep the simulated result explicit and reject fractional cent
   await expect(page.locator('.preview-heading .section-label')).toHaveText('Custom simulation');
   await expect(page.locator('.preview-metrics').getByText('$1,000', { exact: true })).toBeVisible();
   noErrors();
+});
+
+// A long position list must never dictate the heatmap or document height.
+test('Exposure scrolls the complete outcome panel without moving the landscape', async ({ page }) => {
+  for (const [width, height] of [[1440, 900], [1920, 1080]]) {
+    await page.setViewportSize({ width, height });
+    await page.goto('/demo/#/exposure');
+    const rail = page.getByRole('region', { name: 'Selected outcome', exact: true });
+    const bounds = await page.evaluate(() => {
+      const landscape = document.querySelector('.landscape-panel')!.getBoundingClientRect();
+      const outcome = document.querySelector('.outcome-panel')!.getBoundingClientRect();
+      return { landscape: landscape.height, outcome: outcome.height, bottom: landscape.bottom, viewport: document.querySelector('.workspace')!.getBoundingClientRect().bottom, document: document.documentElement.scrollHeight };
+    });
+    expect(Math.abs(bounds.landscape - bounds.outcome)).toBeLessThan(2);
+    expect(bounds.bottom).toBeLessThanOrEqual(bounds.viewport);
+    expect(bounds.document).toBe(height);
+    const workspaceScroll = await page.locator('.workspace').evaluate(el => el.scrollTop);
+    await rail.hover();
+    await page.mouse.wheel(0, 320);
+    await expect.poll(() => rail.evaluate(el => el.scrollTop)).toBeGreaterThan(250);
+    await expect(rail.getByRole('heading', { name: 'Selected outcome' })).not.toBeInViewport();
+    const visibleContributions = await rail.locator('.contribution-list button').evaluateAll(buttons => {
+      const panel = buttons[0].closest('.outcome-panel')!.getBoundingClientRect();
+      return buttons.filter(button => {
+        const box = button.getBoundingClientRect();
+        return box.top >= panel.top && box.bottom <= panel.bottom - 44;
+      }).length;
+    });
+    expect(visibleContributions).toBeGreaterThanOrEqual(6);
+    await page.screenshot({ path: test.info().outputPath(`outcome-scroll-${width}.png`) });
+    expect(await page.locator('.workspace').evaluate(el => el.scrollTop)).toBe(workspaceScroll);
+    await rail.focus();
+    await page.keyboard.press('End');
+    await expect.poll(() => rail.evaluate(el => el.scrollTop)).toBeGreaterThan(0);
+    await expect(rail.locator('.contribution-list button').last()).toBeInViewport();
+    await expect(page.getByRole('button', { name: 'Find hedges', exact: true })).toBeInViewport();
+    await rail.locator('.contribution-list button').last().click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await page.getByRole('button', { name: 'Find hedges', exact: true }).click();
+    await expect(page.locator('.target-banner')).toBeVisible();
+    expect(await page.locator('.workspace').evaluate(el => el.scrollTop)).toBe(0);
+  }
+});
+
+
+test('relationship map fills the left, with the inspector above the hedge watch', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/demo/#/relationships');
+  const watch = page.getByRole('region', { name: 'Hedge failure pairs', exact: true });
+  const exact = page.getByRole('region', { name: 'Exact group offsets', exact: true });
+  expect(await watch.evaluate(el => !!el.closest('.relationship-side'))).toBe(true);
+  expect(await exact.evaluate(el => !!el.closest('.hedge-watch-panel'))).toBe(true);
+  const map = (await page.locator('.graph-panel').boundingBox())!;
+  const inspector = (await page.locator('.evidence-panel').boundingBox())!;
+  const panel = (await page.locator('.hedge-watch-panel').boundingBox())!;
+  expect(inspector.x).toBeGreaterThanOrEqual(map.x + map.width);
+  expect(panel.y).toBeGreaterThanOrEqual(inspector.y + inspector.height - 1);
+  expect(Math.abs(panel.x - inspector.x)).toBeLessThan(2);
+  // Nothing is pushed below the fold or outside the page.
+  for (const box of [map, inspector, panel]) expect(box.y + box.height).toBeLessThanOrEqual(900);
+  // The whole held canvas is framed, and the legend carries the filter.
+  const viewport = (await page.locator('.graph-viewport').boundingBox())!;
+  const nodes = page.locator('.contract-node');
+  for (let i = 0; i < await nodes.count(); i++) {
+    const n = (await nodes.nth(i).boundingBox())!;
+    expect(n.y + n.height).toBeLessThanOrEqual(viewport.y + viewport.height + 1);
+  }
+  const implication = page.getByRole('group', { name: 'Relation types' }).getByRole('button', { name: /implication/i });
+  await expect(implication).toHaveAttribute('aria-pressed', 'true');
+  await implication.click();
+  await expect(implication).toHaveAttribute('aria-pressed', 'false');
+  await watch.getByRole('button').first().click();
+  await expect(page.locator('.evidence-panel').getByRole('heading', { name: 'Where it fails' })).toBeVisible();
+  await exact.getByRole('button').first().click();
+  await expect(page.locator('.evidence-panel')).toContainText('One constant payout.');
+  await watch.focus();
+  await page.keyboard.press('End');
+  await expect(watch.getByRole('button').last()).toBeInViewport();
+});
+
+test('lighting responds gently to pointer and tab focus, and respects reduced motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/demo/#/exposure');
+  const field = page.locator('.light-field');
+  const transform = () => field.evaluate(el => getComputedStyle(el).transform);
+  await page.mouse.move(1300, 750);
+  await expect.poll(transform).not.toBe('none');
+  await expect.poll(transform).not.toBe('matrix(1, 0, 0, 1, 0, 0)');
+  const offset = await field.evaluate(el => {
+    const matrix = new DOMMatrix(getComputedStyle(el).transform);
+    return [matrix.m41, matrix.m42];
+  });
+  expect(Math.abs(offset[0])).toBeLessThanOrEqual(10);
+  expect(Math.abs(offset[1])).toBeLessThanOrEqual(6);
+  const tab = page.getByRole('button', { name: 'Portfolio', exact: true });
+  await tab.hover();
+  await expect.poll(() => tab.evaluate(el => getComputedStyle(el, '::before').opacity)).toBe('1');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.mouse.move(200, 600);
+  await expect.poll(transform).toBe('matrix(1, 0, 0, 1, 0, 0)');
+  await page.keyboard.press('Tab');
+  await tab.focus();
+  await expect.poll(() => tab.evaluate(el => getComputedStyle(el, '::before').opacity)).toBe('1');
+  for (const selector of ['.workspace', '.outcome-panel']) {
+    expect(await page.locator(selector).evaluate(el => getComputedStyle(el).scrollbarWidth)).toBe('none');
+  }
 });
