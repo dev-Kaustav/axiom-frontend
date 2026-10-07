@@ -104,7 +104,13 @@ export type TradeSuggestion = {
   worstImprovement: number; coverageGain: number; targetImprovement: number;
 };
 
-export function suggestTrades(positions: Position[], budgetCents: number, objective: TradeObjective, targetIndex: number | null = null) {
+/** Entry price for a side, in ten-thousandths; null when the contract cannot be priced. */
+export type PriceSource = (contractId: string, side: Position['side']) => number | null;
+
+export function suggestTrades(
+  positions: Position[], budgetCents: number, objective: TradeObjective, targetIndex: number | null = null,
+  priceOf: PriceSource = snapshotPrice, limit = 3,
+) {
   if (!Number.isSafeInteger(budgetCents) || budgetCents <= 0 || (objective === 'target' && targetIndex === null)) return [];
   const beforePnls = comparisonPnls(positions);
   const before = outcomeMetrics(beforePnls);
@@ -118,7 +124,7 @@ export function suggestTrades(positions: Position[], budgetCents: number, object
     if (!view.authored.claim || view.degenerate || view.contract.closed) continue;
     const column = payoffOf(view.contract.contract_id);
     for (const side of ['YES', 'NO'] as const) {
-      const entryPrice = snapshotPrice(view.contract.contract_id, side);
+      const entryPrice = priceOf(view.contract.contract_id, side);
       if (entryPrice === null) continue;
       const maxQuantity = Math.min(MAX_SUGGESTED_QUANTITY, Math.floor(budgetCents * 100 / entryPrice));
       // Lots of 100 keep every snapshot price exact in whole cents.
@@ -144,5 +150,5 @@ export function suggestTrades(positions: Position[], budgetCents: number, object
       if (sizes[0]) candidates.push(sizes[0]);
     }
   }
-  return candidates.sort(rank).slice(0, 3);
+  return candidates.sort(rank).slice(0, limit);
 }

@@ -52,3 +52,50 @@ All six AXF UI phases already consume the shared UI contract and consolidated re
 - TypeScript/Vite build and whitespace checks pass. All 17 browser checks passed across the main run and focused rerun after restoring the selection-context label and correcting a drag-test coordinate for scaled headers. Includes all-route/modal axe, overflow, graph manipulation, outcome scrolling, panel placement and reduced motion. Existing >500kB bundle advisory remains.
 - Recaptured all seven views plus inspector at both target sizes. Additional [scrolled outcome at 1440](rook-dark-terminal/outcome-scroll-1440.png) and [1920](rook-dark-terminal/outcome-scroll-1920.png) document the larger contribution reading area. Outer document remains bounded on every route; 720×450 hedge navigation still works.
 - Relationships split: map left, inspector over hedge watch right; navigator folded into the map bottom bar. Screenshots: rook-dark-terminal/relationships-split-1440.png and -1920.png.
+
+## Trade terminal — 2026-10-07 user request
+
+- Trade is now a bounded workstation screen (references: Bloomberg, Kairos, SoftSolutions nexRates). Ideas and quotes are on the left, the selected idea and analysis tabs in the centre, the order book and ticket on the right, and tape, news wire and simulation log along the bottom. Every panel scrolls inside itself; the document and workspace never scroll at 1280×800, 1440×900 or 1920×1080. Drag-to-rearrange is deferred to production.
+- Live feel comes from a seeded, looping replay feed (`demo/src/domain/liveFeed.ts`, wire copy in `demo/src/data/feed-script.ts`), labelled "Replay · indicative". Mids walk in 0.1¢ ticks from the snapshot marks and revert towards them. Per user decision, feed mids drive the suggestions and before/after results through `suggestTrades(..., priceOf)`; the snapshot remains the default source. The feed can be paused, skips ticks in hidden tabs, and starts paused with `?feed=paused` for stable captures and tests.
+- The capital dropdown is replaced by $5k / $25k / $50k / $100k buttons plus a validated custom amount. Ideas are compact ranked rows marked for rank moves and survive re-pricing because they are keyed by contract and side. The ticket follows the previewed idea's live price until edited and has a YES/NO toggle and "Use mid".
+- Feature parity: every previous Trade feature is retained. The four formerly collapsed sections are the Impact (helps and gives up, side by side), Full comparison, Worst outcome and Relations tabs.
+- Checks: 71 unit tests (5 new feed/price-source tests) and 20 browser tests (3 new: bounded terminal at both target sizes, streaming/pause/selection survival, capital buttons and custom amount), including all-route axe. Build passes. Screenshots: rook-dark-terminal/trade-1440.png and trade-1920.png. With an Exposure target outcome, the control bar wraps to two rows at 1440 and the order book shrinks, but the screen stays bounded.
+
+## Trade / Terminal split — 2026-10-07 user request
+
+Supersedes the combined layout in the "Trade terminal" section above, following [the split plan](Trade%20and%20Terminal%20split%20plan.md). The user found simulation hard to follow alongside streaming data.
+- **Trade** is simulation plus positions and P&L.
+  - Ideas and before/after results use fixed snapshot marks again; no live feed runs here.
+  - Layout: Ideas on the left; selected idea and analysis tabs in the centre; Ticket and Simulations log on the right; a new Positions & P&L book along the bottom.
+  - The book shows every position plus the highlighted proposed trade, valued in Worst, Target, Best or All hold, with before/after totals. The Worst total reconciles with the worst-case readout.
+  - The ticket's "Use mid" became "Use snapshot mark".
+- **Terminal** is a new nav tab, `#/terminal`, for the live replay market.
+  - Panels: quotes board, focused order book with a YES/NO view, tape and news wire.
+  - The feed runs only while Terminal is open.
+  - "Simulate YES/NO in Trade" opens Trade with the ticket pre-filled at the live mid and labelled "From Terminal · price at time". It does not auto-simulate.
+- Nothing was removed; the panels were relocated. Colour and lighting are unchanged. Terminal design refinement is pending.
+- Checks:
+  - 71 unit tests and 23 browser tests pass. The overflow and axe sweeps now include Terminal.
+  - New browser tests: both screens bounded at 1440×900 and 1920×1080; Trade numbers hold still; Terminal streams and pauses; hand-off; positions book reconciliation.
+  - Build passes.
+  - Screenshots: rook-dark-terminal/trade-1440/1920.png and terminal-1440/1920.png.
+
+## Trade redesign with an RFQ ticket — 2026-10-07 user request
+
+- The Positions & P&L widget is removed from Trade. The resident ticket is replaced by a floating **New trade · RFQ** dialog, modelled on a Bloomberg-style request-for-quote ticket. It takes no screen space until opened.
+- The ticket sends a request (contract, buy YES/NO, quantity in lots of 100, optional limit) to four simulated providers: Venue book, Maker A, Maker B and Maker C.
+  - Quotes arrive staggered. Each is live for 15 seconds with a countdown and shows offer, size (partial where a provider's limit is smaller), cost, difference from the mark, and the worst-case change if accepted.
+  - The cheapest eligible quote is marked Best. Quotes above the limit or lapsed cannot be accepted.
+  - A stage bar records Request, Quotes and Accept, with timestamps.
+  - Accept simulates the quote. "Simulate at limit" keeps the old custom-price path. Amend and Refresh behave as on a dealer ticket.
+  - The dialog states plainly that nothing is sent. Quotes come from `demo/src/domain/rfq.ts`: deterministic offsets from the snapshot mark, with unit tests.
+- New layout:
+  - Left: Ideas, full height.
+  - Centre: the selected idea, with Inspect and **Request quotes** actions, a four-figure KPI strip (worst, best, profitable scenarios, capital) and a taller before/after chart, above the analysis tabs.
+  - Right: Simulations log, full height. Selecting a run restores it.
+- The Terminal hand-off now opens the RFQ ticket for that contract and side. It shows the live mid with "Use as limit" and never auto-simulates.
+- Checks:
+  - 75 unit tests (4 new RFQ) and 24 browser tests.
+  - New browser coverage: the quote lifecycle with a mocked clock (arrival, limit, lapse, refresh, amend, accessibility scan of the open ticket), Terminal → RFQ → accept, and restoring a logged run.
+  - Build passes.
+  - Screenshots: rook-dark-terminal/trade-1440/1920.png and trade-rfq-1440/1920.png.

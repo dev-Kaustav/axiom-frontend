@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-const PAGES = ['Exposure', 'Portfolio', 'Scenarios', 'Relationships', 'Trade', 'Contracts', 'Data'];
+const PAGES = ['Exposure', 'Portfolio', 'Scenarios', 'Relationships', 'Trade', 'Terminal', 'Contracts', 'Data'];
 
 /** Fails the test on any uncaught page error, so a broken view cannot pass quietly. */
 async function guard(page: Page) {
@@ -77,16 +77,18 @@ test('the five questions can be answered end to end', async ({ page }) => {
   await page.getByRole('button', { name: 'Trade', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Trade ideas', exact: true })).toBeVisible();
   // A suggestion is previewed immediately; the unchanged book is an explicit baseline.
-  await expect(page.locator('.suggestion-list .suggestion')).toHaveCount(3);
+  expect(await page.locator('.suggestion-list .suggestion').count()).toBeGreaterThanOrEqual(3);
   await page.getByRole('button', { name: /Keep current portfolio/ }).click();
-  await page.getByText('Full before and after comparison', { exact: true }).click();
+  await page.getByRole('tab', { name: 'Full comparison', exact: true }).click();
   const worstRow = page.locator('table.compare-table tbody tr').first();
   await expect(worstRow.locator('th')).toHaveText('Worst outcome');
   await expect(worstRow.locator('td').nth(1)).toHaveText(await worstRow.locator('td').first().innerText());
 
+  await page.getByRole('button', { name: /New trade/ }).click();
   await page.getByLabel('Quantity').fill('200000');
-  await page.getByLabel('Price').fill('0.02');
-  await page.getByRole('button', { name: 'Simulate trade' }).click();
+  await page.getByLabel('Price ($)').fill('0.02');
+  await page.getByRole('button', { name: /Simulate trade/ }).click();
+  await page.getByRole('tab', { name: 'Full comparison', exact: true }).click();
   await expect(worstRow.locator('td').nth(1)).not.toHaveText('\u2014');
   await expect(worstRow.locator('td').nth(2)).not.toHaveText('\u2014');
 
@@ -441,7 +443,8 @@ test('dragging a container keeps its wires attached and curved', async ({ page }
 
 test('a vulnerability leads to targeted suggestions with comparable before and after outcomes', async ({ page }) => {
   const noErrors = await guard(page);
-  await page.goto('/demo/');
+  // A paused replay keeps the ranking still while the test clicks through it.
+  await page.goto('/demo/?feed=paused');
   const risk = page.locator('.vulnerability-row').nth(1);
   const scenario = await risk.locator('.risk-select b').innerText();
   await risk.locator('.risk-select').click();
@@ -460,7 +463,7 @@ test('a vulnerability leads to targeted suggestions with comparable before and a
   await expect(page.locator('#preview-heading')).toHaveText(selectedName.replace(/^(YES|NO)/, '$1 '));
 
   await page.getByRole('button', { name: 'More profitable scenarios', exact: true }).click();
-  await page.getByLabel('Additional capital budget').selectOption('5000');
+  await page.getByRole('button', { name: 'Up to $5,000', exact: true }).click();
   await expect(page.locator('.trade-preview .chart-heading')).toContainText('Before / after');
   await page.getByRole('button', { name: /Keep current portfolio/ }).click();
   await expect(page.locator('#preview-heading')).toHaveText('Keep the current portfolio');
@@ -477,14 +480,16 @@ test('a vulnerability leads to targeted suggestions with comparable before and a
 
 test('custom edits keep the simulated result explicit and reject fractional cents', async ({ page }) => {
   const noErrors = await guard(page);
-  await page.goto('/demo/#/trade');
+  await page.goto('/demo/?feed=paused#/trade');
   const originalPreview = await page.locator('#preview-heading').innerText();
+  await page.getByRole('button', { name: /New trade/ }).click();
   await page.getByLabel('Quantity', { exact: true }).fill('1');
   await page.getByLabel('Price ($)', { exact: true }).fill('0.005');
-  await expect(page.getByRole('button', { name: 'Simulate trade', exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: /Simulate trade/ })).toBeDisabled();
   await expect(page.locator('#preview-heading')).toHaveText(originalPreview);
   await page.getByLabel('Quantity', { exact: true }).fill('200000');
-  await page.getByRole('button', { name: 'Simulate trade', exact: true }).click();
+  await page.getByRole('button', { name: /Simulate trade/ }).click();
+  await expect(page.getByRole('dialog')).toBeHidden();
   await expect(page.locator('.preview-heading .section-label')).toHaveText('Custom simulation');
   await expect(page.locator('.preview-metrics').getByText('$1,000', { exact: true })).toBeVisible();
   noErrors();
@@ -595,4 +600,132 @@ test('lighting responds gently to pointer and tab focus, and respects reduced mo
   for (const selector of ['.workspace', '.outcome-panel']) {
     expect(await page.locator(selector).evaluate(el => getComputedStyle(el).scrollbarWidth)).toBe('none');
   }
+});
+
+// Trade and Terminal are workstation screens: panels scroll inside themselves, never the page.
+test('Trade and Terminal are bounded screens at both target sizes', async ({ page }) => {
+  const noErrors = await guard(page);
+  for (const [route, panels] of [['trade', 4], ['terminal', 4]] as const) {
+    for (const [width, height] of [[1440, 900], [1920, 1080]]) {
+      await page.setViewportSize({ width, height });
+      await page.goto(`/demo/?feed=paused#/${route}`);
+      await expect(page.locator('.view-content .panel').first()).toBeVisible();
+      const m = await page.evaluate(() => {
+        const ws = document.querySelector('.workspace')!;
+        const footer = document.querySelector('.app-footer')!.getBoundingClientRect().top;
+        const bottoms = [...document.querySelectorAll('.view-content .panel')].map(p => p.getBoundingClientRect().bottom);
+        return {
+          doc: document.documentElement.scrollHeight - innerHeight,
+          workspace: ws.scrollHeight - ws.clientHeight,
+          overflowing: bottoms.filter(bottom => bottom > footer).length,
+          count: bottoms.length,
+        };
+      });
+      expect(m.doc, `${route} document at ${width}`).toBeLessThanOrEqual(0);
+      expect(m.workspace, `${route} workspace at ${width}`).toBeLessThanOrEqual(0);
+      expect(m.count).toBe(panels);
+      expect(m.overflowing, `${route} panels below the fold at ${width}`).toBe(0);
+    }
+  }
+  await page.goto('/demo/#/trade');
+  await expect(page.getByRole('button', { name: /New trade/ })).toBeInViewport();
+  noErrors();
+});
+
+test('Trade holds still: ideas and results use fixed snapshot marks', async ({ page }) => {
+  const noErrors = await guard(page);
+  await page.goto('/demo/#/trade');
+  await expect(page.locator('.live-dot')).toHaveCount(0);
+  const read = () => page.locator('.ideas-panel, .trade-preview').allInnerTexts();
+  const before = await read();
+  await page.waitForTimeout(3500);
+  expect(await read()).toEqual(before);
+  await page.getByRole('button', { name: /New trade/ }).click();
+  await expect(page.getByRole('dialog').locator('.ticket-mid')).toContainText('Snapshot mark');
+  noErrors();
+});
+
+test('the Terminal replay feed streams and pauses', async ({ page }) => {
+  const noErrors = await guard(page);
+  await page.goto('/demo/#/terminal');
+  const quotes = () => page.locator('.quotes-table tbody').innerText();
+  const tapeTop = () => page.locator('.tape-table tbody tr').first().innerText();
+  const before = await quotes();
+  await expect.poll(quotes, { timeout: 8000 }).not.toBe(before);
+  await page.getByRole('button', { name: 'Pause feed', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Resume feed', exact: true })).toBeVisible();
+  const frozen = [await quotes(), await tapeTop()];
+  await page.waitForTimeout(3200);
+  expect([await quotes(), await tapeTop()]).toEqual(frozen);
+  noErrors();
+});
+
+test('a Terminal contract opens a new-trade ticket on Trade without simulating', async ({ page }) => {
+  const noErrors = await guard(page);
+  await page.goto('/demo/?feed=paused#/terminal');
+  const row = page.locator('.quotes-table tbody tr').nth(2);
+  const name = (await row.locator('.quote-name').innerText()).trim();
+  await row.locator('.quote-name').click();
+  await expect(page.locator('.book-summary')).toContainText(name);
+  await page.getByRole('button', { name: 'Simulate NO in Trade', exact: true }).click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('#trade-contract option:checked')).toHaveText(name);
+  await expect(dialog.locator('.side-toggle button.no')).toHaveAttribute('aria-pressed', 'true');
+  await expect(dialog.locator('.ticket-source')).toContainText('From Terminal');
+  await expect(page.locator('.preview-heading .section-label')).toHaveText('Selected idea');
+  await dialog.getByRole('button', { name: /Simulate trade/ }).click();
+  await expect(dialog).toBeHidden();
+  await expect(page.locator('.preview-heading .section-label')).toHaveText('Custom simulation');
+  await expect(page.locator('#preview-heading')).toHaveText(`NO ${name}`);
+  await expect(page.locator('.sim-list li')).toHaveCount(1);
+  noErrors();
+});
+
+test('the new-trade ticket previews cost and closes without simulating', async ({ page }) => {
+  const noErrors = await guard(page);
+  await page.goto('/demo/?feed=paused#/trade');
+  await page.getByRole('button', { name: /New trade/ }).click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.getByLabel('Price ($)', { exact: true })).not.toHaveValue('');
+  await dialog.getByLabel('Quantity', { exact: true }).fill('100000');
+  await dialog.getByLabel('Price ($)', { exact: true }).fill('0.02');
+  await expect(dialog.locator('.trade-ticket-summary')).toContainText('$2,000');
+  const axe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+  expect(axe.violations, 'violations in the new-trade ticket').toEqual([]);
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await expect(page.locator('.sim-list li')).toHaveCount(0);
+  noErrors();
+});
+
+test('a logged run can be brought back from the simulations list', async ({ page }) => {
+  const noErrors = await guard(page);
+  await page.goto('/demo/#/trade');
+  await page.locator('.suggestion').nth(1).click();
+  const chosen = await page.locator('#preview-heading').innerText();
+  await page.getByRole('button', { name: /Keep current portfolio/ }).click();
+  await expect(page.locator('#preview-heading')).toHaveText('Keep the current portfolio');
+  await expect(page.locator('.sim-list li')).toHaveCount(2);
+  await page.locator('.sim-entry').nth(1).click();
+  await expect(page.locator('#preview-heading')).toHaveText(chosen);
+  await expect(page.locator('.preview-heading .section-label')).toContainText('Restored');
+  noErrors();
+});
+
+test('capital is chosen with buttons or a custom amount', async ({ page }) => {
+  const noErrors = await guard(page);
+  await page.goto('/demo/?feed=paused#/trade');
+  await expect(page.getByRole('button', { name: 'Up to $25,000', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  const field = page.getByLabel('Custom capital in dollars');
+  await field.fill('7500');
+  await field.press('Enter');
+  await expect(page.getByRole('button', { name: 'Up to $25,000', exact: true })).toHaveAttribute('aria-pressed', 'false');
+  for (const text of await page.locator('.suggestion-size').allInnerTexts()) {
+    const cost = Number(text.match(/\$([\d,]+) cost/)![1].replace(/,/g, ''));
+    expect(cost).toBeLessThanOrEqual(7500);
+  }
+  await field.fill('12x');
+  await expect(field).toHaveAttribute('aria-invalid', 'true');
+  noErrors();
 });

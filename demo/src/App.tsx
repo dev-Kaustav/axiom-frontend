@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Activity, Layers3, GitBranch, FlaskConical, ArrowLeftRight, BookOpen, Database } from 'lucide-react';
+import { Activity, Layers3, GitBranch, FlaskConical, ArrowLeftRight, MonitorDot, BookOpen, Database } from 'lucide-react';
 import './styles.css';
 import { Modal } from './components/primitives';
 import { PortfolioView } from './components/PortfolioView';
@@ -7,14 +7,16 @@ import { ExposureView } from './components/ExposureView';
 import { ScenarioExplorer } from './components/ScenarioExplorer';
 import { RelationshipsView } from './components/RelationshipsView';
 import { TradeSimulator } from './components/TradeSimulator';
+import type { TicketSeed } from './components/NewTradeDialog';
+import { TerminalView } from './components/TerminalView';
 import { ContractsView, DataView } from './components/ContractsView';
 import { ContractInspector } from './components/ContractInspector';
 import { Clock } from './components/Clock';
 import { PORTFOLIO, POSITIONS, SNAPSHOT, contractView } from './domain/engine';
 
-const PAGES = ['Exposure', 'Portfolio', 'Scenarios', 'Relationships', 'Trade', 'Contracts', 'Data'] as const;
+const PAGES = ['Exposure', 'Portfolio', 'Scenarios', 'Relationships', 'Trade', 'Terminal', 'Contracts', 'Data'] as const;
 type Page = (typeof PAGES)[number];
-const ICONS = [Activity, Layers3, FlaskConical, GitBranch, ArrowLeftRight, BookOpen, Database];
+const ICONS = [Activity, Layers3, FlaskConical, GitBranch, ArrowLeftRight, MonitorDot, BookOpen, Database];
 const currentPage = () => PAGES.find(p => `#/${p.toLowerCase()}` === window.location.hash) ?? 'Exposure';
 
 
@@ -25,6 +27,8 @@ export default function App() {
   const [inspecting, setInspecting] = useState<string | null>(null);
   const [scenarioKey, setScenarioKey] = useState<string | null>(null);
   const [hedgeTarget, setHedgeTarget] = useState<number | null>(null);
+  // A contract the Terminal handed to Trade; consumed when Trade next mounts from it.
+  const [ticketSeed, setTicketSeed] = useState<TicketSeed | null>(null);
   const navigate = (next: Page) => { window.location.hash = `/${next.toLowerCase()}`; setPage(next); };
   useEffect(() => {
     const sync = () => setPage(currentPage());
@@ -76,7 +80,8 @@ export default function App() {
     setScenarioKey(key);
     navigate('Scenarios');
   };
-  const findHedges = (index: number) => { setHedgeTarget(index); navigate('Trade'); };
+  const findHedges = (index: number) => { setHedgeTarget(index); setTicketSeed(null); navigate('Trade'); };
+  const simulateFromTerminal = (seed: TicketSeed) => { setTicketSeed(seed); navigate('Trade'); };
 
   return (
     <div className="app">
@@ -94,7 +99,7 @@ export default function App() {
               type="button"
               className={p === page ? 'tab active' : 'tab'}
               aria-current={p === page ? 'page' : undefined}
-              onClick={() => navigate(p)}
+              onClick={() => { setTicketSeed(null); navigate(p); }}
             >
               <Icon size={14} aria-hidden="true" />{p}
             </button>
@@ -129,7 +134,8 @@ export default function App() {
         {page === 'Relationships' && (
           <RelationshipsView positions={POSITIONS} onContract={setInspecting} onScenario={openScenario} />
         )}
-        {page === 'Trade' && <TradeSimulator key={hedgeTarget ?? 'book'} positions={POSITIONS} onContract={setInspecting} targetIndex={hedgeTarget} onClearTarget={() => setHedgeTarget(null)} />}
+        {page === 'Trade' && <TradeSimulator key={`${hedgeTarget ?? 'book'}:${ticketSeed?.at ?? ''}`} positions={POSITIONS} onContract={setInspecting} targetIndex={hedgeTarget} onClearTarget={() => setHedgeTarget(null)} seed={ticketSeed} />}
+        {page === 'Terminal' && <TerminalView positions={POSITIONS} onSimulate={simulateFromTerminal} />}
         {page === 'Contracts' && <ContractsView onContract={setInspecting} />}
         {page === 'Data' && <DataView />}
         </div>
