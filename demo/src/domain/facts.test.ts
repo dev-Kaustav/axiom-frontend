@@ -55,7 +55,7 @@ describe('every relation the graph draws is true in every world', () => {
 });
 
 describe('the five October brackets', () => {
-  const ids = ['Oct -50+', 'Oct -25', 'Oct hold', 'Oct +25', 'Oct +50+'].map(byName);
+  const ids = ['Oct -50', 'Oct -25', 'Oct hold', 'Oct +25', 'Oct +50'].map(byName);
   test('exactly one pays in every one of the 2,187 worlds', () => {
     for (let i = 0; i < STATE_COUNT; i += 1) {
       expect(ids.reduce((n, id) => n + payoffOf(id)[i], 0)).toBe(1);

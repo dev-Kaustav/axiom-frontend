@@ -204,7 +204,7 @@ test('a selection of contracts is measured against the outcome space', async ({ 
   // The five October brackets partition the October decision, so exactly one
   // pays in every world and the combined payout is a constant. That is the
   // whole point of the basket check, and it is computed, not asserted.
-  for (const [i, name] of ['Oct -50+', 'Oct -25', 'Oct hold', 'Oct +25', 'Oct +50+'].entries()) {
+  for (const [i, name] of ['Oct -50', 'Oct -25', 'Oct hold', 'Oct +25', 'Oct +50'].entries()) {
     await page.locator('.contract-node', { hasText: name }).first()
       .click(i === 0 ? {} : { modifiers: ['Shift'] });
   }

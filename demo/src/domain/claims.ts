@@ -187,11 +187,11 @@ const BUCKET_BY_LABEL: Record<string, string> = {
 };
 
 const BUCKET_SHORT: Record<string, string> = {
-  CUT_50_PLUS: '-50+',
+  CUT_50_PLUS: '-50',
   CUT_25: '-25',
   HOLD: 'hold',
   HIKE_25: '+25',
-  HIKE_50_PLUS: '+50+',
+  HIKE_50_PLUS: '+50',
 };
 
 const unsupported = (contract_id: string, event_id: string, shortName: string, rationale: string): Authored => ({
