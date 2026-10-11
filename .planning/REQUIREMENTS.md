@@ -40,3 +40,13 @@ All items are pending implementation.
 
 ## Deferred
 Live orders, automated execution, trading keys, additional venues, CSV import, and demo-model parity.
+
+## Urgent P0 requirements — 2026-10-12
+
+Historical totals above are retained. Add these two requirements to the active
+scope (backend: 84 total; frontend: prior total plus 2).
+
+| ID | Requirement | Phase | Status |
+|---|---|---|---|
+| WL-UI-01 | Bottom form reached by nav/hero with accessible responsive layout and honest API states | AXF-01.1 | Local implementation; live acceptance pending |
+| WL-CFG-01 | Public build origin shared with React; preserve demo gate and Vercel deployment | AXF-01.1 | Local implementation; operator rollout pending |

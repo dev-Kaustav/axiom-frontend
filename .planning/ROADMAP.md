@@ -1,12 +1,12 @@
 # Roadmap — Axiom Frontend v1
 
-All phases are planned, none executed. Backend readiness is an explicit dependency, not an instruction to fake data or to re-test the demo.
+Broader product phase completion is not claimed. The inserted P0 waitlist phase is implemented locally; operator production acceptance remains pending. Backend readiness is an explicit dependency, not an instruction to fake data or to re-test the demo.
 
 ## Phase 1: Production shell and API boundary
 
 **ID:** AXF-01
 **Goal:** Production shell and API boundary using backend data while preserving the validated terminal.
-**Depends on:** None
+**Depends on:** None for scaffolding; urgent AXF-01.1 rollout prioritized first
 **Requirements:** FND-01, FND-02
 **Backend:** None for scaffolding; API origin and existing OpenAPI for integration
 **Success criteria:** Production is independently implemented in root src/ with its own build/config/dependencies outside demo/; no production imports or copies demo code. Both routes retain correct assets/deep links; no silent fixture fallback.; Typed API requests preserve IDs/decimals, cancellation, structured errors, and response versions.
@@ -26,6 +26,18 @@ All phases are planned, none executed. Backend readiness is an explicit dependen
 **Wave 4** *(blocked on Wave 3 completion)*
 
 - [ ] 01-04-PLAN.md — Compose landing + /app + /demo into one deployment (publication decision checkpoint) and document it
+
+
+## Urgent phase AXF-01.1: Landing waitlist integration
+
+**Priority:** P0, ahead of broader product work.
+**Depends on:** AXM-02.1
+**Requirements:** WL-UI-01, WL-CFG-01
+**Status:** Implemented locally; operator production acceptance pending.
+**Plan:** [PLAN.md](phases/AXF-01.1-waitlist/PLAN.md)
+**Verification:** [VERIFICATION.md](phases/AXF-01.1-waitlist/VERIFICATION.md)
+**Success criteria:** Browser signup at bottom of rook.pm persists in rook_prod
+without a registry snapshot; duplicate normalized emails preserve one row.
 
 ## Phase 2: Backend catalog and evidence
 

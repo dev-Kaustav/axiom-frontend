@@ -40,3 +40,10 @@ Use GSD project/planning artifacts and frontend-design/ui-ux-pro-max guidance wi
 ## Visual direction revision — 2026-10-07
 
 The user requests a finished dark product with intentional foreground/background separation, selective gradients, Rook/violet identity, Manrope everywhere, readable text, no price ribbon and no unnecessary disclaimers. Reuse [the shared redesign report](reports/Rook%20dark%20terminal%20redesign.md) across AXF-01 through AXF-06 as mapped in UI-SPEC.md. Exact recipes and layout proportions remain proposed pending representative Exposure proof; no implementation, checker approval or phase completion is claimed. Production still independently implements the visual contract without importing or copying demo code/data. API, exact-value, backend dependency and honest-state requirements remain active.
+
+## Urgent P0 — 2026-10-12
+
+AXF-01.1 is prioritized before broader product work. Vercel serves rook.pm;
+EC2/Nginx serves api.rook.pm; existing rook_prod RDS is in ap-southeast-2.
+Configuration is supplied through environments; waitlist needs no snapshot.
+Operator rollout and final browser/RDS acceptance remain pending.
