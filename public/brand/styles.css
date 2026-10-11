@@ -41,6 +41,7 @@
 
   --tracking-label: .11em;
   --gutter: 56px;
+  --content-inset: 24px;
 
   font-family: var(--font);
   color: var(--t1);
@@ -60,7 +61,8 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 4px; border-radius: 2px; }
 ::selection { background: var(--accent-fill); color: var(--t1); }
 
-.wrap { width: min(1280px, calc(100% - var(--gutter) * 2)); margin-inline: auto; }
+/* Keep content comfortably inside the decorative guide rails. */
+.wrap { width: min(1280px, calc(100% - var(--gutter) * 2)); margin-inline: auto; padding-inline: var(--content-inset); }
 .skip-link { position: absolute; top: -100px; left: 20px; background: var(--accent-cta); color: #17130d; padding: 12px; z-index: 40; }
 .skip-link:focus { top: 12px; }
 
@@ -403,7 +405,7 @@ em { font-style: normal; color: var(--accent-soft); }
 /* --- Responsive ----------------------------------------------------------- */
 
 @media (max-width: 1080px) {
-  :root { --gutter: 34px; }
+  :root { --gutter: 34px; --content-inset: 16px; }
   .split, .feature, .console-body { grid-template-columns: 1fr; gap: 36px; }
   .console-controls { border-right: 0; border-bottom: 1px solid var(--line); }
   .cards { grid-template-columns: 1fr; }
@@ -411,7 +413,7 @@ em { font-style: normal; color: var(--accent-soft); }
 }
 
 @media (max-width: 680px) {
-  :root { --gutter: 18px; }
+  :root { --gutter: 18px; --content-inset: 0px; }
   .hero { padding-block: 0; }
   .section, .thesis, .final-cta { padding-block: 72px; }
   .hero-stage { margin-top: 52px; padding-bottom: 56px; }
