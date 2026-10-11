@@ -4,9 +4,9 @@
   "milestone": "v1",
   "phases": [],
   "next": {
-    "command": "operator rollout",
+    "command": "operator rollout from main",
     "label": "AXF-01.1 production acceptance",
-    "reason": "Local implementation; user runs production deployment and confirms browser/RDS acceptance"
+    "reason": "AXF-01.1 cherry-picked to main; user owns production deployment and browser/RDS acceptance"
   },
   "updated_at": "2026-10-12"
 }

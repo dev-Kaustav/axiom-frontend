@@ -64,3 +64,8 @@ Code and local verification are implemented; user will run production DevOps.
 Next: follow backend docs/deployment.md, set Vercel VITE_API_ORIGIN, and confirm
 browser signup plus duplicate behavior in RDS. Resume broader product plans only
 after P0 acceptance. No deployed success or broader operations completion claimed.
+
+## Production branch correction
+
+Production deploys main only. AXF-01.1 is cherry-picked onto current main,
+preserving newer main changes and excluding unrelated local demo edits.

@@ -32,3 +32,12 @@ AXIOM_REGISTRY_PATH. Run `python tests/waitlist_browser.py`.
 
 Vercel environment, Git production deployment and live browser/RDS acceptance
 are operator tasks in DEPLOYMENT.txt and ../axiom-backend/docs/deployment.md.
+
+## Cherry-picked main verification
+
+Waitlist commit is cherry-picked onto latest main, preserving its three newer
+commits. Unrelated local demo edits are excluded. Demo build and root packaging
+passed using main source; production origin asset check and all six gate checks
+passed. Browser suite passed against the cherry-picked main frontend/backend
+and isolated scratch PostgreSQL. Vercel deploys main with
+VITE_API_ORIGIN=https://api.rook.pm; live rollout remains operator-owned.

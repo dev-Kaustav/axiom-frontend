@@ -12,3 +12,10 @@ Execute before broader product work; existing phase evidence stays historical.
 Acceptance: deployed browser signup creates exactly one RDS row, repeated normalized
 email preserves it, with no snapshot required. Local success does not mark live
 acceptance complete. No listing/admin/export or automated messaging scope.
+
+## Main-only rollout amendment
+
+User requires production deployment from main in both repositories. Cherry-pick
+the waitlist changes onto latest main; preserve newer main commits and unrelated
+local edits. Backend includes migration 0006 and its metadata as the dependency
+for 0007 without importing broader product implementation.

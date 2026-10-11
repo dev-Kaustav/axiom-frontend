@@ -12,8 +12,8 @@ Connect rook.pm and www.rook.pm to Production in Settings > Domains.
 Set VITE_API_ORIGIN=https://api.rook.pm in the Production build environment.
 The root build generates public dist/config.js from this variable; the future
 React app reads the same VITE_API_ORIGIN through Vite. Redeploy after changing it.
-The configured Production Branch must be feat/axf-01-production-shell for this
-push to auto-deploy production; otherwise promote the commit with your workflow.
+The configured Production Branch is main. The waitlist commit is cherry-picked
+onto main; pushing main triggers the existing production Git deployment.
 The API uses EC2/Nginx and existing rook_prod RDS in ap-southeast-2. Follow
 ../axiom-backend/docs/deployment.md for the operator-owned backend rollout.
 No registry snapshot is required for waitlist intake. /health remains registry-aware.
