@@ -8,7 +8,33 @@ combines public/ and demo/dist/ into dist/ for one Vercel deployment.
 VERCEL
 Import dev-Kaustav/axiom-frontend, using the repository root.
 vercel.json specifies the build command and dist output directory.
-Connect rook.pm to Production in Settings > Domains.
+Connect rook.pm and www.rook.pm to Production in Settings > Domains.
+Set VITE_API_ORIGIN=https://api.rook.pm in the Production build environment.
+The root build generates public dist/config.js from this variable; the future
+React app reads the same VITE_API_ORIGIN through Vite. Redeploy after changing it.
+The configured Production Branch must be feat/axf-01-production-shell for this
+push to auto-deploy production; otherwise promote the commit with your workflow.
+The API uses EC2/Nginx and existing rook_prod RDS in ap-southeast-2. Follow
+../axiom-backend/docs/deployment.md for the operator-owned backend rollout.
+No registry snapshot is required for waitlist intake. /health remains registry-aware.
+
+LOCAL WAITLIST
+VITE_API_ORIGIN=http://127.0.0.1:9000 npm run build
+npm run preview
+Add http://127.0.0.1:4174 to local backend AXIOM_CORS_ORIGINS. Keep production
+origins https://rook.pm,https://www.rook.pm in the production backend .env.
+With no VITE_API_ORIGIN, the form reports unavailable and never claims success.
+
+WAITLIST ACCEPTANCE
+Navigation and hero Join the waitlist links reach #waitlist, after founders and
+before footer. Name/email required; WhatsApp optional and international.
+Pending requests disable submit; failures retain values. Success requires HTTP
+202 with status accepted. Duplicate email submissions preserve the original RDS
+row. Test the deployed form and inspect RDS directly; no public signup list,
+confirmation emails or WhatsApp messages are provided. Preserve /demo access.
+Local browser regression: install Python playwright and Chromium, build with
+VITE_API_ORIGIN=http://127.0.0.1:9001, run preview at :4174 and a scratch-only
+backend at :9001, then run tests/waitlist_browser.py. Never use RDS for this test.
 
 DEMO ACCESS GATE
 /demo and everything under it sit behind a sign-in page. The gate covers the

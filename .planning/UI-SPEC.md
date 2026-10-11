@@ -63,3 +63,15 @@ The user rejected repeated vertical header gradients and the subsequent single-c
 ## Relationship workspace allocation
 
 The relationship map fills the left of the workspace, with contract families stacked down it. The right column splits into the evidence inspector above and Hedge failure watch below, each with its own scroll. Exact group offsets sit as chips at the top of the watch. The universe navigator (search, scope, group by) is a popover on the map's bottom bar, beside the relation-type chips that act as both legend and filter. Preserve pair filtering against focused contracts, pair/group selection and evidence linkage, graph resize/pan/zoom and keyboard access.
+
+
+## AXF-01.1 landing waitlist exception
+
+The public landing page preserves its current warm dark visual language.
+Replace final CTA after founder contact with a two-column headline/copy and
+form; stack on mobile. Top nav and primary hero link to #waitlist, secondary
+hero retains /demo. Require name/email, label WhatsApp optional, hide honeypot.
+Respect reduced motion, visible focus, sticky-header offsets and keyboard
+navigation. Disable pending submits; only show success after API acceptance;
+retain values on validation/rate-limit/connection errors. This scope does not
+adopt pending terminal redesign into the landing page or alter demo code.

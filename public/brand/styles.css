@@ -448,7 +448,7 @@ em { font-style: normal; color: var(--accent-soft); }
   position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .5; mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.13'/%3E%3C/svg%3E");
 }
-main, .site-header, .site-footer { position: relative; z-index: 2; }
+main, .site-footer { position: relative; z-index: 2; }
 
 /* A faint dot field, radially masked so it fades out before the edges. */
 #problem::after, .faq::after {
@@ -1015,4 +1015,27 @@ main, .site-header, .site-footer { position: relative; z-index: 2; }
   .founder-photo { width: 84px; }
   .founder h3 { font-size: 17px; }
   .founder-links { gap: 7px 14px; font-size: 12px; }
+}
+
+/* Waitlist uses the landing page's warm ink, typography and restrained borders. */
+.waitlist { scroll-margin-top: 18px; background: radial-gradient(ellipse at 12% 80%, #dfb77412, transparent 65%); }
+.waitlist-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(40px, 7vw, 110px); align-items: start; }
+.waitlist-copy .lede { margin-block: 24px; max-width: 470px; }
+.waitlist-form { display: grid; gap: 12px; padding: clamp(24px, 3vw, 40px); border: 1px solid var(--line-strong); border-radius: 8px; background: #151617; }
+.waitlist-form label { font-size: 13px; color: var(--t2); }
+.waitlist-form label span { color: var(--t3); }
+.waitlist-form input { width: 100%; min-width: 0; padding: 14px 16px; background: #0e0f10; border: 1px solid var(--line-strong); border-radius: 4px; font: inherit; font-size: 16px; color: var(--t1); margin-bottom: 10px; }
+.waitlist-form input::placeholder { color: var(--t3); }
+.waitlist-form .fineprint { margin: -10px 0 12px; }
+.waitlist-form .button { width: 100%; justify-content: space-between; cursor: pointer; }
+.waitlist-form .button:disabled { opacity: .65; cursor: wait; transform: none; }
+#waitlist-status { min-height: 44px; font-size: 14px; line-height: 1.6; color: var(--accent-soft); }
+#waitlist-status[data-error="true"] { color: #ffb6a8; }
+.waitlist-form [aria-invalid="true"] { border-color: #ffb6a8; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 4px; }
+@media (max-width: 680px) {
+  .waitlist-grid { grid-template-columns: 1fr; gap: 32px; }
+  .header-inner { gap: 12px; }
+  .nav-cta { white-space: nowrap; }
+  .hero-actions { flex-wrap: wrap; }
 }

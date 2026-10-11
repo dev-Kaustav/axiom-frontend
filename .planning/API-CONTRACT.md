@@ -32,3 +32,20 @@ Frontend Phase 1 scaffolding can start now. Phase 2 live acceptance requires AXM
 
 ## Confirmed client libraries
 TanStack Router owns validated navigable URL state. TanStack Query owns server data with account/snapshot/version-scoped keys, cancellation and explicit freshness policies. Wagmi owns wallet connection/signing, not backend authorization or portfolio accounting.
+
+## P0 waitlist contract — AXM-02.1 / AXF-01.1
+
+- `POST /v1/waitlist`: JSON `name` (trimmed 1–100), `email` (valid, <=254,
+  lowercase), optional `whatsapp` (international + and 8–15 digits after
+  spaces/hyphens/parentheses are removed), `website` hidden honeypot (default empty).
+- New and duplicate submissions: HTTP 202 `{"status":"accepted"}`. Unique
+  normalized email with transactional PostgreSQL ON CONFLICT DO NOTHING;
+  duplicates preserve the first row. Nonempty honeypot accepts without writing.
+- Invalid input: 422. Database failure: generic 503 with no signup payload logs.
+  Nginx intake limit: five/minute/IP, burst five, 429 with Retry-After 60.
+- `GET /ready`: 200 `{"status":"ok"}` only with accessible database and
+  waitlist table, otherwise generic 503. No snapshot needed. `/health` unchanged.
+- No credentials; CORS GET/POST/OPTIONS, Content-Type for configured origins
+  `https://rook.pm,https://www.rook.pm`. No listing/admin/export/message endpoints.
+- Frontend at Vercel rook.pm uses build-time `VITE_API_ORIGIN=https://api.rook.pm`
+  for generated `/config.js` and future React. Backend one `.env`, RDS verify-full.
