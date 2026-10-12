@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0e0f10">
+  <meta name="description" content="Request access to the Rook demo. Leave your email and we’ll send your credentials.">
+  <title>Request demo — Rook</title>
+  <link rel="canonical" href="https://rook.pm/request-demo">
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
+  <link rel="preload" href="/brand/plex-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/brand/styles.css">
+  <link rel="stylesheet" href="/brand/request-demo.css">
+  <script src="/config.js" defer></script>
+  <script src="/brand/request-demo.js" defer></script>
+</head>
+<body class="demo-request-page">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="wordmark" href="/" aria-label="Rook home"><img src="/brand/rook.svg" width="26" height="26" alt="">rook<span>.</span></a>
+      <a class="demo-back" href="/">← Back to Rook</a>
+    </div>
+  </header>
+  <main id="main" class="demo-request-main">
+    <section class="demo-request-card" aria-labelledby="request-title">
+      <p class="eyebrow"><span class="signal" aria-hidden="true"></span>Explore the workstation</p>
+      <h1 id="request-title">Your whole book.<br><em>See it in action.</em></h1>
+      <p class="demo-request-intro">Request access to the Rook demo. Leave your email and we’ll send you the credentials.</p>
+      <form id="demo-request-form" aria-label="Request demo access" novalidate>
+        <label for="demo-email">Email address</label>
+        <input id="demo-email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength="254" placeholder="you@example.com" aria-describedby="demo-status">
+        <button class="button" type="submit">Request demo <span aria-hidden="true">→</span></button>
+        <p id="demo-status" role="status" aria-live="polite" aria-atomic="true"></p>
+      </form>
+      <div id="demo-success" class="demo-success" hidden>
+        <h2 tabindex="-1">Request received.</h2>
+        <p>We’ll email your demo credentials to <strong id="demo-confirmed-email"></strong>.</p>
+        <a class="text-link" href="/">Back to Rook <span aria-hidden="true">→</span></a>
+      </div>
+      <noscript><p class="demo-request-intro">Enable JavaScript to request demo access, or email <a class="text-link" href="mailto:kaustav@rook.pm">kaustav@rook.pm</a>.</p></noscript>
+    </section>
+  </main>
+</body>
+</html>

@@ -69,6 +69,7 @@ createServer(async (req, res) => {
     const url = new URL(req.url, 'http://localhost');
     if (gated(url.pathname) && await gate(req, res, url.pathname)) return;
     const pathname = url.pathname === '/' ? '/index.html' :
+      ['/request-demo', '/request-demo/'].includes(url.pathname) ? '/request-demo/index.html' :
       ['/demo', '/demo/'].includes(url.pathname) ? '/demo/index.html' : url.pathname;
     const path = resolve(root, '.' + decodeURIComponent(pathname));
     if (!path.startsWith(root + sep)) { res.writeHead(403).end('Forbidden'); return; }

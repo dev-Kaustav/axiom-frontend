@@ -1,0 +1,42 @@
+.demo-request-page { min-height: 100svh; }
+.demo-back { font-size: 13px; color: var(--t2); padding-block: 12px; }
+.demo-back:hover { color: var(--accent-soft); }
+.demo-request-main {
+  min-height: calc(100svh - 73px);
+  display: grid; place-items: center;
+  padding: 64px 24px;
+  background: radial-gradient(ellipse at 50% 36%, #dfb7740c, transparent 65%);
+}
+.demo-request-card {
+  width: min(100%, 530px); padding: clamp(28px, 5vw, 48px);
+  border: 1px solid var(--line-strong); border-radius: 8px;
+  background: #151617; box-shadow: 0 24px 70px #00000030;
+}
+.demo-request-card .eyebrow { color: var(--accent-soft); margin-bottom: 24px; }
+.demo-request-card h1 { font-size: clamp(32px, 5vw, 44px); line-height: 1.15; margin-bottom: 20px; }
+.demo-request-card h1 em { font-family: Georgia, serif; font-style: italic; }
+.demo-request-intro { font-size: 16px; line-height: 1.7; color: var(--t2); margin-bottom: 32px; }
+#demo-request-form { display: grid; gap: 12px; }
+#demo-request-form label { font-size: 14px; color: var(--t2); }
+#demo-email {
+  width: 100%; min-width: 0; padding: 15px 16px;
+  background: #0e0f10; border: 1px solid #62656a; border-radius: 4px;
+  font: inherit; font-size: 16px; color: var(--t1);
+}
+#demo-email::placeholder { color: var(--t3); }
+#demo-email:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 3px; }
+#demo-email[aria-invalid="true"] { border-color: #ffb6a8; }
+#demo-request-form .button { width: 100%; justify-content: space-between; cursor: pointer; margin-top: 8px; font-size: 14px; }
+#demo-request-form .button:disabled { opacity: .65; cursor: wait; transform: none; }
+#demo-status { min-height: 44px; font-size: 14px; line-height: 1.6; color: var(--accent-soft); }
+#demo-status[data-error="true"] { color: #ffb6a8; }
+.demo-success { padding-top: 8px; }
+.demo-success h2 { font-size: 26px; margin-bottom: 16px; color: var(--accent-soft); }
+.demo-success p { font-size: 16px; line-height: 1.7; color: var(--t2); margin-bottom: 28px; overflow-wrap: anywhere; }
+.demo-success strong { color: var(--t1); font-weight: 500; }
+.demo-request-card [hidden] { display: none; }
+@media (max-width: 540px) {
+  .demo-request-main { padding: 40px 20px; }
+  .demo-request-card { padding: 28px 24px; }
+  .demo-request-card .eyebrow { font-size: 9px; letter-spacing: .08em; }
+}

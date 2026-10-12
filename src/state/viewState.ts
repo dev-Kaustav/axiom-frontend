@@ -3,7 +3,8 @@ import { ApiError, isApiError } from '../api/errors.ts';
 import { formatUtcTimestamp } from '../format/time.ts';
 export interface QuerySnapshot { status: 'pending' | 'error' | 'success'; error: unknown; hasData: boolean; isFetching: boolean; dataUpdatedAt: number; errorUpdatedAt: number; isEmpty?: boolean }
 export interface ViewCopy { noun: string; loading: string; emptyHeading: string; emptyBody: string }
-export type ViewState = { kind: 'loading' | 'empty' }
+export type ViewState = { kind: 'loading' }
+  | { kind: 'empty' }
   | { kind: 'unavailable'; reason: 'not_configured' | 'capability' }
   | { kind: 'error' | 'stale_version' | 'unsupported_scope' | 'expired_session' | 'unresolved_account'; error: ApiError }
   | { kind: 'rate_limited'; error: ApiError; retryAt: number }

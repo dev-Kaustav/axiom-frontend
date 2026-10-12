@@ -10,6 +10,8 @@ Import dev-Kaustav/axiom-frontend, using the repository root.
 vercel.json specifies the build command and dist output directory.
 Connect rook.pm and www.rook.pm to Production in Settings > Domains.
 Set VITE_API_ORIGIN=https://api.rook.pm in the Production build environment.
+Production builds fail if this variable is missing, so a deployment cannot
+silently publish a waitlist with no API address.
 The root build generates public dist/config.js from this variable; the future
 React app reads the same VITE_API_ORIGIN through Vite. Redeploy after changing it.
 The configured Production Branch is main. The waitlist commit is cherry-picked
