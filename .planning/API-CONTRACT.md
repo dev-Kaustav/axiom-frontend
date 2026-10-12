@@ -49,3 +49,15 @@ TanStack Router owns validated navigable URL state. TanStack Query owns server d
   `https://rook.pm,https://www.rook.pm`. No listing/admin/export/message endpoints.
 - Frontend at Vercel rook.pm uses build-time `VITE_API_ORIGIN=https://api.rook.pm`
   for generated `/config.js` and future React. Backend one `.env`, RDS verify-full.
+
+## Demo requests — 2026-10-12
+
+- Public page `/request-demo`, linked from the landing header, collects only email.
+- `POST /v1/demo-requests`: JSON `{"email":"you@example.com"}`; validated,
+  trimmed, lowercase, <=254 characters; extra fields rejected. New and duplicate
+  emails return HTTP 202 `{"status":"accepted"}` after committing to
+  `app.demo_requests` (migration 0008). The first row and timestamp are retained.
+- Validation 422, generic database failure 503, shared Nginx intake limit 429.
+  Same API origin and CORS configuration as waitlist; no credentials in requests.
+- `/ready` now requires both intake tables. Credentials are emailed manually
+  later by the operator; the page only confirms a saved request.

@@ -18,7 +18,8 @@
     "test": "node --experimental-strip-types --test tests/api-client.test.mjs tests/view-state.test.mjs tests/search.test.mjs",
     "test:build": "node --experimental-strip-types --test tests/build/*.test.mjs",
     "test:live": "node --experimental-strip-types --test tests/live/*.test.mjs",
-    "test:waitlist-phone": "node --test tests/waitlist-phone.test.mjs"
+    "test:waitlist-phone": "node --test tests/waitlist-phone.test.mjs",
+    "test:request-demo": "node --test tests/request-demo.test.mjs"
   },
   "dependencies": {
     "react": "^19.3.0",

@@ -34,7 +34,7 @@
 .demo-success h2 { font-size: 26px; margin-bottom: 16px; color: var(--accent-soft); }
 .demo-success p { font-size: 16px; line-height: 1.7; color: var(--t2); margin-bottom: 28px; overflow-wrap: anywhere; }
 .demo-success strong { color: var(--t1); font-weight: 500; }
-.demo-request-card [hidden] { display: none; }
+#demo-request-form[hidden], .demo-request-card [hidden] { display: none; }
 @media (max-width: 540px) {
   .demo-request-main { padding: 40px 20px; }
   .demo-request-card { padding: 28px 24px; }

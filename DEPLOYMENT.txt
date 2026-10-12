@@ -76,6 +76,7 @@ After the first deploy, confirm the edge middleware actually ran:
 It must print 401. If it prints 200, middleware did not run for this project
 type - turn on Vercel Deployment Protection > Password Protection instead.
 
+/request-demo     Public email-only demo request page (also /request-demo/).
 /                 Static Rook landing page.
 /brand/*          Landing-page assets.
 /demo             Demo entry point (local rewrite to /demo/index.html).

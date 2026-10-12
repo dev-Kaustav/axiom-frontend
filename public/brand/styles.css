@@ -115,6 +115,17 @@ em { font-style: normal; color: var(--accent-soft); }
 .nav-cta { font-size: 12px; padding: 10px 16px; border: 1px solid var(--line-strong); border-radius: 4px; color: var(--t2); transition: background .2s, border-color .2s, color .2s; }
 .nav-cta:hover { background: var(--accent-fill); border-color: var(--accent-line); color: var(--t1); }
 .nav-cta span { margin-left: 14px; }
+.header-actions { display: flex; align-items: center; gap: 12px; flex: none; }
+.header-actions .nav-cta { white-space: nowrap; }
+@media (max-width: 1240px) {
+  .site-header:has(.header-actions) nav { display: none; }
+}
+@media (max-width: 540px) {
+  .header-inner:has(.header-actions) { height: auto; min-height: 72px; flex-wrap: wrap; padding-block: 16px; }
+  .header-actions { width: 100%; }
+  .header-actions .nav-cta { flex: 1; padding-inline: 12px; text-align: center; }
+  .header-actions .nav-cta span { margin-left: 6px; }
+}
 
 /* --- Hero ----------------------------------------------------------------- */
 
