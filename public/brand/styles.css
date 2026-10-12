@@ -1028,6 +1028,17 @@ main, .site-footer { position: relative; z-index: 2; }
 .waitlist-form label span { color: var(--t3); }
 .waitlist-form input { width: 100%; min-width: 0; padding: 14px 16px; background: #0e0f10; border: 1px solid var(--line-strong); border-radius: 4px; font: inherit; font-size: 16px; color: var(--t1); margin-bottom: 10px; }
 .waitlist-form input::placeholder { color: var(--t3); }
+.phone-field { display: flex; min-width: 0; margin-bottom: 10px; background: #0e0f10; border: 1px solid var(--line-strong); border-radius: 4px; }
+.phone-country { position: relative; display: flex; align-items: center; gap: 8px; flex: none; padding: 0 12px; border-right: 1px solid var(--line-strong); font-size: 15px; font-variant-numeric: tabular-nums; }
+.phone-country img { width: 24px; height: 18px; object-fit: cover; border-radius: 2px; }
+.phone-country svg { color: var(--t3); }
+.phone-country select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font: inherit; }
+.phone-country:focus-within { outline: 2px solid var(--accent-soft); outline-offset: 2px; border-radius: 3px; }
+.waitlist-form .phone-field input { flex: 1; width: 0; margin: 0; border: 0; background: transparent; padding-inline: 12px; }
+.phone-field:has(input:focus-visible) { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
+.phone-field input:focus-visible { outline: none; }
+.phone-field:has([aria-invalid="true"]) { border-color: #ffb6a8; }
+.waitlist-form .phone-error { margin: -12px 0 12px; font-size: 13px; line-height: 1.5; color: #ffb6a8; }
 .waitlist-form .fineprint { margin: -10px 0 12px; }
 .waitlist-form .button { width: 100%; justify-content: space-between; cursor: pointer; }
 .waitlist-form .button:disabled { opacity: .65; cursor: wait; transform: none; }

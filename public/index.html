@@ -34,6 +34,8 @@
   </script>
   <script src="/config.js" defer></script>
   <script src="/brand/landing.js" defer></script>
+  <script src="/brand/phone/libphonenumber.js" defer></script>
+  <script src="/brand/phone/countries.js" defer></script>
   <script src="/brand/waitlist.js" defer></script>
   <script type="application/ld+json">
 {
@@ -827,8 +829,19 @@
         <label for="waitlist-email">Email</label>
         <input id="waitlist-email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com">
         <label for="waitlist-whatsapp">WhatsApp <span>(optional)</span></label>
-        <input id="waitlist-whatsapp" name="whatsapp" type="tel" autocomplete="tel" maxlength="50" placeholder="+91 98765 43210" aria-describedby="waitlist-phone-help">
-        <p id="waitlist-phone-help" class="fineprint">Include your country code, starting with +.</p>
+        <div class="phone-field">
+          <div class="phone-country">
+            <img id="waitlist-country-flag" src="/brand/phone/flags/us.svg" width="24" height="18" alt="" aria-hidden="true">
+            <span id="waitlist-dial-code" aria-hidden="true">+1</span>
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <select id="waitlist-country" aria-label="WhatsApp country and calling code" autocomplete="off">
+              <option value="US">United States (+1)</option>
+            </select>
+          </div>
+          <input id="waitlist-whatsapp" name="whatsapp" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="10" placeholder="Phone number" aria-describedby="waitlist-phone-help waitlist-phone-error">
+        </div>
+        <p id="waitlist-phone-help" class="fineprint">Enter 10 digits. Country code is added automatically.</p>
+        <p id="waitlist-phone-error" class="phone-error" aria-live="polite" hidden></p>
         <div hidden aria-hidden="true"><label for="waitlist-website">Website</label><input id="waitlist-website" name="website" tabindex="-1" autocomplete="off"></div>
         <button class="button" type="submit">Join the waitlist <span aria-hidden="true">→</span></button>
         <p id="waitlist-status" role="status" aria-live="polite" aria-atomic="true"></p>

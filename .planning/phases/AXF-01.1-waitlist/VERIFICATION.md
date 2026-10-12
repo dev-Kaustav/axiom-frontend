@@ -41,3 +41,25 @@ passed using main source; production origin asset check and all six gate checks
 passed. Browser suite passed against the cherry-picked main frontend/backend
 and isolated scratch PostgreSQL. Vercel deploys main with
 VITE_API_ORIGIN=https://api.rook.pm; live rollout remains operator-owned.
+
+## Phone field refinement — 2026-10-12
+
+- Replaced the international-number placeholder with a self-hosted SVG flag,
+  country/calling-code selector and separate `Phone number` input; the United
+  States defaults to +1. The country selector is a native keyboard-accessible select.
+- libphonenumber-js metadata supplies mobile digit lengths (India: 10), with
+  inline length/number validation and automatic international-paste handling.
+  Overlong pasted values remain editable and cannot submit a truncated number.
+  The API receives a single international number or null for the optional field.
+- `node scripts/build.mjs` and the four waitlist configuration/deployment tests
+  passed. The separate app artifact test requires an existing `.app-dist/` build
+  and was not part of this landing-only verification.
+- `tests/waitlist-phone.test.mjs` passed in Chrome using a mocked API: optional
+  blank value, invalid and valid lengths, country changes, full international
+  paste, local trunk prefixes, exact API payload and keyboard order. Desktop,
+  375px/320px mobile and landscape screenshots were inspected locally.
+- Reproduce with the built landing preview running at :4174 and
+  `npm run test:waitlist-phone`. Set `PLAYWRIGHT_CHROMIUM_EXECUTABLE` to an installed
+  Chrome executable when bundled Chromium is unavailable. The test mocks all
+  signup requests and does not create database records. Production rollout
+  remains operator-owned.

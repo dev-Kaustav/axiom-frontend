@@ -9,6 +9,8 @@ if (apiOrigin) {
     throw new Error('VITE_API_ORIGIN must be an HTTP(S) origin without a path or credentials');
   }
 }
+const { buildPhoneAssets } = await import('./build-phone-assets.mjs');
+await buildPhoneAssets(new URL('../dist/brand/phone/', import.meta.url));
 await writeFile(new URL('../dist/config.js', import.meta.url),
   `window.ROOK_CONFIG = ${JSON.stringify({ apiOrigin }).replaceAll('<', '\\u003c')};\n`);
 await cp(new URL('../demo/dist/', import.meta.url), new URL('../dist/demo/', import.meta.url), { recursive: true });
