@@ -1,5 +1,6 @@
 import { useMemo, useState, type CSSProperties } from 'react';
 import { ArrowRight, ArrowUpRight, Crosshair, RotateCcw } from 'lucide-react';
+import { LivePortfolio } from './LivePortfolio';
 import { OutcomeChart } from './OutcomeChart';
 import { Panel, KeyValue, Badge, ResizeHandle, useColumnWidth } from './primitives';
 import {
@@ -29,7 +30,7 @@ export function ExposureView({ positions, onScenario, onContract, onHedge }: {
   const slice = useMemo(() => ALL_STATES.flatMap((s, index) =>
     WINDOWS.every(([key]) => s[key] === windows[key]) ? [{ state: s, index, pnl: vector[index] }] : []), [windows, vector]);
   const selected = slice.find(r => r.state.october === selectedMoves.october && r.state.december === selectedMoves.december)!;
-  const result = portfolioAt(positions, selected.index);
+  const result = useMemo(() => portfolioAt(positions, selected.index), [positions, selected.index]);
   const stateFacts = facts(selected.state);
   const contributions = [...result.rows].sort((a, b) => a.pnlCents - b.pnlCents);
   const maxAbs = Math.max(Math.abs(summary.worst.pnlCents), Math.abs(summary.best.pnlCents), 1);
@@ -48,7 +49,7 @@ export function ExposureView({ positions, onScenario, onContract, onHedge }: {
         <h2>{risks[0] ? scenarioTitle(risks[0].scenario.representative) : 'No loss-making scenario in this model'}</h2>
         {risks[0] && <p className="diagnosis-path">{pathDetail(risks[0].scenario.representative)}</p>}
       </div>
-      <OutcomeChart values={comparisonValues} />
+      <LivePortfolio positions={positions} />
       <div className="diagnosis-action"><span>Worst portfolio P&amp;L</span><button className={`metric-button diagnosis-worst ${summary.worst.pnlCents < 0 ? 'negative' : 'positive'}`} onClick={() => selectExtreme('worst')}>{money(summary.worst.pnlCents, true)}<ArrowUpRight size={16}/></button>
         {risks[0] && <button className="primary-button" onClick={() => onHedge(risks[0].index)}>Protect this outcome <ArrowRight size={15}/></button>}
       </div>
@@ -103,6 +104,7 @@ export function ExposureView({ positions, onScenario, onContract, onHedge }: {
         <button className="text-button hedge-link" onClick={() => onHedge(risk.index)} aria-label={`Find hedges for vulnerability ${i + 1}`}>Find hedges <ArrowUpRight size={14}/></button>
       </div>)}</div>
     </section>
+    <Panel title="Settlement distribution" className="settlement-distribution"><OutcomeChart values={comparisonValues} /></Panel>
     <div className="exposure-bottom">
       <Panel title="Economic drivers" eyebrow="MAXIMUM P&L SWING">
         <ul className="driver-list">{driving.map(d => <li key={d.id}><span>{d.label}</span><span className="driver-bar"><i style={{width:`${d.swingCents / driving[0].swingCents * 100}%`}}/></span><span className="mono">{money(d.swingCents)}</span></li>)}</ul>

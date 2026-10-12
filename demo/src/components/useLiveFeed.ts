@@ -1,14 +1,15 @@
 import { useSyncExternalStore } from 'react';
 import { CONTRACT_VIEWS, POSITIONS } from '../domain/engine';
 import { snapshotPrice } from '../domain/decisionSupport';
-import { createFeed, stepFeed, warmFeed, type FeedState } from '../domain/liveFeed';
+import { createFeed, stepFeed, warmFeed, INTERVAL_MS, type FeedState } from '../domain/liveFeed';
 
 /**
- * One replay feed for the page, held outside React so only the Trade terminal
- * re-renders on a tick. It runs while something is subscribed, skips ticks in
+ * One replay feed for the page, held outside React so Exposure and Terminal
+ * share one session. It runs while something is subscribed, skips ticks in
  * a hidden tab, and starts paused with `?feed=paused` for stable captures.
  */
-const INTERVAL_MS = 1500;
+const FIXED_AT = Date.UTC(2026, 9, 12, 14, 0, 0);
+let replayStart: number;
 type Snapshot = { feed: FeedState; paused: boolean };
 
 let snapshot: Snapshot | null = null;
@@ -31,7 +32,8 @@ function marks(): [string, number][] {
 function current(): Snapshot {
   if (!snapshot) {
     const paused = new URLSearchParams(window.location.search).get('feed') === 'paused';
-    snapshot = { feed: warmFeed(createFeed(marks()), 40, Date.now(), INTERVAL_MS), paused };
+    replayStart = paused ? FIXED_AT : Date.now();
+    snapshot = { feed: warmFeed(createFeed(marks()), 360, replayStart, INTERVAL_MS), paused };
   }
   return snapshot;
 }
@@ -41,7 +43,7 @@ const emit = () => listeners.forEach(listener => listener());
 function tick() {
   const s = current();
   if (s.paused || document.hidden) return;
-  snapshot = { ...s, feed: stepFeed(s.feed, Date.now()) };
+  snapshot = { ...s, feed: stepFeed(s.feed, s.feed.at + INTERVAL_MS) };
   emit();
 }
 
@@ -56,6 +58,11 @@ function subscribe(listener: () => void) {
 
 export function setFeedPaused(paused: boolean) {
   snapshot = { ...current(), paused };
+  emit();
+}
+
+export function restartFeed() {
+  snapshot = { ...current(), feed: warmFeed(createFeed(marks()), 360, replayStart, INTERVAL_MS) };
   emit();
 }
 

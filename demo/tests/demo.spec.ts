@@ -510,7 +510,9 @@ test('Exposure scrolls the complete outcome panel without moving the landscape',
     expect(bounds.bottom).toBeLessThanOrEqual(bounds.viewport);
     expect(bounds.document).toBe(height);
     const workspaceScroll = await page.locator('.workspace').evaluate(el => el.scrollTop);
-    await rail.hover();
+    // Move into the visible rail without locator.hover() scrolling its ancestors.
+    const railBox = (await rail.boundingBox())!;
+    await page.mouse.move(railBox.x + railBox.width / 2, railBox.y + railBox.height / 2);
     await page.mouse.wheel(0, 320);
     await expect.poll(() => rail.evaluate(el => el.scrollTop)).toBeGreaterThan(250);
     await expect(rail.getByRole('heading', { name: 'Selected outcome' })).not.toBeInViewport();
@@ -605,7 +607,7 @@ test('lighting responds gently to pointer and tab focus, and respects reduced mo
 // Trade and Terminal are workstation screens: panels scroll inside themselves, never the page.
 test('Trade and Terminal are bounded screens at both target sizes', async ({ page }) => {
   const noErrors = await guard(page);
-  for (const [route, panels] of [['trade', 4], ['terminal', 4]] as const) {
+  for (const [route, panels] of [['trade', 4], ['terminal', 5]] as const) {
     for (const [width, height] of [[1440, 900], [1920, 1080]]) {
       await page.setViewportSize({ width, height });
       await page.goto(`/demo/?feed=paused#/${route}`);
@@ -651,7 +653,7 @@ test('the Terminal replay feed streams and pauses', async ({ page }) => {
   const quotes = () => page.locator('.quotes-table tbody').innerText();
   const tapeTop = () => page.locator('.tape-table tbody tr').first().innerText();
   const before = await quotes();
-  await expect.poll(quotes, { timeout: 8000 }).not.toBe(before);
+  await expect.poll(quotes, { timeout: 2000 }).not.toBe(before);
   await page.getByRole('button', { name: 'Pause feed', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Resume feed', exact: true })).toBeVisible();
   const frozen = [await quotes(), await tapeTop()];
