@@ -3,6 +3,10 @@
   "framework": null,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "redirects": [
+    { "source": "/docs", "destination": "https://docs.rook.pm", "permanent": true },
+    { "source": "/docs/:path*", "destination": "https://docs.rook.pm/:path*", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/request-demo", "destination": "/request-demo/index.html" },
     { "source": "/request-demo/", "destination": "/request-demo/index.html" },
